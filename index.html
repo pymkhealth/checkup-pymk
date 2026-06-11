@@ -36,10 +36,7 @@
   window._where = where;
   window._onSnapshot = onSnapshot;
 
-  // Load data on startup
-  window.addEventListener('load', async function(){
-    await window.loadFromFirebase();
-  });
+  // (ย้าย loadFromFirebase ไปเรียกใน script ปกติด้านล่างแล้ว)
 </script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap');
@@ -1419,9 +1416,25 @@ function viewPdfCurrent(){
 }
 function closePdfViewer(){ /* handled by window.open */ }
 
-// Init DOB on login page load
+// Init DOB และโหลดข้อมูลจาก Firebase เมื่อหน้าพร้อม
 window.addEventListener('load', function(){
   initDOBDropdowns('login-dob-day','login-dob-month','login-dob-year');
+  // รอให้ Firebase module โหลดเสร็จก่อนจึงดึงข้อมูล
+  if(typeof window.loadFromFirebase === 'function'){
+    window.loadFromFirebase();
+  } else {
+    var attempts = 0;
+    var interval = setInterval(function(){
+      attempts++;
+      if(typeof window.loadFromFirebase === 'function'){
+        clearInterval(interval);
+        window.loadFromFirebase();
+      } else if(attempts > 50){
+        clearInterval(interval);
+        console.error('loadFromFirebase ไม่พร้อมใช้งาน');
+      }
+    }, 100);
+  }
 });
 </script>
 </body>
