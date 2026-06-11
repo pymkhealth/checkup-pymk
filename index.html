@@ -11,13 +11,13 @@
   import { getFirestore, collection, doc, setDoc, getDocs, updateDoc, deleteDoc, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   const firebaseConfig = {
-    apiKey: "AIzaSyDdLnFHTbU9aYb9f0Rb43GJNbo_w4zGsyA",
-    authDomain: "checkup-f4015.firebaseapp.com",
-    projectId: "checkup-f4015",
-    storageBucket: "checkup-f4015.firebasestorage.app",
-    messagingSenderId: "651568886763",
-    appId: "1:651568886763:web:e80368d31b4bba16d31fae",
-    measurementId: "G-N4CWQ7ZL9D"
+    apiKey: "AIzaSyAh_U2SfI-8mj5voLR17ZqYr3-EkywAHng",
+    authDomain: "pymk-health.firebaseapp.com",
+    projectId: "pymk-health",
+    storageBucket: "pymk-health.firebasestorage.app",
+    messagingSenderId: "314295525314",
+    appId: "1:314295525314:web:21b4e8fdc763792bd9405b",
+    measurementId: "G-5VW0RZ4PYK"
   };
 
   const app = initializeApp(firebaseConfig);
@@ -35,8 +35,21 @@
   window._where = where;
   window._onSnapshot = onSnapshot;
   window._firebaseModuleReady = true;
-  document.dispatchEvent(new Event('firebase-module-ready'));
-  // (ย้าย loadFromFirebase ไปเรียกใน script ปกติด้านล่างแล้ว)
+
+  // รอให้ DOM และ script ปกติโหลดเสร็จก่อน แล้วค่อยเรียก loadFromFirebase
+  function tryLoad() {
+    if (typeof window.loadFromFirebase === 'function') {
+      window.loadFromFirebase();
+    } else {
+      setTimeout(tryLoad, 50);
+    }
+  }
+
+  if (document.readyState === 'complete') {
+    tryLoad();
+  } else {
+    window.addEventListener('load', tryLoad);
+  }
 </script>
 <style>
 .p-4{padding:1rem!important}.p-6{padding:1.5rem!important}.p-8{padding:2rem!important}
@@ -1423,37 +1436,11 @@ function viewPdfCurrent(){
 }
 function closePdfViewer(){ /* handled by window.open */ }
 
-// Init DOB และโหลดข้อมูลจาก Firebase เมื่อหน้าพร้อม
+// Init DOB เมื่อหน้าพร้อม (loadFromFirebase ถูกเรียกจาก ES module แล้ว)
 window.addEventListener('load', function(){
   initDOBDropdowns('login-dob-day','login-dob-month','login-dob-year');
   showLoadingOverlay('กำลังโหลดข้อมูล...');
 });
-
-// รอ Firebase module dispatch event 'firebase-module-ready' แล้วค่อยโหลด
-document.addEventListener('firebase-module-ready', function(){
-  window.loadFromFirebase();
-});
-
-// Fallback: ถ้า event ไม่ถูก dispatch (เช่น script โหลดช้า) ให้ poll ต่อ
-setTimeout(function(){
-  if(!window._firebaseModuleReady){
-    var attempts = 0;
-    var interval = setInterval(function(){
-      attempts++;
-      if(window._getDocs && window._col && window._db){
-        clearInterval(interval);
-        if(!window._firebaseLoadStarted){
-          window._firebaseLoadStarted = true;
-          window.loadFromFirebase();
-        }
-      } else if(attempts > 150){
-        clearInterval(interval);
-        hideLoadingOverlay();
-        alert('ไม่สามารถเชื่อมต่อ Firebase ได้ กรุณารีโหลดหน้าเว็บ');
-      }
-    }, 100);
-  }
-}, 500);
 </script>
 </body>
 </html>
