@@ -34,7 +34,8 @@
   window._query = query;
   window._where = where;
   window._onSnapshot = onSnapshot;
-
+  window._firebaseModuleReady = true;
+  document.dispatchEvent(new Event('firebase-module-ready'));
   // (ย้าย loadFromFirebase ไปเรียกใน script ปกติด้านล่างแล้ว)
 </script>
 <style>
@@ -1425,22 +1426,34 @@ function closePdfViewer(){ /* handled by window.open */ }
 // Init DOB และโหลดข้อมูลจาก Firebase เมื่อหน้าพร้อม
 window.addEventListener('load', function(){
   initDOBDropdowns('login-dob-day','login-dob-month','login-dob-year');
-  // แสดง overlay ก่อนเลย
   showLoadingOverlay('กำลังโหลดข้อมูล...');
-  // รอให้ Firebase module (_getDocs, _col, _db) พร้อมก่อน แล้วค่อยโหลด
-  var attempts = 0;
-  var interval = setInterval(function(){
-    attempts++;
-    if(window._getDocs && window._col && window._db){
-      clearInterval(interval);
-      window.loadFromFirebase();
-    } else if(attempts > 100){
-      clearInterval(interval);
-      hideLoadingOverlay();
-      alert('ไม่สามารถเชื่อมต่อ Firebase ได้ กรุณารีโหลดหน้าเว็บ');
-    }
-  }, 100);
 });
+
+// รอ Firebase module dispatch event 'firebase-module-ready' แล้วค่อยโหลด
+document.addEventListener('firebase-module-ready', function(){
+  window.loadFromFirebase();
+});
+
+// Fallback: ถ้า event ไม่ถูก dispatch (เช่น script โหลดช้า) ให้ poll ต่อ
+setTimeout(function(){
+  if(!window._firebaseModuleReady){
+    var attempts = 0;
+    var interval = setInterval(function(){
+      attempts++;
+      if(window._getDocs && window._col && window._db){
+        clearInterval(interval);
+        if(!window._firebaseLoadStarted){
+          window._firebaseLoadStarted = true;
+          window.loadFromFirebase();
+        }
+      } else if(attempts > 150){
+        clearInterval(interval);
+        hideLoadingOverlay();
+        alert('ไม่สามารถเชื่อมต่อ Firebase ได้ กรุณารีโหลดหน้าเว็บ');
+      }
+    }, 100);
+  }
+}, 500);
 </script>
 </body>
 </html>
