@@ -1425,22 +1425,21 @@ function closePdfViewer(){ /* handled by window.open */ }
 // Init DOB และโหลดข้อมูลจาก Firebase เมื่อหน้าพร้อม
 window.addEventListener('load', function(){
   initDOBDropdowns('login-dob-day','login-dob-month','login-dob-year');
-  // รอให้ Firebase module โหลดเสร็จก่อนจึงดึงข้อมูล
-  if(typeof window.loadFromFirebase === 'function'){
-    window.loadFromFirebase();
-  } else {
-    var attempts = 0;
-    var interval = setInterval(function(){
-      attempts++;
-      if(typeof window.loadFromFirebase === 'function'){
-        clearInterval(interval);
-        window.loadFromFirebase();
-      } else if(attempts > 50){
-        clearInterval(interval);
-        console.error('loadFromFirebase ไม่พร้อมใช้งาน');
-      }
-    }, 100);
-  }
+  // แสดง overlay ก่อนเลย
+  showLoadingOverlay('กำลังโหลดข้อมูล...');
+  // รอให้ Firebase module (_getDocs, _col, _db) พร้อมก่อน แล้วค่อยโหลด
+  var attempts = 0;
+  var interval = setInterval(function(){
+    attempts++;
+    if(window._getDocs && window._col && window._db){
+      clearInterval(interval);
+      window.loadFromFirebase();
+    } else if(attempts > 100){
+      clearInterval(interval);
+      hideLoadingOverlay();
+      alert('ไม่สามารถเชื่อมต่อ Firebase ได้ กรุณารีโหลดหน้าเว็บ');
+    }
+  }, 100);
 });
 </script>
 </body>
