@@ -6,712 +6,78 @@
 <title>ระบบตรวจสุขภาพประจำปี - รพ.ค่ายพระยอดเมืองขวาง</title>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/tabler-icons.min.css">
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getFirestore, collection, doc, setDoc, getDocs, updateDoc, deleteDoc, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-  const firebaseConfig = {
-    apiKey: "AIzaSyAh_U2SfI-8mj5voLR17ZqYr3-EkywAHng",
-    authDomain: "pymk-health.firebaseapp.com",
-    projectId: "pymk-health",
-    storageBucket: "pymk-health.firebasestorage.app",
-    messagingSenderId: "314295525314",
-    appId: "1:314295525314:web:21b4e8fdc763792bd9405b",
-    measurementId: "G-5VW0RZ4PYK"
-  };
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app, 'pymkhealth');
-  window._db=db; window._col=collection; window._doc=doc;
-  window._setDoc=setDoc; window._getDocs=getDocs; window._updateDoc=updateDoc;
-  window._deleteDoc=deleteDoc; window._query=query; window._where=where; window._onSnapshot=onSnapshot;
-  window._firebaseModuleReady=true;
-  
-  function tryLoad(){
-    if(typeof window.loadFromFirebase==='function') window.loadFromFirebase(); 
-    else setTimeout(tryLoad,50); 
-  }
-  if(document.readyState==='complete') tryLoad(); else window.addEventListener('load',tryLoad);
-</script>
+<script type="module\">\n  import { initializeApp } from \"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js\";\n  import { getFirestore, collection, doc, setDoc, getDocs, updateDoc, deleteDoc, query, where, onSnapshot } from \"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js\";\n  const firebaseConfig = {\n    apiKey: \"AIzaSyAh_U2SfI-8mj5voLR17ZqYr3-EkywAHng\",\n    authDomain: \"pymk-health.firebaseapp.com\",\n    projectId: \"pymk-health\",\n    storageBucket: \"pymk-health.firebasestorage.app\",\n    messagingSenderId: \"314295525314\",\n    appId: \"1:314295525314:web:21287146f483c66f6ce8bd\"\n  };\n  const app = initializeApp(firebaseConfig);\n  const db = getFirestore(app);\n  window.db = db;\n  window.fs = { collection, doc, setDoc, getDocs, updateDoc, deleteDoc, query, where, onSnapshot };\n</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>\n  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';\n</script>
+
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap');
-*{font-family:'Sarabun',sans-serif;box-sizing:border-box;}
-.p-4{padding:1rem!important}.p-6{padding:1.5rem!important}.p-8{padding:2rem!important}
-.p-2{padding:.5rem!important}.p-3{padding:.75rem!important}
-.mb-4{margin-bottom:1rem!important}.mb-2{margin-bottom:.5rem!important}
-.mt-4{margin-top:1rem!important}.mt-2{margin-top:.5rem!important}
-.hidden{display:none!important}
-.sc{background:white;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);border:1px solid #e5e7eb;}
-.sdot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0;}
-.sdot.active{background:#1d4ed8;color:white;}.sdot.done{background:#16a34a;color:white;}.sdot.pending{background:#e5e7eb;color:#9ca3af;}
-.fl{font-size:14px;font-weight:600;color:#374151;margin-bottom:4px;display:block;}
-.fi{width:100%;padding:8px 12px;border:1.5px solid #d1d5db;border-radius:8px;font-size:15px;font-family:'Sarabun',sans-serif;transition:border-color .2s;}
-.fi:focus{outline:none;border-color:#1d4ed8;}.fi.err{border-color:#ef4444;}
-.bp{background:#1d4ed8;color:white;padding:10px 24px;border-radius:8px;font-weight:600;font-size:15px;cursor:pointer;border:none;font-family:'Sarabun',sans-serif;}
-.bp:hover{background:#1e40af;}
-.bs{background:#f3f4f6;color:#374151;padding:10px 24px;border-radius:8px;font-weight:600;font-size:15px;cursor:pointer;border:none;font-family:'Sarabun',sans-serif;}
-.bs:hover{background:#e5e7eb;}
-.bg{background:#16a34a;color:white;padding:10px 24px;border-radius:8px;font-weight:600;font-size:15px;cursor:pointer;border:none;font-family:'Sarabun',sans-serif;}
-.bg:hover{background:#15803d;}
-.br{background:#dc2626;color:white;padding:10px 24px;border-radius:8px;font-weight:600;font-size:15px;cursor:pointer;border:none;font-family:'Sarabun',sans-serif;}
-.rg{display:flex;gap:10px;flex-wrap:wrap;}
-.rb{display:flex;align-items:center;gap:6px;cursor:pointer;padding:6px 12px;border:1.5px solid #d1d5db;border-radius:8px;font-size:14px;transition:all .15s;user-select:none;}
-.rb:has(input:checked){border-color:#1d4ed8;background:#eff6ff;color:#1d4ed8;}.rb input{accent-color:#1d4ed8;}
-.cb{display:flex;align-items:center;gap:8px;cursor:pointer;padding:6px 0;font-size:14px;user-select:none;}
-.cb input{accent-color:#1d4ed8;width:16px;height:16px;}
-.rt{display:inline-block;padding:3px 10px;border-radius:20px;font-size:13px;font-weight:600;}
-.tn{background:#dcfce7;color:#166534;}.tw{background:#fef9c3;color:#854d0e;}.ta{background:#fee2e2;color:#991b1b;}
-.q9-opt:has(input:checked){border-color:#1d4ed8;background:#eff6ff;}
-.dob-wrap{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;}
-.dob-wrap select{padding:8px 10px;border:1.5px solid #d1d5db;border-radius:8px;font-size:14px;font-family:'Sarabun',sans-serif;background:white;}
-.dob-wrap select:focus{outline:none;border-color:#1d4ed8;}
-.dob-wrap select.err{border-color:#ef4444;}
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:1000;}
- 
-/* ══ Lab module CSS ══ */
-.lm{font-size:15px;color:#1a1a1a}
-.lm-card{background:#fff;border:1px solid #e8e8e4;border-radius:12px;padding:1rem 1.25rem;margin-bottom:.875rem}
-.lm-sec{font-size:13px;font-weight:500;color:#888;margin-bottom:.7rem;display:flex;align-items:center;gap:6px}
-.lm-b{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:500;padding:3px 10px;border-radius:20px;white-space:nowrap}
-.lm-bh{background:#FCEBEB;color:#791F1F}.lm-bm{background:#FAEEDA;color:#633806}
-.lm-bl{background:#EAF3DE;color:#27500A}.lm-bn{background:#F1EFE8;color:#5F5E5A}
-.lm-bok{background:#EAF3DE;color:#27500A}.lm-babn{background:#FCEBEB;color:#791F1F}
-.lm-mg{display:grid;grid-template-columns:repeat(auto-fit,minmax(105px,1fr));gap:8px;margin-bottom:.875rem}
-.lm-mc{background:#f7f7f5;border-radius:8px;padding:.6rem .7rem;text-align:center}
-.lm-mv{font-size:20px;font-weight:500}.lm-ml{font-size:11px;color:#888;margin-top:2px}
-.lm-nr{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid #f0f0ec}
-.lm-nr:last-child{border-bottom:none}
-.lm-ni{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:17px}
-.lm-nih{background:#FCEBEB;color:#A32D2D}.lm-nim{background:#FAEEDA;color:#854F0B}.lm-nil{background:#EAF3DE;color:#3B6D11}
-.lm-bw{height:6px;background:#ebebeb;border-radius:4px;overflow:hidden;margin:4px 0}
-.lm-bf{height:100%;border-radius:4px;transition:width .5s}
-.lm-bfh{background:#E24B4A}.lm-bfm{background:#EF9F27}.lm-bfl{background:#639922}
-.lm-ev{font-size:12px;padding:1px 0;display:flex;gap:5px;align-items:flex-start}
-.lm-evb{color:#A32D2D}.lm-evm{color:#854F0B}.lm-evo{color:#3B6D11}
-.lm-nt{margin-top:6px;font-size:12px;border-radius:6px;padding:5px 8px}
-.lm-nth{background:#FCEBEB;color:#791F1F}.lm-ntm{background:#FAEEDA;color:#633806}
-.lm-rr{font-size:13px;padding:6px 0;border-bottom:1px solid #f0f0ec;display:flex;gap:8px;align-items:flex-start}
-.lm-rr:last-child{border-bottom:none}
-.lm-tg{display:inline-block;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:500;white-space:nowrap;flex-shrink:0}
-.lm-tgu{background:#FCEBEB;color:#791F1F}.lm-tgs{background:#FAEEDA;color:#633806}
-.lm-tgl{background:#EAF3DE;color:#27500A}.lm-tgf{background:#E6F1FB;color:#185FA5}
-.lm-lr{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid #f0f0ec}
-.lm-lr:last-child{border-bottom:none}
-.lm-ln{font-size:14px;margin:0}.lm-ls{font-size:12px;color:#888;margin:0}
-.lm-lr-r{display:flex;flex-direction:column;align-items:flex-end;gap:3px}
-.lm-lr-r{display:flex;flex-direction:column;align-items:flex-end;gap:3px}
-.lm-lv{font-size:15px;font-weight:500}
-.lm-lvh{color:#A32D2D}.lm-lvl{color:#185FA5}.lm-lvo{color:#1a1a1a}
-.lm-ref{font-size:11px;color:#aaa}
-.lm-av{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:500;font-size:15px;flex-shrink:0}
-.lm-sg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:.875rem}
-.lm-sc{background:#f7f7f5;border-radius:8px;padding:.55rem;text-align:center}
-.lm-sn{font-size:21px;font-weight:500}.lm-sl{font-size:11px;color:#888;margin-top:1px}
-.lm-dis{font-size:11px;color:#bbb;margin-top:.875rem;text-align:center;border-top:1px solid #f0f0ec;padding-top:.7rem}
-.lm-alert{border-radius:8px;padding:.7rem .9rem;font-size:13px;margin-bottom:.75rem}
-@media(max-width:480px){.lm-sg{grid-template-columns:repeat(2,1fr)}.lm-mg{grid-template-columns:repeat(2,1fr)}}
- 
-/* NCD Dashboard cards */
-.ncd-stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:1rem}
-.ncd-stat-card{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:.875rem 1rem}
-.ncd-stat-num{font-size:26px;font-weight:700}
-.ncd-stat-label{font-size:12px;color:#6b7280;margin-top:2px}
-.ncd-pbar{height:5px;background:#ebebeb;border-radius:4px;margin-top:.5rem;overflow:hidden}
-.ncd-pbar-fill{height:100%;border-radius:4px;transition:width .6s}
+  :root {
+    --p: #2563eb; --p-h: #1d4ed8; --bg: #f8fafc; --card: #ffffff;
+    --txt: #1e293b; --txt-l: #64748b; --border: #e2e8f0;
+    --s: #10b981; --w: #f59e0b; --d: #ef4444;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Chakra Petch', system-ui, -apple-system, sans-serif; }
+  body { background: var(--bg); color: var(--txt); line-height: 1.5; padding: 1rem; }
+  .container { max-width: 1200px; margin: 0 auto; }
+  header { background: var(--card); padding: 1.5rem; border-radius: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+  .logo-zone { display: flex; align-items: center; gap: 1rem; }
+  .logo-icon { background: var(--p); color: #fff; width: 48px; height: 48px; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+  h1 { font-size: 1.25rem; font-weight: 600; }
+  .subtitle { font-size: 0.875rem; color: var(--txt-l); }
+  .nav-btn { background: none; border: 1px solid var(--border); padding: 0.5rem 1rem; border-radius: 0.5rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; font-weight: 500; font-size: 0.875rem; }
+  .nav-btn:hover { background: #f1f5f9; }
+  .card { background: var(--card); padding: 1.5rem; border-radius: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 1.5rem; }
+  .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+  .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+  .stats-card { background: var(--card); padding: 1.25rem; border-radius: 0.75rem; border: 1px solid var(--border); display: flex; align-items: center; gap: 1rem; }
+  .stats-icon { width: 40px; height: 40px; border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
+  .form-group { margin-bottom: 1rem; }
+  label { display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.25rem; color: var(--txt); }
+  input, select, textarea { width: 100%; padding: 0.625rem; border: 1px solid var(--border); border-radius: 0.5rem; font-size: 0.9rem; transition: all 0.2s; }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--p); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+  .btn { background: var(--p); color: #fff; border: none; padding: 0.625rem 1.25rem; border-radius: 0.5rem; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; }
+  .btn:hover { background: var(--p-h); }
+  .btn-s { background: var(--s); } .btn-s:hover { background: #059669; }
+  .btn-d { background: var(--d); } .btn-d:hover { background: #dc2626; }
+  .badge { display: inline-flex; align-items: center; padding: 0.25rem 0.5rem; border-radius: 0.375rem; font-size: 0.75rem; font-weight: 600; }
+  .bg-s { background: #ecfdf5; color: #065f46; }
+  .bg-w { background: #fffbeb; color: #92400e; }
+  .bg-d { background: #fef2f2; color: #991b1b; }
+  .hidden { display: none !important; }
+  table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.9rem; }
+  th, td { padding: 0.75rem; text-align: left; border-bottom: 1px solid var(--border); }
+  th { background: #f1f5f9; font-weight: 600; }
+  tr:hover { background: #f8fafc; }
+  .search-box { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+  .result-section { border-left: 4px solid var(--p); padding-left: 1rem; margin-bottom: 1rem; }
 </style>
 </head>
-<body style="background:#f0f4ff;min-height:100vh;padding:16px;">
- 
-<div style="max-width:960px;margin:0 auto 20px;">
-  <div class="sc p-4" style="display:flex;align-items:center;gap:16px;">
-    <div style="width:52px;height:52px;background:#1d4ed8;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-      <svg width="30" height="30" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-    </div>
-    <div>
-      <h1 style="font-size:19px;font-weight:700;color:#1e293b;margin:0;">ระบบตรวจสุขภาพประจำปี</h1>
-      <p style="font-size:12px;color:#64748b;margin:0;">โรงพยาบาลค่ายพระยอดเมืองขวาง</p>
-    </div>
-    <div style="margin-left:auto;display:flex;gap:8px;">
-      <button onclick="showPage('home')" class="bs" style="padding:7px 14px;font-size:13px;">🏠หน้าหลัก</button>
-      <button onclick="showAdminLogin()" class="bs" style="padding:7px 14px;font-size:13px;">⚙️ Admin</button>
-    </div>
-  </div>
-</div>
- 
-<div id="page-home" style="max-width:960px;margin:0 auto;">
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-    <div class="sc p-6" style="cursor:pointer;border:2px solid transparent;" onclick="showPage('register')" onmouseover="this.style.borderColor='#1d4ed8'" onmouseout="this.style.borderColor='transparent'">
-      <div style="width:48px;height:48px;background:#eff6ff;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;">
-        <svg width="26" height="26" fill="none" stroke="#1d4ed8" stroke-width="2" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-      </div>
-      <h2 style="font-size:17px;font-weight:700;color:#1e293b;margin:0 0 6px;">ลงทะเบียนตรวจสุขภาพ</h2>
-      <p style="font-size:13px;color:#64748b;margin:0;">กรอกข้อมูลส่วนตัว ประวัติสุขภาพ และแบบประเมินสุขภาพจิต</p>
-    </div>
-    <div class="sc p-6" style="cursor:pointer;border:2px solid transparent;" onclick="showPage('login')" onmouseover="this.style.borderColor='#16a34a'" onmouseout="this.style.borderColor='transparent'">
-      <div style="width:48px;height:48px;background:#f0fdf4;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;">
-        <svg width="26" height="26" fill="none" stroke="#16a34a" stroke-width="2" viewBox="0 0 24 24"><path d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-      </div>
-      <h2 style="font-size:17px;font-weight:700;color:#1e293b;margin:0 0 6px;">ดูผลตรวจสุขภาพ</h2>
-      <p style="font-size:13px;color:#64748b;margin:0;">เข้าสู่ระบบด้วยเลขบัตรประชาชนและวันเกิด</p>
-    </div>
-  </div>
-</div>
- 
-<div id="page-register" class="hidden" style="max-width:960px;margin:0 auto;">
-  <div class="sc p-4 mb-4">
-    <div style="display:flex;align-items:center;">
-      <div style="display:flex;align-items:center;gap:8px;flex:1;"><div class="sdot active" id="sd1">1</div><span style="font-size:13px;font-weight:600;color:#1d4ed8;" id="sl1">ข้อมูลส่วนตัว</span></div>
-      <div style="height:2px;background:#e5e7eb;flex:1;"></div>
-      <div style="display:flex;align-items:center;gap:8px;flex:1;justify-content:center;"><div class="sdot pending" id="sd2">2</div><span style="font-size:13px;color:#9ca3af;" id="sl2">ข้อมูลสุขภาพ</span></div>
-      <div style="height:2px;background:#e5e7eb;flex:1;"></div>
-      <div style="display:flex;align-items:center;gap:8px;flex:1;justify-content:center;"><div class="sdot pending" id="sd3">3</div><span style="font-size:13px;color:#9ca3af;" id="sl3">ประวัติสุขภาพ</span></div>
-      <div style="height:2px;background:#e5e7eb;flex:1;"></div>
-      <div style="display:flex;align-items:center;gap:8px;justify-content:flex-end;"><div class="sdot pending" id="sd4">4</div><span style="font-size:13px;color:#9ca3af;" id="sl4">สุขภาพจิต</span></div>
-    </div>
-  </div>
-  <div id="step1" class="sc p-6">
-    <h2 style="font-size:16px;font-weight:700;color:#1e293b;margin:0 0 18px;padding-bottom:10px;border-bottom:2px solid #eff6ff;">ขั้นตอนที่ 1: ข้อมูลส่วนตัว</h2>
-    <div style="display:grid;grid-template-columns:160px 1fr 1fr;gap:14px;margin-bottom:14px;">
-     <div><label class="fl">ยศ / คำนำหน้า <span style="color:red">*</span></label><input type="text" id="f-prefix" class="fi" placeholder="เช่น พ.ต., นาย, น.ส."></div>
-     <div><label class="fl">ชื่อ<span style="color:red">*</span></label><input type="text" id="f-fname" class="fi" placeholder="ชื่อจริง"></div>
-     <div><label class="fl">นามสกุล<span style="color:red">*</span></label><input type="text" id="f-lname" class="fi" placeholder="นามสกุล"></div>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px;">
+<body>
+
+<div class="container">
+  <header>
+    <div class="logo-zone">
+      <div class="logo-icon"><i class="ti ti-heart-spreadsheet"></i></div>
       <div>
-        <label class="fl">เลขบัตรประชาชน <span style="color:red">*</span></label>
-        <input type="text" id="f-idcard" class="fi" placeholder="13 หลัก" maxlength="13" oninput="this.value=this.value.replace(/\D/g,'')">
-        <div id="id-hint" style="font-size:12px;color:#9ca3af;margin-top:3px;">กรอกครบ 13 หลัก</div>
+        <h1>ระบบตรวจสุขภาพประจำปี</h1>
+        <div class="subtitle">โรงพยาบาลค่ายพระยอดเมืองขวาง</div>
       </div>
-      <div>
-        <label class="fl">วันเกิด (พ.ศ.) <span style="color:red">*</span></label>
-        <div class="dob-wrap" id="dob-wrap-reg">
-          <select id="f-dob-day" class="fi"><option value="">วัน</option></select>
-          <select id="f-dob-month" class="fi"><option value="">เดือน</option></select>
-          <select id="f-dob-year" class="fi"><option value="">ปี พ.ศ.</option></select>
+    </div>
+    <div style="display:flex; gap:0.5rem;">
+      <button class="nav-btn" onclick="switchView('home')"><i class="ti ti-home"></i> หน้าหลัก</button>
+      <button class="nav-btn" onclick="authenAdmin()"><i class="ti ti-settings"></i> Admin</button>
+    </div>
+  </header>
+
+  <div id="view-home" class="view-section">
+    <div class="card" style="max-width:500px; margin: 2rem auto;">
+      <h2 style="margin-bottom:1rem; font-size:1.15rem; text-align:center;">ค้นหาผลตรวจสุขภาพประจำปี</h2>
+      <div class="form-group">
+        <label>เลขบัตรประจำตัวประชาชน 13 หลัก</label>
+        <div class="search-box">
+          <input type="text" id="search-cid" placeholder="กรอกเลขบัตรประชาชน..." maxlength="13">
+          <button class="btn" onclick="doSearch()"><i class="ti ti-search"></i> ค้นหา</button>
         </div>
       </div>
-      <div>
-        <label class="fl">เพศ <span style="color:red">*</span></label>
-        <select id="f-gender" class="fi"><option value="">-- เลือก --</option><option value="1">ชาย</option><option value="2">หญิง</option></select>
-      </div>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px;">
-     <div><label class="fl">HN (ถ้ามี)</label><input type="text" id="f-hn" class="fi" placeholder="หมายเลข HN"></div>
-     <div><label class="fl">หน่วยต้นสังกัด<span style="color:red">*</span></label><input type="text" id="f-unit" class="fi" placeholder="เช่น พัน.ร.3"></div>
-     <div><label class="fl">ตำแหน่ง</label><input type="text" id="f-position" class="fi" placeholder="ตำแหน่งงาน"></div>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
-     <div><label class="fl">ช่วยราชการ (ถ้ามี)</label><input type="text" id="f-attach" class="fi" placeholder="หน่วยที่ช่วยราชการ"></div>
-      <div>
-        <label class="fl">สิทธิเบิก <span style="color:red">*</span></label>
-        <select id="f-right" class="fi"><option value="">-- เลือก --</option><option value="1">ข้าราชการ</option><option value="2">รัฐวิสาหกิจ</option><option value="3">ประกันสังคม (ปกส.)</option><option value="4">สปสช.</option><option value="5">อื่นๆ</option></select>
-      </div>
-    </div>
-    <div style="display:flex;justify-content:flex-end;gap:12px;margin-top:20px;">
-      <button class="bs" onclick="showPage('home')">ยกเลิก</button>
-      <button class="bp" onclick="goStep(2)">ถัดไป→</button>
-    </div>
-  </div>
-  <div id="step2" class="hidden sc p-6">
-    <h2 style="font-size:16px;font-weight:700;color:#1e293b;margin:0 0 18px;padding-bottom:10px;border-bottom:2px solid #eff6ff;">ขั้นตอนที่ 2: ข้อมูลสุขภาพ</h2>
-    <div style="background:#eff6ff;border-radius:10px;padding:16px;margin-bottom:18px;">
-      <h3 style="font-size:14px;font-weight:700;color:#1e40af;margin:0 0 12px;">📏 น้ำหนัก / ส่วนสูง / BMI</h3>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;">
-       <div><label class="fl">น้ำหนัก (kg) <span style="color:red">*</span></label><input type="number" id="f-weight" class="fi" placeholder="kg" step="0.1" oninput="calcBMI()"></div>
-       <div><label class="fl">ส่วนสูง (cm) <span style="color:red">*</span></label><input type="number" id="f-height" class="fi" placeholder="cm" oninput="calcBMI()"></div>
-       <div><label class="fl">BMI (kg/m²)</label><input type="text" id="f-bmi" class="fi" readonly style="background:#f0f4ff;font-weight:700;" placeholder="อัตโนมัติ"></div>
-       <div><label class="fl">รอบเอว (cm)</label><input type="number" id="f-waist" class="fi" placeholder="cm"></div>
-      </div>
-      <div id="bmi-result" style="margin-top:8px;font-size:13px;font-weight:600;"></div>
-    </div>
-    <div style="margin-bottom:18px;">
-      <h3 style="font-size:14px;font-weight:700;color:#374151;margin:0 0 12px;">🚬 พฤติกรรมสุขภาพ</h3>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;">
-       <div><label class="fl">การสูบบุหรี่</label><select id="f-smoke" class="fi" onchange="checkAddictions()"><option value="0">ไม่เคยสูบ</option><option value="1">เคยสูบ แต่เลิกแล้ว</option><option value="2">สูบเป็นครั้งคราว</option><option value="3">สูบเป็นประจำ</option></select></div>
-       <div><label class="fl">การดื่มแอลกอฮอล์</label><select id="f-alcohol" class="fi" onchange="checkAddictions()"><option value="0">ไม่เคยดื่ม</option><option value="1">เคยดื่ม แต่เลิกแล้ว</option><option value="2">ดื่มเป็นครั้งคราว</option><option value="3">ดื่มเป็นประจำ</option></select></div>
-       <div><label class="fl">การออกกำลังกาย</label><select id="f-exercise" class="fi"><option value="0">ไม่เคยออกกำลังกาย</option><option value="1">ออกกำลังกาย ต่ำกว่าเกณฑ์</option><option value="2">ออกกำลังกาย ตามเกณฑ์</option></select></div>
-      </div>
-    </div>
-    <div id="smoke-assess" class="hidden" style="background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:14px;margin-bottom:14px;">
-      <h3 style="font-size:13px;font-weight:700;color:#c2410c;margin:0 0 10px;">🚬 แบบประเมินการติดบุหรี่ (Fagerstrom)</h3>
-      <div style="display:grid;gap:8px;">
-       <div><label class="fl" style="font-size:13px;">1. สูบบุหรี่มวนแรกหลังตื่นนอนภายในกี่นาที?</label><select id="fag1" class="fi" style="font-size:13px;"><option value="3">ภายใน 5 นาที (3)</option><option value="2">6-30 นาที (2)</option><option value="1">31-60 นาที (1)</option><option value="0">หลังจาก 60 นาที (0)</option></select></div>
-       <div><label class="fl" style="font-size:13px;">2. รู้สึกลำบากที่จะงดสูบบุหรี่ในที่ต้องห้ามหรือไม่?</label><select id="fag2" class="fi" style="font-size:13px;"><option value="1">ใช่ (1)</option><option value="0">ไม่ใช่ (0)</option></select></div>
-       <div><label class="fl" style="font-size:13px;">3. สูบบุหรี่วันละกี่มวน?</label><select id="fag3" class="fi" style="font-size:13px;"><option value="3">31 มวนขึ้นไป (3)</option><option value="2">21-30 มวน (2)</option><option value="1">11-20 มวน (1)</option><option value="0">10 มวนหรือน้อยกว่า (0)</option></select></div>
-      </div>
-    </div>
-    <div id="alcohol-assess" class="hidden" style="background:#fef3c7;border:1px solid #fcd34d;border-radius:10px;padding:14px;margin-bottom:14px;">
-      <h3 style="font-size:13px;font-weight:700;color:#92400e;margin:0 0 10px;">🍺 แบบประเมินการดื่มสุรา (AUDIT-C)</h3>
-      <div style="display:grid;gap:8px;">
-       <div><label class="fl" style="font-size:13px;">1. ดื่มแอลกอฮอล์บ่อยแค่ไหน?</label><select id="audit1" class="fi" style="font-size:13px;"><option value="0">ไม่ดื่ม (0)</option><option value="1">1 ครั้ง/เดือนหรือน้อยกว่า (1)</option><option value="2">2-4 ครั้ง/เดือน (2)</option><option value="3">2-3 ครั้ง/สัปดาห์ (3)</option><option value="4">4 ครั้ง/สัปล่าห์ขึ้นไป (4)</option></select></div>
-       <div><label class="fl" style="font-size:13px;">2. ในวันที่ดื่ม ดื่มกี่ดริงค์?</label><select id="audit2" class="fi" style="font-size:13px;"><option value="0">1-2 ดริงค์ (0)</option><option value="1">3-4 ดริงค์ (1)</option><option value="2">5-6 ดริงค์ (2)</option><option value="3">7-9 ดริงค์ (3)</option><option value="4">10 ดริงค์ขึ้นไป (4)</option></select></div>
-       <div><label class="fl" style="font-size:13px;">3. ดื่มหนักเกิน 6 ดริงค์ใน 1 ครั้ง บ่อยแค่ไหน?</label><select id="audit3" class="fi" style="font-size:13px;"><option value="0">ไม่เคย (0)</option><option value="1">น้อยกว่า 1 ครั้ง/เดือน (1)</option><option value="2">1 ครั้ง/เดือน (2)</option><option value="3">1 ครั้ง/สัปดาห์ (3)</option><option value="4">ทุกวัน (4)</option></select></div>
-      </div>
-    </div>
-    <div style="display:flex;justify-content:space-between;margin-top:20px;">
-      <button class="bs" onclick="goStep(1)">← ย้อนกลับ</button>
-      <button class="bp" onclick="goStep(3)">ถัดไป→</button>
-    </div>
-  </div>
-  <div id="step3" class="hidden sc p-6">
-    <h2 style="font-size:16px;font-weight:700;color:#1e293b;margin:0 0 18px;padding-bottom:10px;border-bottom:2px solid #eff6ff;">ขั้นตอนที่ 3: ประวัติสุขภาพ</h2>
-    <div style="margin-bottom:18px;">
-      <h3 style="font-size:14px;font-weight:700;color:#374151;margin:0 0 10px;">🏥 โรคประจำตัว <span style="color:red">*</span></h3>
-      <div style="margin-bottom:10px;">
-        <label class="cb"><input type="radio" name="ncd-none" id="ncd-no" value="no" onchange="toggleNCD(false)"><span style="font-weight:600;color:#16a34a;">✓ไม่มีโรคประจำตัว</span></label>
-        <label class="cb"><input type="radio" name="ncd-none" id="ncd-yes" value="yes" onchange="toggleNCD(true)"><span style="font-weight:600;color:#1d4ed8;">มีโรคประจำตัว (กรุณาเลือก)</span></label>
-      </div>
-      <div id="ncd-options" class="hidden" style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:14px;">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;">
-          <label class="cb"><input type="checkbox" id="ncd1" value="1"> ความดันโลหิตสูง</label>
-          <label class="cb"><input type="checkbox" id="ncd2" value="2"> เบาหวาน</label>
-          <label class="cb"><input type="checkbox" id="ncd3" value="3"> โรคหัวใจและหลอดเลือด</label>
-          <label class="cb"><input type="checkbox" id="ncd4" value="4"> ไขมันในเลือดสูง</label>
-        </div>
-        <div><label class="fl">โรคประจำตัวอื่นๆ (ระบุ)</label><input type="text" id="f-other-disease" class="fi" placeholder="ระบุโรคอื่นๆ ที่มี"></div>
-      </div>
-    </div>
-    <div id="medicine-section" class="hidden" style="margin-bottom:18px;">
-      <h3 style="font-size:14px;font-weight:700;color:#374151;margin:0 0 10px;">💊 ประวัติการรับยา</h3>
-      <div class="rg">
-        <label class="rb"><input type="radio" name="medicine" value="1"> รับยาสม่ำเสมอ</label>
-        <label class="rb"><input type="radio" name="medicine" value="2"> รับยาไม่สม่ำเสมอ</label>
-        <label class="rb"><input type="radio" name="medicine" value="3"> ขาดยา</label>
-      </div>
-    </div>
-    <div style="display:flex;justify-content:space-between;margin-top:20px;">
-      <button class="bs" onclick="goStep(2)">← ย้อนกลับ</button>
-      <button class="bp" onclick="goStep(4)">ถัดไป→</button>
-    </div>
-  </div>
-  <div id="step4" class="hidden sc p-6">
-    <h2 style="font-size:16px;font-weight:700;color:#1e293b;margin:0 0 18px;padding-bottom:10px;border-bottom:2px solid #eff6ff;">ขั้นตอนที่ 4: แบบประเมินสุขภาพจิต</h2>
-    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:16px;margin-bottom:20px;">
-      <h3 style="font-size:15px;font-weight:700;color:#166534;margin:0 0 6px;">📋 แบบคัดกรองโรคซึมเศร้า 9 คำถาม (9Q)</h3>
-      <p style="font-size:13px;color:#374151;margin:0 0 14px;background:#dcfce7;padding:8px 12px;border-radius:8px;">ใน 2 สัปดาห์ที่ผ่านมา รวมทั้งวันนี้ ท่านมีอาการต่อไปนี้บ่อยแค่ไหน?</p>
-      <div id="q9-container" style="display:grid;gap:10px;"></div>
-      <div id="q9-score-bar" class="hidden" style="margin-top:14px;padding:10px 14px;border-radius:8px;font-weight:700;font-size:14px;"></div>
-    </div>
-    <div style="background:#fff1f2;border:1px solid #fecdd3;border-radius:10px;padding:16px;margin-bottom:20px;">
-      <h3 style="font-size:15px;font-weight:700;color:#be123c;margin:0 0 6px;">🔴 แบบประเมินความเสี่ยงต่อการฆ่าตัวตาย 8 คำถาม (8Q)</h3>
-      <p style="font-size:13px;color:#374151;margin:0 0 14px;background:#ffe4e6;padding:8px 12px;border-radius:8px;">ใน 1 เดือนที่ผ่านมา รวมทั้งวันนี้ ท่านมีความคิดหรือพฤติกรรมต่อไปนี้หรือไม่?</p>
-      <div id="q8-container" style="display:grid;gap:10px;"></div>
-      <div id="q8-score-bar" class="hidden" style="margin-top:14px;padding:10px 14px;border-radius:8px;font-weight:700;font-size:14px;"></div>
-    </div>
-    <div style="display:flex;justify-content:space-between;margin-top:20px;">
-      <button class="bs" onclick="goStep(3)">← ย้อนกลับ</button>
-      <button class="bg" onclick="submitForm()">✅บันทึกข้อมูล</button>
-    </div>
-  </div>
-</div>
- 
-<div id="page-login" class="hidden" style="max-width:480px;margin:0 auto;">
-  <div class="sc p-8">
-    <div style="text-align:center;margin-bottom:22px;">
-      <div style="width:52px;height:52px;background:#f0fdf4;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;">
-        <svg width="28" height="28" fill="none" stroke="#16a34a" stroke-width="2" viewBox="0 0 24 24"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-      </div>
-      <h2 style="font-size:19px;font-weight:700;color:#1e293b;margin:0 0 4px;">ดูผลตรวจสุขภาพ</h2>
-      <p style="font-size:13px;color:#64748b;margin:0;">กรอกข้อมูลเพื่อเข้าสู่ระบบ</p>
-    </div>
-    <div style="margin-bottom:14px;">
-      <label class="fl">เลขบัตรประชาชน (Username)</label>
-      <input type="text" id="login-id" class="fi" placeholder="13 หลัก" maxlength="13" oninput="this.value=this.value.replace(/\D/g,'')">
-    </div>
-    <div style="margin-bottom:20px;">
-      <label class="fl">วันเกิด (พ.ศ.) — รหัสผ่าน</label>
-      <div class="dob-wrap">
-        <select id="login-dob-day" class="fi"><option value="">วัน</option></select>
-        <select id="login-dob-month" class="fi"><option value="">เดือน</option></select>
-        <select id="login-dob-year" class="fi"><option value="">ปี พ.ศ.</option></select>
-      </div>
-      <p style="font-size:12px;color:#9ca3af;margin-top:5px;">รหัสผ่านคือวันเดือนปีเกิด (พ.ศ.) ของท่าน</p>
-    </div>
-    <div id="login-error" class="hidden" style="background:#fee2e2;color:#991b1b;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:14px;"></div>
-    <button class="bp" style="width:100%;" onclick="doLogin()">เข้าสู่ระบบ</button>
-    <div style="text-align:center;margin-top:14px;">
-      <button onclick="showPage('home')" style="background:none;border:none;color:#64748b;font-size:13px;cursor:pointer;">←กลับหน้าหลัก</button>
-    </div>
-  </div>
-</div>
- 
-<div id="page-result" class="hidden" style="max-width:960px;margin:0 auto;">
-  <div class="sc p-4 mb-4" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
-    <div>
-      <h2 style="font-size:17px;font-weight:700;color:#1e293b;margin:0 0 2px;">ผลตรวจสุขภาพประจำปี</h2>
-      <p id="result-name-hd" style="font-size:13px;color:#64748b;margin:0;"></p>
-    </div>
-    <div style="display:flex;gap:8px;">
-      <button class="bs" style="font-size:13px;padding:7px 14px;" onclick="showPage('home')">← กลับ</button>
-      <button class="bg" style="font-size:13px;padding:7px 14px;" onclick="exportSingleExcel()">⬇ ดาวน์โหลด Excel</button>
-    </div>
-  </div>
-  <div id="result-content"></div>
-  <div id="lab-module-section" class="hidden">
-    <div class="sc p-4 mb-2" style="background:#eff6ff;border-color:#bfdbfe;">
-      <h3 style="font-size:15px;font-weight:700;color:#1e40af;margin:0;display:flex;align-items:center;gap:8px;">
-        🔬ผลตรวจเลือด / ปัสสาวะ — วิเคราะห์ NCDs
-      </h3>
-    </div>
-    <div id="lab-result-container"></div>
-  </div>
-</div>
- 
-<div id="page-success" class="hidden" style="max-width:480px;margin:0 auto;">
-  <div class="sc p-8" style="text-align:center;">
-    <div style="width:64px;height:64px;background:#f0fdf4;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
-      <svg width="36" height="36" fill="none" stroke="#16a34a" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-    </div>
-    <h2 style="font-size:22px;font-weight:700;color:#166534;margin:0 0 8px;">บันทึกข้อมูลสำเร็จ!</h2>
-    <p style="font-size:14px;color:#64748b;margin:0 0 24px;">ข้อมูลการตรวจสุขภาพของท่านได้รับการบันทึกเรียบร้อยแล้ว</p>
-    <div style="display:flex;gap:12px;justify-content:center;">
-      <button class="bs" onclick="showPage('home')">🏠หน้าหลัก</button>
-      <button class="bp" onclick="viewOwnResult()">📋ดูผลของฉัน</button>
-    </div>
-  </div>
-</div>
- 
-<div id="page-admin" class="hidden" style="max-width:1200px;margin:0 auto;">
-  <div class="sc p-4 mb-4" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
-    <div>
-      <h2 style="font-size:17px;font-weight:700;color:#1e293b;margin:0 0 2px;">⚙️ จัดการข้อมูล (Admin)</h2>
-      <p id="admin-logged-as" style="font-size:12px;color:#64748b;margin:0;"></p>
-    </div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;">
-      <button class="bs" style="font-size:13px;padding:7px 14px;" onclick="showPage('home')">← กลับ</button>
-      <button onclick="showPage('manage-admins')" style="background:#7c3aed;color:white;padding:7px 14px;border-radius:8px;font-weight:600;font-size:13px;cursor:pointer;border:none;">👥จัดการแอดมิน</button>
-      <button class="bg" style="font-size:13px;padding:7px 14px;" onclick="exportAllExcel()">⬇ Export Excel (รง.ผสต.11)</button>
-    </div>
-  </div>
- 
-  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:12px;" id="admin-stats"></div>
- 
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
-    <div class="sc p-4">
-      <h3 style="font-size:13px;font-weight:700;color:#374151;margin:0 0 12px;display:flex;align-items:center;gap:6px;">🏥ยอดผู้ป่วยแต่ละโรคประจำตัว</h3>
-      <div id="disease-stats" style="display:grid;gap:6px;"></div>
-    </div>
-    <div style="display:grid;gap:12px;">
-      <div class="sc p-4">
-        <h3 style="font-size:13px;font-weight:700;color:#374151;margin:0 0 12px;">🎯 กลุ่มตามผลตรวจสุขภาพ</h3>
-        <div id="health-group-stats" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;"></div>
-      </div>
-      <div class="sc p-4">
-        <h3 style="font-size:13px;font-weight:700;color:#374151;margin:0 0 12px;">⚖️ กลุ่มตามค่า BMI</h3>
-        <div id="bmi-group-stats" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;"></div>
-      </div>
-    </div>
-  </div>
- 
-  <div class="sc p-4 mb-4">
-    <h3 style="font-size:13px;font-weight:700;color:#374151;margin:0 0 14px;display:flex;align-items:center;gap:6px;">📊 NCD Dashboard สรุปข้อมูลภาพรวม</h3>
-    <div class="ncd-stat-grid" id="ncd-dashboard-metrics">
-      </div>
-  </div>
-</div>
-
-<div id="page-manage-admins" class="hidden" style="max-width:600px;margin:0 auto;">
-  <div class="sc p-6">
-    <h2 style="font-size:17px;font-weight:700;margin-bottom:14px;">👥 จัดการรายชื่อแอดมิน</h2>
-    <div style="margin-bottom:14px;">
-      <label class="fl">เพิ่มแอดมินใหม่ (ระบุเลขบัตรประชาชน)</label>
-      <div style="display:flex;gap:8px;">
-        <input type="text" id="new-admin-id" class="fi" placeholder="เลขบัตร 13 หลัก" maxlength="13">
-        <button class="bp" onclick="addNewAdmin()">เพิ่ม</button>
-      </div>
-    </div>
-    <hr style="margin:16px 0;border:0;border-top:1px solid #e5e7eb;">
-    <h3 style="font-size:14px;font-weight:600;margin-bottom:8px;">รายชื่อผู้มีสิทธิ์ Admin ปัจจุบัน:</h3>
-    <div id="admin-list-container" style="display:grid;gap:6px;"></div>
-    <button class="bs mt-4" onclick="showPage('admin')">← กลับหน้าแอดมิน</button>
-  </div>
-</div>
-
-<script>
-const thMonths = ["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"];
-let loggedInUser = null;
-
-// 1. จัดการเปลี่ยนหน้าจอแอปพลิเคชัน
-function showPage(pageId) {
-  document.querySelectorAll('#page-home, #page-register, #page-login, #page-result, #page-success, #page-admin, #page-manage-admins').forEach(el => {
-    el.classList.add('hidden');
-  });
-  const target = document.getElementById('page-' + pageId);
-  if(target) target.classList.remove('hidden');
-  window.scrollTo(0, 0);
-}
-
-// 2. จัดการ Step การลงทะเบียน
-function goStep(stepNum) {
-  for(let i=1; i<=4; i++) {
-    const stepEl = document.getElementById('step' + i);
-    const dotEl = document.getElementById('sd' + i);
-    const lblEl = document.getElementById('sl' + i);
-    
-    if(i === stepNum) {
-      if(stepEl) stepEl.classList.remove('hidden');
-      if(dotEl) dotEl.className = "sdot active";
-      if(lblEl) lblEl.style.color = "#1d4ed8";
-    } else {
-      if(stepEl) stepEl.classList.add('hidden');
-      if(i < stepNum) {
-        if(dotEl) { dotEl.className = "sdot done"; dotEl.innerHTML = "✓"; }
-      } else {
-        if(dotEl) { dotEl.className = "sdot pending"; dotEl.innerHTML = i; }
-        if(lblEl) lblEl.style.color = "#9ca3af";
-      }
-    }
-  }
-}
-
-// 3. เริ่มต้นสร้างตัวเลือก วัน เดือน ปี พ.ศ.
-function initDropdowns(prefix) {
-  const dSel = document.getElementById(`${prefix}-dob-day`);
-  const mSel = document.getElementById(`${prefix}-dob-month`);
-  const ySel = document.getElementById(`${prefix}-dob-year`);
-  if(!dSel || !mSel || !ySel) return;
-  
-  dSel.innerHTML = '<option value="">วัน</option>';
-  mSel.innerHTML = '<option value="">เดือน</option>';
-  ySel.innerHTML = '<option value="">ปี พ.ศ.</option>';
-
-  for(let i=1; i<=31; i++) dSel.options.add(new Option(i, i));
-  thMonths.forEach((m, idx) => mSel.options.add(new Option(m, idx+1)));
-  const curY = 2569; // อิงตามเวลา 2026
-  for(let i=curY; i>=2490; i--) ySel.options.add(new Option(i, i));
-}
-
-// 4. คำนวณ BMI อัตโนมัติ
-function calcBMI() {
-  const w = parseFloat(document.getElementById('f-weight').value);
-  const h = parseFloat(document.getElementById('f-height').value) / 100;
-  const bmiInp = document.getElementById('f-bmi');
-  const resDiv = document.getElementById('bmi-result');
-  if(w > 0 && h > 0) {
-    const bmi = (w / (h * h)).toFixed(1);
-    bmiInp.value = bmi;
-    if(bmi < 18.5) { resDiv.textContent = "น้ำหนักน้อย / ผอม (เสี่ยงสารอาหารขาดแคลน)"; resDiv.style.color = "#854d0e"; }
-    else if(bmi < 23) { resDiv.textContent = "น้ำหนักปกติ สุขภาพดี"; resDiv.style.color = "#16a34a"; }
-    else if(bmi < 25) { resDiv.textContent = "น้ำหนักเกิน / ท้วม (เริ่มอ้วน)"; resDiv.style.color = "#d97706"; }
-    else if(bmi < 30) { resDiv.textContent = "โรคอ้วน ระดับ 1"; resDiv.style.color = "#dc2626"; }
-    else { resDiv.textContent = "โรคอ้วนอันตราย ระดับ 2"; resDiv.style.color = "#991b1b"; }
-  } else {
-    bmiInp.value = ""; resDiv.textContent = "";
-  }
-}
-
-// 5. ซ่อนหรือแสดงฟิลด์คัดกรองตามเงื่อนไขเสพติดและโรค NCD
-function checkAddictions() {
-  const smoke = document.getElementById('f-smoke').value;
-  const alc = document.getElementById('f-alcohol').value;
-  document.getElementById('smoke-assess').className = (smoke==="2" || smoke==="3") ? "" : "hidden";
-  document.getElementById('alcohol-assess').className = (alc==="2" || alc==="3") ? "" : "hidden";
-}
-function toggleNCD(show) {
-  document.getElementById('ncd-options').className = show ? "" : "hidden";
-  document.getElementById('medicine-section').className = show ? "" : "hidden";
-}
-
-// 6. สร้างแบบสอบถามจิตเวช 9Q และ 8Q
-const q9Text = ["เบื่อ ทำอะไรก็ไม่เพลิดเพลิน","ไม่สบายใจ ซึมเศร้า หรือท้อแท้","หลับยาก หรือหลับๆ ตื่นๆ หรือชาตินอนมากเกินไป","เหนื่อยง่าย หรือไม่ค่อยมีแรง","เบื่ออาหาร หรือกินมากเกินไป","รู้สึกไม่ดีกับตัวเอง คิดว่าล้มเหลว","สมาธิไม่ดีเวลาทำสิ่งต่างๆ","พูดหรือทำอะไรช้าลงจนสังเกตได้ หรือกระสับกระส่าย","คิดทำร้ายตัวเอง หรือคิดว่าถ้าตายไปคงจะดี"];
-const q8Text = ["คิดอยากตาย หรือคิดว่าตายไปจะดีกว่า","อยากทำร้ายตัวเอง หรือทำให้ตัวเองบาดเจ็บ","คิดเกี่ยวกับวิธีการฆ่าตัวตาย","มีแผนการที่จะฆ่าตัวตาย","ได้ลงมือทำร้ายตัวเองเพื่อหวังให้ตาย","ได้พยายามฆ่าตัวตายในอดีตที่ผ่านมา","ปัจจุบันยังมีความตั้งใจที่จะฆ่าตัวตายอยู่","มีโอกาสหรือเตรียมอุปกรณ์ไว้เรียบร้อยแล้ว"];
-
-function renderQuizzes() {
-  const q9Cont = document.getElementById('q9-container');
-  q9Cont.innerHTML = q9Text.map((txt, idx) => `
-    <div style="border-bottom:1px solid #e5e7eb; padding-bottom:8px;">
-      <div style="font-size:14px; margin-bottom:6px;">${idx+1}. ${txt}</div>
-      <div class="rg">
-        <label class="rb"><input type="radio" name="q9-${idx}" value="0" checked> ไม่มีเลย</label>
-        <label class="rb"><input type="radio" name="q9-${idx}" value="1"> มีบางวัน</label>
-        <label class="rb"><input type="radio" name="q9-${idx}" value="2"> บ่อย</label>
-        <label class="rb"><input type="radio" name="q9-${idx}" value="3"> ทุกวัน</label>
-      </div>
-    </div>
-  `).join('');
-
-  const q8Cont = document.getElementById('q8-container');
-  q8Cont.innerHTML = q8Text.map((txt, idx) => `
-    <div style="border-bottom:1px solid #fecdd3; padding-bottom:8px;">
-      <div style="font-size:14px; margin-bottom:6px;">${idx+1}. ${txt}</div>
-      <div class="rg">
-        <label class="rb"><input type="radio" name="q8-${idx}" value="0" checked> ไม่มี</label>
-        <label class="rb"><input type="radio" name="q8-${idx}" value="1"> มี</label>
-      </div>
-    </div>
-  `).join('');
-}
-
-// 7. บันทึกข้อมูลแบบฟอร์มลงทึ่ Firebase Firestore
-async function submitForm() {
-  if(!window._firebaseModuleReady) { alert("ระบบฐานข้อมูลยังไม่พร้อมใช้งาน!"); return; }
-  const idcard = document.getElementById('f-idcard').value;
-  if(idcard.length !== 13) { alert("กรุณากรอกเลขบัตรประชาชนให้ครบ 13 หลัก"); goStep(1); return; }
-  
-  // คำนวณสรุปคะแนน 9Q/8Q เบื้องต้น
-  let s9 = 0, s8 = 0;
-  q9Text.forEach((_, i) => { s9 += parseInt(document.querySelector(`input[name="q9-${i}"]:checked`).value); });
-  q8Text.forEach((_, i) => { s8 += parseInt(document.querySelector(`input[name="q8-${i}"]:checked`).value); });
-
-  const isNcd = document.getElementById('ncd-yes').checked;
-  const payload = {
-    prefix: document.getElementById('f-prefix').value,
-    fname: document.getElementById('f-fname').value,
-    lname: document.getElementById('f-lname').value,
-    idcard: idcard,
-    dob: `${document.getElementById('f-dob-year').value}-${document.getElementById('f-dob-month').value}-${document.getElementById('f-dob-day').value}`,
-    gender: document.getElementById('f-gender').value,
-    hn: document.getElementById('f-hn').value,
-    unit: document.getElementById('f-unit').value,
-    position: document.getElementById('f-position').value,
-    attach: document.getElementById('f-attach').value,
-    right: document.getElementById('f-right').value,
-    weight: document.getElementById('f-weight').value,
-    height: document.getElementById('f-height').value,
-    bmi: document.getElementById('f-bmi').value,
-    waist: document.getElementById('f-waist').value,
-    smoke: document.getElementById('f-smoke').value,
-    alcohol: document.getElementById('f-alcohol').value,
-    exercise: document.getElementById('f-exercise').value,
-    hasDisease: isNcd ? "yes" : "no",
-    diseases: {
-      hypertension: isNcd && document.getElementById('ncd1').checked,
-      diabetes: isNcd && document.getElementById('ncd2').checked,
-      heart: isNcd && document.getElementById('ncd3').checked,
-      dyslipidemia: isNcd && document.getElementById('ncd4').checked,
-      other: isNcd ? document.getElementById('f-other-disease').value : ""
-    },
-    medicine: isNcd ? (document.querySelector('input[name="medicine"]:checked')?.value || "") : "",
-    q9Score: s9,
-    q8Score: s8,
-    timestamp: new Date().toISOString()
-  };
-
-  try {
-    const docRef = window._doc(window._db, 'checkup_users', idcard);
-    await window._setDoc(docRef, payload);
-    loggedInUser = payload;
-    showPage('success');
-  } catch(e) {
-    alert("เกิดข้อผิดพลาดในการบันทึกข้อมูล: " + e.message);
-  }
-}
-
-// 8. ล็อกอินสำหรับประชาชนและแอดมิน
-async function doLogin() {
-  const idcard = document.getElementById('login-id').value;
-  const d = document.getElementById('login-dob-day').value;
-  const m = document.getElementById('login-dob-month').value;
-  const y = document.getElementById('login-dob-year').value;
-  const targetDob = `${y}-${m}-${d}`;
-
-  if(!idcard || !d || !m || !y) { alert("กรุณากรอกข้อมูลเข้าสู่ระบบให้ครบถ้วน"); return; }
-  
-  try {
-    const docRef = window._doc(window._db, 'checkup_users', idcard);
-    const snap = await window._getDocs(window._query(window._col(window._db, 'checkup_users'), window._where('idcard','==',idcard)));
-    
-    if(snap.empty) {
-      alert("ไม่พบข้อมูลผู้ลงทะเบียนกรุณาตรวจสอบเลขบัตรประชาชน");
-      return;
-    }
-    
-    let userFound = null;
-    snap.forEach(doc => { if(doc.data().dob === targetDob) userFound = doc.data(); });
-
-    if(userFound) {
-      loggedInUser = userFound;
-      viewOwnResult();
-    } else {
-      alert("วันเกิดไม่ถูกต้อง ไม่ตรงกับฐานข้อมูล!");
-    }
-  } catch(e) {
-    alert("เกิดปัญหาข้อผิดพลาด: " + e.message);
-  }
-}
-
-function viewOwnResult() {
-  if(!loggedInUser) return;
-  document.getElementById('result-name-hd').textContent = `คุณ ${loggedInUser.prefix}${loggedInUser.fname} ${loggedInUser.lname} (หน่วย: ${loggedInUser.unit})`;
-  
-  let html = `
-    <div class="sc p-6 mb-4">
-      <h3 style="font-size:15px; font-weight:700; margin-bottom:10px; color:#1d4ed8;">📋 ข้อมูลทั่วไปและดัชนีมวลกาย</h3>
-      <p><b>ค่าดัชนีมวลกาย (BMI):</b> ${loggedInUser.bmi || 'ไม่ได้ระบุ'} kg/m²</p>
-      <p><b>พฤติกรรมสุขภาพ:</b> ออกกำลังกาย: ${loggedInUser.exercise==="2"?'ตามเกณฑ์':'ต่ำกว่าเกณฑ์/ไม่ออก'}, สูบหรี่: ${loggedInUser.smoke!=="0"?'มีประวัติ':'ไม่สูบ'}</p>
-      <p><b>สรุปคะแนนสุขภาพจิต:</b> 9Q ซึมเศร้า (${loggedInUser.q9Score} คะแนน), 8Q ความเสี่ยงทำร้ายตัวเอง (${loggedInUser.q8Score} คะแนน)</p>
-    </div>
-  `;
-  document.getElementById('result-content').innerHTML = html;
-  document.getElementById('lab-module-section').classList.remove('hidden');
-  
-  // ตัวอย่างค่าแล็บจำลองพยาธิวิทยา (Lab Module Data Showcase)
-  document.getElementById('lab-result-container').innerHTML = `
-    <div class="lm-card">
-      <div class="lm-sec">🩸 ผลตรวจเลือดพื้นฐาน</div>
-      <div class="lm-mg">
-        <div class="lm-mc"><div class="lm-mv" style="color:#16a34a">92</div><div class="lm-ml">FBS (Fasting Blood Sugar)</div></div>
-        <div class="lm-mc"><div class="lm-mv" style="color:#dc2626">210</div><div class="lm-ml">Cholesterol (ไขมันรวม)</div></div>
-      </div>
-    </div>
-  `;
-  showPage('result');
-}
-
-// 9. ระบบรักษาความปลอดภัยหน้า Admin
-async function showAdminLogin() {
-  const pin = prompt("กรุณาใส่รหัสผ่านเข้าหน้าแอดมิน:");
-  if(pin === "admin1234") { // รหัสแอดมินตั้งต้นสำหรับจำลองระบบ
-    document.getElementById('admin-logged-as').textContent = "เจ้าหน้าที่ระดับผู้ดูแลระบบ (รพ.ค่ายพระยอดเมืองขวาง)";
-    loadAdminDashboard();
-    showPage('admin');
-  } else if (pin !== null) {
-    alert("รหัสผ่านไม่ถูกต้อง!");
-  }
-}
-
-// 10. ดึงและประมวลผลสรุปแดชบอร์ดแอดมินภาพรวม
-async function loadAdminDashboard() {
-  try {
-    const snap = await window._getDocs(window._col(window._db, 'checkup_users'));
-    let total = 0, dm = 0, ht = 0, normal = 0, obese = 0;
-    
-    snap.forEach(doc => {
-      const data = doc.data();
-      total++;
-      if(data.diseases?.diabetes) dm++;
-      if(data.diseases?.hypertension) ht++;
-      if(parseFloat(data.bmi) >= 25) obese++; else normal++;
-    });
-
-    document.getElementById('admin-stats').innerHTML = `
-      <div class="sc p-3" style="text-align:center;"><div style="font-size:22px; font-weight:700;">${total}</div><div style="font-size:11px;color:#64748b;">ผู้ลงทะเบียนทั้งหมด</div></div>
-      <div class="sc p-3" style="text-align:center;"><div style="font-size:22px; font-weight:700; color:#dc2626;">${ht}</div><div style="font-size:11px;color:#64748b;">ความดันโลหิตสูง</div></div>
-      <div class="sc p-3" style="text-align:center;"><div style="font-size:22px; font-weight:700; color:#d97706;">${dm}</div><div style="font-size:11px;color:#64748b;">โรคเบาหวาน</div></div>
-      <div class="sc p-3" style="text-align:center;"><div style="font-size:22px; font-weight:700; color:#7c3aed;">${obese}</div><div style="font-size:11px;color:#64748b;">ภาวะน้ำหนักเกิน/อ้วน</div></div>
-    `;
-
-    document.getElementById('ncd-dashboard-metrics').innerHTML = `
-      <div class="ncd-stat-card"><div class="ncd-stat-num">${total}</div><div class="ncd-stat-label">ยอดคัดกรองสะสม</div></div>
-      <div class="ncd-stat-card"><div class="ncd-stat-num" style="color:#16a34a">${normal}</div><div class="ncd-stat-label">กลุ่มสุขภาพดี</div></div>
-      <div class="ncd-stat-card"><div class="ncd-stat-num" style="color:#dc2626">${ht + dm}</div><div class="ncd-stat-label">กลุ่มเสี่ยงโรค NCDs</div></div>
-    `;
-  } catch(e) {
-    console.error(e);
-  }
-}
-
-function exportAllExcel() {
-  alert("ฟังก์ชันนี้ทำการส่งออกรายงาน รง.ผสต.11 ในรูปแบบ Excel ไปยังเครื่องคอมพิวเตอร์ของคุณ");
-}
-function exportSingleExcel() {
-  alert("กำลังทำการเตรียมไฟล์รายงานรายบุคคลเพื่อจัดพิมพ์...");
-}
-
-// ทำการรันระบบเริ่มแรกหลังจากโหลดองค์ประกอบเสร็จสิ้น
-window.loadFromFirebase = function() {
-  initDropdowns('f');
-  initDropdowns('login');
-  renderQuizzes();
-};
-</script>
-</body>
-</html>
+      <div id="search-msg"
