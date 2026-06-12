@@ -5,15 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ระบบตรวจสุขภาพประจำปี - รพ.ค่ายพระยอดเมืองขวาง</title>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
-<!-- Tabler Icons (ใช้โดย lab-result-module) -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/tabler-icons.min.css">
-<!-- โมดูลผลตรวจ Lab -->
-<script src="lab-result-module.js"></script>
 <!-- Firebase SDK -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getFirestore, collection, doc, setDoc, getDocs, updateDoc, deleteDoc, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
   const firebaseConfig = {
     apiKey: "AIzaSyAh_U2SfI-8mj5voLR17ZqYr3-EkywAHng",
     authDomain: "pymk-health.firebaseapp.com",
@@ -23,52 +19,29 @@
     appId: "1:314295525314:web:21b4e8fdc763792bd9405b",
     measurementId: "G-5VW0RZ4PYK"
   };
-
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app, 'pymkhealth');
-
-  window._db = db;
-  window._col = collection;
-  window._doc = doc;
-  window._setDoc = setDoc;
-  window._getDocs = getDocs;
-  window._updateDoc = updateDoc;
-  window._deleteDoc = deleteDoc;
-  window._query = query;
-  window._where = where;
-  window._onSnapshot = onSnapshot;
-  window._firebaseModuleReady = true;
-
-  function tryLoad() {
-    if (typeof window.loadFromFirebase === 'function') {
-      window.loadFromFirebase();
-    } else {
-      setTimeout(tryLoad, 50);
-    }
-  }
-
-  if (document.readyState === 'complete') {
-    tryLoad();
-  } else {
-    window.addEventListener('load', tryLoad);
-  }
+  window._db=db; window._col=collection; window._doc=doc;
+  window._setDoc=setDoc; window._getDocs=getDocs; window._updateDoc=updateDoc;
+  window._deleteDoc=deleteDoc; window._query=query; window._where=where; window._onSnapshot=onSnapshot;
+  window._firebaseModuleReady=true;
+  function tryLoad(){ if(typeof window.loadFromFirebase==='function') window.loadFromFirebase(); else setTimeout(tryLoad,50); }
+  if(document.readyState==='complete') tryLoad(); else window.addEventListener('load',tryLoad);
 </script>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap');
+*{font-family:'Sarabun',sans-serif;box-sizing:border-box;}
 .p-4{padding:1rem!important}.p-6{padding:1.5rem!important}.p-8{padding:2rem!important}
 .p-2{padding:.5rem!important}.p-3{padding:.75rem!important}
 .mb-4{margin-bottom:1rem!important}.mb-2{margin-bottom:.5rem!important}
 .mt-4{margin-top:1rem!important}.mt-2{margin-top:.5rem!important}
 .hidden{display:none!important}
-</style>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap');
-*{font-family:'Sarabun',sans-serif;}
 .sc{background:white;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);border:1px solid #e5e7eb;}
 .sdot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0;}
-.sdot.active{background:#1d4ed8;color:white;} .sdot.done{background:#16a34a;color:white;} .sdot.pending{background:#e5e7eb;color:#9ca3af;}
+.sdot.active{background:#1d4ed8;color:white;}.sdot.done{background:#16a34a;color:white;}.sdot.pending{background:#e5e7eb;color:#9ca3af;}
 .fl{font-size:14px;font-weight:600;color:#374151;margin-bottom:4px;display:block;}
-.fi{width:100%;padding:8px 12px;border:1.5px solid #d1d5db;border-radius:8px;font-size:15px;font-family:'Sarabun',sans-serif;transition:border-color .2s;box-sizing:border-box;}
-.fi:focus{outline:none;border-color:#1d4ed8;} .fi.err{border-color:#ef4444;}
+.fi{width:100%;padding:8px 12px;border:1.5px solid #d1d5db;border-radius:8px;font-size:15px;font-family:'Sarabun',sans-serif;transition:border-color .2s;}
+.fi:focus{outline:none;border-color:#1d4ed8;}.fi.err{border-color:#ef4444;}
 .bp{background:#1d4ed8;color:white;padding:10px 24px;border-radius:8px;font-weight:600;font-size:15px;cursor:pointer;border:none;font-family:'Sarabun',sans-serif;}
 .bp:hover{background:#1e40af;}
 .bs{background:#f3f4f6;color:#374151;padding:10px 24px;border-radius:8px;font-weight:600;font-size:15px;cursor:pointer;border:none;font-family:'Sarabun',sans-serif;}
@@ -76,23 +49,69 @@
 .bg{background:#16a34a;color:white;padding:10px 24px;border-radius:8px;font-weight:600;font-size:15px;cursor:pointer;border:none;font-family:'Sarabun',sans-serif;}
 .bg:hover{background:#15803d;}
 .br{background:#dc2626;color:white;padding:10px 24px;border-radius:8px;font-weight:600;font-size:15px;cursor:pointer;border:none;font-family:'Sarabun',sans-serif;}
-.br:hover{background:#b91c1c;}
 .rg{display:flex;gap:10px;flex-wrap:wrap;}
 .rb{display:flex;align-items:center;gap:6px;cursor:pointer;padding:6px 12px;border:1.5px solid #d1d5db;border-radius:8px;font-size:14px;transition:all .15s;user-select:none;}
-.rb:has(input:checked){border-color:#1d4ed8;background:#eff6ff;color:#1d4ed8;} .rb input{accent-color:#1d4ed8;}
+.rb:has(input:checked){border-color:#1d4ed8;background:#eff6ff;color:#1d4ed8;}.rb input{accent-color:#1d4ed8;}
 .cb{display:flex;align-items:center;gap:8px;cursor:pointer;padding:6px 0;font-size:14px;user-select:none;}
 .cb input{accent-color:#1d4ed8;width:16px;height:16px;}
 .rt{display:inline-block;padding:3px 10px;border-radius:20px;font-size:13px;font-weight:600;}
-.tn{background:#dcfce7;color:#166534;} .tw{background:#fef9c3;color:#854d0e;} .ta{background:#fee2e2;color:#991b1b;}
-.hidden{display:none!important;}
+.tn{background:#dcfce7;color:#166534;}.tw{background:#fef9c3;color:#854d0e;}.ta{background:#fee2e2;color:#991b1b;}
 .q9-opt:has(input:checked){border-color:#1d4ed8;background:#eff6ff;}
 .dob-wrap{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;}
 .dob-wrap select{padding:8px 10px;border:1.5px solid #d1d5db;border-radius:8px;font-size:14px;font-family:'Sarabun',sans-serif;background:white;}
 .dob-wrap select:focus{outline:none;border-color:#1d4ed8;}
 .dob-wrap select.err{border-color:#ef4444;}
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:1000;}
-/* ── Lab module card ── */
-#lab-module-section{margin-top:1rem;}
+
+/* ══ Lab module CSS ══ */
+.lm{font-size:15px;color:#1a1a1a}
+.lm-card{background:#fff;border:1px solid #e8e8e4;border-radius:12px;padding:1rem 1.25rem;margin-bottom:.875rem}
+.lm-sec{font-size:13px;font-weight:500;color:#888;margin-bottom:.7rem;display:flex;align-items:center;gap:6px}
+.lm-b{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:500;padding:3px 10px;border-radius:20px;white-space:nowrap}
+.lm-bh{background:#FCEBEB;color:#791F1F}.lm-bm{background:#FAEEDA;color:#633806}
+.lm-bl{background:#EAF3DE;color:#27500A}.lm-bn{background:#F1EFE8;color:#5F5E5A}
+.lm-bok{background:#EAF3DE;color:#27500A}.lm-babn{background:#FCEBEB;color:#791F1F}
+.lm-mg{display:grid;grid-template-columns:repeat(auto-fit,minmax(105px,1fr));gap:8px;margin-bottom:.875rem}
+.lm-mc{background:#f7f7f5;border-radius:8px;padding:.6rem .7rem;text-align:center}
+.lm-mv{font-size:20px;font-weight:500}.lm-ml{font-size:11px;color:#888;margin-top:2px}
+.lm-nr{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid #f0f0ec}
+.lm-nr:last-child{border-bottom:none}
+.lm-ni{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:17px}
+.lm-nih{background:#FCEBEB;color:#A32D2D}.lm-nim{background:#FAEEDA;color:#854F0B}.lm-nil{background:#EAF3DE;color:#3B6D11}
+.lm-bw{height:6px;background:#ebebeb;border-radius:4px;overflow:hidden;margin:4px 0}
+.lm-bf{height:100%;border-radius:4px;transition:width .5s}
+.lm-bfh{background:#E24B4A}.lm-bfm{background:#EF9F27}.lm-bfl{background:#639922}
+.lm-ev{font-size:12px;padding:1px 0;display:flex;gap:5px;align-items:flex-start}
+.lm-evb{color:#A32D2D}.lm-evm{color:#854F0B}.lm-evo{color:#3B6D11}
+.lm-nt{margin-top:6px;font-size:12px;border-radius:6px;padding:5px 8px}
+.lm-nth{background:#FCEBEB;color:#791F1F}.lm-ntm{background:#FAEEDA;color:#633806}
+.lm-rr{font-size:13px;padding:6px 0;border-bottom:1px solid #f0f0ec;display:flex;gap:8px;align-items:flex-start}
+.lm-rr:last-child{border-bottom:none}
+.lm-tg{display:inline-block;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:500;white-space:nowrap;flex-shrink:0}
+.lm-tgu{background:#FCEBEB;color:#791F1F}.lm-tgs{background:#FAEEDA;color:#633806}
+.lm-tgl{background:#EAF3DE;color:#27500A}.lm-tgf{background:#E6F1FB;color:#185FA5}
+.lm-lr{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid #f0f0ec}
+.lm-lr:last-child{border-bottom:none}
+.lm-ln{font-size:14px;margin:0}.lm-ls{font-size:12px;color:#888;margin:0}
+.lm-lr-r{display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+.lm-lv{font-size:15px;font-weight:500}
+.lm-lvh{color:#A32D2D}.lm-lvl{color:#185FA5}.lm-lvo{color:#1a1a1a}
+.lm-ref{font-size:11px;color:#aaa}
+.lm-av{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:500;font-size:15px;flex-shrink:0}
+.lm-sg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:.875rem}
+.lm-sc{background:#f7f7f5;border-radius:8px;padding:.55rem;text-align:center}
+.lm-sn{font-size:21px;font-weight:500}.lm-sl{font-size:11px;color:#888;margin-top:1px}
+.lm-dis{font-size:11px;color:#bbb;margin-top:.875rem;text-align:center;border-top:1px solid #f0f0ec;padding-top:.7rem}
+.lm-alert{border-radius:8px;padding:.7rem .9rem;font-size:13px;margin-bottom:.75rem}
+@media(max-width:480px){.lm-sg{grid-template-columns:repeat(2,1fr)}.lm-mg{grid-template-columns:repeat(2,1fr)}}
+
+/* NCD Dashboard cards */
+.ncd-stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:1rem}
+.ncd-stat-card{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:.875rem 1rem}
+.ncd-stat-num{font-size:26px;font-weight:700}
+.ncd-stat-label{font-size:12px;color:#6b7280;margin-top:2px}
+.ncd-pbar{height:5px;background:#ebebeb;border-radius:4px;margin-top:.5rem;overflow:hidden}
+.ncd-pbar-fill{height:100%;border-radius:4px;transition:width .6s}
 </style>
 </head>
 <body style="background:#f0f4ff;min-height:100vh;padding:16px;">
@@ -147,7 +166,6 @@
       <div style="display:flex;align-items:center;gap:8px;justify-content:flex-end;"><div class="sdot pending" id="sd4">4</div><span style="font-size:13px;color:#9ca3af;" id="sl4">สุขภาพจิต</span></div>
     </div>
   </div>
-
   <!-- STEP 1 -->
   <div id="step1" class="sc p-6">
     <h2 style="font-size:16px;font-weight:700;color:#1e293b;margin:0 0 18px;padding-bottom:10px;border-bottom:2px solid #eff6ff;">ขั้นตอนที่ 1: ข้อมูลส่วนตัว</h2>
@@ -192,7 +210,6 @@
       <button class="bp" onclick="goStep(2)">ถัดไป →</button>
     </div>
   </div>
-
   <!-- STEP 2 -->
   <div id="step2" class="hidden sc p-6">
     <h2 style="font-size:16px;font-weight:700;color:#1e293b;margin:0 0 18px;padding-bottom:10px;border-bottom:2px solid #eff6ff;">ขั้นตอนที่ 2: ข้อมูลสุขภาพ</h2>
@@ -235,7 +252,6 @@
       <button class="bp" onclick="goStep(3)">ถัดไป →</button>
     </div>
   </div>
-
   <!-- STEP 3 -->
   <div id="step3" class="hidden sc p-6">
     <h2 style="font-size:16px;font-weight:700;color:#1e293b;margin:0 0 18px;padding-bottom:10px;border-bottom:2px solid #eff6ff;">ขั้นตอนที่ 3: ประวัติสุขภาพ</h2>
@@ -268,7 +284,6 @@
       <button class="bp" onclick="goStep(4)">ถัดไป →</button>
     </div>
   </div>
-
   <!-- STEP 4 -->
   <div id="step4" class="hidden sc p-6">
     <h2 style="font-size:16px;font-weight:700;color:#1e293b;margin:0 0 18px;padding-bottom:10px;border-bottom:2px solid #eff6ff;">ขั้นตอนที่ 4: แบบประเมินสุขภาพจิต</h2>
@@ -334,9 +349,8 @@
       <button class="bg" style="font-size:13px;padding:7px 14px;" onclick="exportSingleExcel()">⬇ ดาวน์โหลด Excel</button>
     </div>
   </div>
-  <!-- ข้อมูลทั่วไป -->
   <div id="result-content"></div>
-  <!-- ════ ส่วนผลตรวจ Lab (โมดูล) ════ -->
+  <!-- ════ ส่วนผลตรวจ Lab + NCD Analysis ════ -->
   <div id="lab-module-section" class="hidden">
     <div class="sc p-4 mb-2" style="background:#eff6ff;border-color:#bfdbfe;">
       <h3 style="font-size:15px;font-weight:700;color:#1e40af;margin:0;display:flex;align-items:center;gap:8px;">
@@ -376,6 +390,7 @@
     </div>
   </div>
 
+  <!-- สถิติทั่วไป (เดิม) -->
   <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:12px;" id="admin-stats"></div>
 
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
@@ -393,6 +408,14 @@
         <div id="bmi-group-stats" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;"></div>
       </div>
     </div>
+  </div>
+
+  <!-- ════ NCD Dashboard (ใหม่) ════ -->
+  <div class="sc p-4 mb-4">
+    <h3 style="font-size:13px;font-weight:700;color:#374151;margin:0 0 14px;display:flex;align-items:center;gap:6px;">
+      🧬 ยอดผู้เสี่ยง NCDs (จากการวิเคราะห์ผลตรวจเลือด PDF)
+    </h3>
+    <div id="ncd-dashboard"></div>
   </div>
 
   <div class="sc" style="overflow-x:auto;">
@@ -417,9 +440,9 @@
   </div>
 </div>
 
-<!-- MODAL แนบ PDF ผลตรวจ -->
+<!-- MODAL แนบ PDF -->
 <div id="modal-pdf" class="hidden modal-overlay">
-  <div class="sc p-6" style="width:520px;max-width:95vw;max-height:90vh;overflow-y:auto;">
+  <div class="sc p-6" style="width:560px;max-width:95vw;max-height:90vh;overflow-y:auto;">
     <h3 style="font-size:16px;font-weight:700;color:#1e293b;margin:0 0 4px;">📎 แนบผลตรวจสุขภาพประจำปี (PDF)</h3>
     <p id="pdf-person-name" style="font-size:13px;color:#64748b;margin:0 0 18px;"></p>
     <div id="pdf-current-wrap" class="hidden" style="margin-bottom:14px;padding:10px 14px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;display:flex;align-items:center;justify-content:space-between;gap:10px;">
@@ -444,16 +467,16 @@
     <div id="pdf-preview-wrap" class="hidden" style="margin-top:12px;padding:10px 14px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;display:flex;align-items:center;gap:10px;">
       <span style="font-size:22px;">📄</span>
       <div style="flex:1;min-width:0;">
-        <div style="font-size:13px;font-weight:600;color:#1d4ed8;" id="pdf-preview-name" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></div>
+        <div style="font-size:13px;font-weight:600;color:#1d4ed8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" id="pdf-preview-name"></div>
         <div style="font-size:11px;color:#6b7280;" id="pdf-preview-size"></div>
       </div>
       <button onclick="clearPdfPreview()" style="background:none;border:none;color:#9ca3af;font-size:18px;cursor:pointer;">✕</button>
     </div>
-    <!-- ════ Preview ผลวิเคราะห์ Lab (ก่อน save) ════ -->
+    <!-- ════ Preview Lab ก่อน save ════ -->
     <div id="pdf-lab-preview" class="hidden" style="margin-top:16px;border-top:2px solid #eff6ff;padding-top:14px;">
       <div style="font-size:13px;font-weight:700;color:#1e40af;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
         🔬 ตัวอย่างการวิเคราะห์ผลตรวจ
-        <span id="pdf-lab-loading" style="font-size:12px;font-weight:400;color:#64748b;">กำลังอ่าน PDF...</span>
+        <span id="pdf-lab-loading" style="font-size:12px;font-weight:400;color:#64748b;"></span>
       </div>
       <div id="pdf-lab-preview-content"></div>
     </div>
@@ -462,17 +485,6 @@
       <button class="bs" style="flex:1;" onclick="closePdfModal()">ยกเลิก</button>
       <button class="bp" style="flex:1;" id="pdf-save-btn" onclick="savePdf()">💾 บันทึก PDF</button>
     </div>
-  </div>
-</div>
-
-<!-- MODAL ดู PDF -->
-<div id="modal-pdf-viewer" class="hidden modal-overlay" style="padding:16px;">
-  <div style="background:white;border-radius:12px;width:90vw;max-width:860px;height:90vh;display:flex;flex-direction:column;overflow:hidden;">
-    <div style="padding:14px 20px;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;justify-content:space-between;">
-      <div style="font-size:15px;font-weight:700;color:#1e293b;" id="pdf-viewer-title">ผลตรวจสุขภาพ</div>
-      <button onclick="closePdfViewer()" style="background:#f3f4f6;border:none;border-radius:8px;padding:6px 14px;font-size:13px;cursor:pointer;font-family:Sarabun,sans-serif;">✕ ปิด</button>
-    </div>
-    <iframe id="pdf-viewer-frame" style="flex:1;border:none;width:100%;"></iframe>
   </div>
 </div>
 
@@ -554,208 +566,310 @@
 </div>
 
 <script>
-// ======= STORAGE =======
-let records = [], admins = [], currentRecord = null, lastId = null, currentAdmin = null;
-let _firebaseReady = false;
+/* ══════════════════════════════════════════════════════════
+   LAB MODULE — อ่าน PDF แสดงผลตรวจ + วิเคราะห์ NCDs
+══════════════════════════════════════════════════════════ */
+(function(G){
+  const PJS='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+  const PWK='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  function loadPdfJs(){
+    return new Promise(res=>{
+      if(G.pdfjsLib){res(G.pdfjsLib);return;}
+      const s=document.createElement('script');s.src=PJS;
+      s.onload=()=>{G.pdfjsLib.GlobalWorkerOptions.workerSrc=PWK;res(G.pdfjsLib);};
+      document.head.appendChild(s);
+    });
+  }
+  async function pdfToText(src){
+    const lib=await loadPdfJs();
+    // src can be: base64 dataURL string, ArrayBuffer, or http URL
+    let loadParam;
+    if(typeof src==='string'){
+      if(src.startsWith('data:')){
+        // แปลง dataURL → Uint8Array
+        const b64=src.split(',')[1];
+        const bin=atob(b64);
+        const arr=new Uint8Array(bin.length);
+        for(let i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);
+        loadParam={data:arr};
+      } else {
+        loadParam={url:src};
+      }
+    } else {
+      loadParam={data:src};
+    }
+    const pdf=await lib.getDocument(loadParam).promise;
+    let t='';
+    for(let i=1;i<=pdf.numPages;i++){
+      const pg=await pdf.getPage(i);
+      const tc=await pg.getTextContent();
+      t+=tc.items.map(x=>x.str).join(' ')+'\n';
+    }
+    return t;
+  }
+  function nv(text,re){const m=text.match(re);return m?parseFloat(m[1]):null;}
+
+  function extractLab(text){
+    const d={};
+    const nm=text.match(/ชื่อ\s*:\s*([^\n\r]+)/)||text.match(/((?:ร|พ)\.[อต]\.(?:หญิง|ชาย)\s+\S+\s+\S+|นาย\s+\S+\s+\S+|นาง(?:สาว)?\s+\S+\s+\S+)/);
+    d.name=nm?nm[1].trim():null;
+    const am=text.match(/อายุ\s*:\s*(\d+)\s*ป/);d.age=am?parseInt(am[1]):null;
+    const dm=text.match(/(\d+\s+(?:มกราคม|กุมภาพันธ์|มีนาคม|เมษายน|พฤษภาคม|มิถุนายน|กรกฎาคม|สิงหาคม|กันยายน|ตุลาคม|พฤศจิกายน|ธันวาคม)\s+\d{4})/);
+    d.date=dm?dm[1]:null;
+    d.hb=nv(text,/Hb\s+([\d.]+)/);d.hct=nv(text,/Hct\s+([\d.]+)/);
+    d.rbc=nv(text,/RBC count\s+([\d.]+)/);d.mcv=nv(text,/MCV\s+([\d.]+)/);
+    d.mch=nv(text,/MCH\s+([\d.]+)/);d.mchc=nv(text,/MCHC\s+([\d.]+)/);
+    d.plt=nv(text,/Platelet Count\s+([\d.]+)/);d.wbc=nv(text,/WBC count\s+([\d.]+)/);
+    d.neu=nv(text,/Neutrophil\s+([\d.]+)/);d.lym=nv(text,/Lymphocyte\s+([\d.]+)/);
+    d.eos=nv(text,/Eosinophil\s+([\d.]+)/);d.mono=nv(text,/Monocyte\s+([\d.]+)/);
+    d.chol=nv(text,/Cholesterol\s+([\d.]+)/);d.tg=nv(text,/Triglyceride\s+([\d.]+)/);
+    d.fbs=nv(text,/Glucose\(FBS\)\s+([\d.]+)/)||nv(text,/Glucose\s+([\d.]+)/);
+    d.uric=nv(text,/Uric acid\.\.\s+([\d.]+)/);
+    d.bun=nv(text,/BUN[^\d]*([\d.]+)/);d.creat=nv(text,/Creatinine[^\d]*([\d.]+)/);
+    d.egfr=nv(text,/eGFR[^\d]*([\d.]+)/);
+    d.alt=nv(text,/SGPT\(ALT\)[^\d]*([\d.]+)/);d.ast=nv(text,/SGOT\(AST\)[^\d]*([\d.]+)/);d.alp=nv(text,/ALP[^\d]*([\d.]+)/);
+    d.urineBlood=/3\+\s*Blood|2\+\s*Blood|1\+\s*Blood/.test(text);
+    d.urineProtein=!/Negative Protein/.test(text)&&/Protein/.test(text);
+    d.urineGlucose=!/Glucose Negative/.test(text)&&/Glucose/.test(text);
+    d.urineRBC=nv(text,/(\d+)-\d+\s+RBC\s+0\s*-\s*2/);
+    d.urinePeriod=/มีประจำเดือน|มีประจําเดือน/.test(text);
+    return d;
+  }
+
+  function analyzeNCD(d,gender,age){
+    const f=gender==='F';
+    const diseases=[];
+    function dis(id,name,icon,score,level,evidence,note){diseases.push({id,name,icon,score:Math.min(score,100),level,evidence,note});}
+    /* โลหิตจาง */
+    let sc=0,ev=[];
+    if(d.hb!==null&&d.hb<(f?12:14)){sc+=35;ev.push({b:true,t:`Hb ${d.hb} g/dL ต่ำกว่าเกณฑ์`});}
+    if(d.hct!==null&&d.hct<(f?36:40)){sc+=20;ev.push({b:true,t:`Hct ${d.hct}% ต่ำกว่าเกณฑ์`});}
+    if(d.mcv!==null&&d.mcv<80){sc+=20;ev.push({b:true,t:`MCV ${d.mcv} fL ต่ำ — เม็ดเลือดแดงขนาดเล็ก`});}
+    if(d.mch!==null&&d.mch<27){sc+=15;ev.push({b:true,t:`MCH ${d.mch} pg ต่ำ — บ่งชี้ขาดธาตุเหล็ก`});}
+    if(d.rbc!==null&&d.rbc<4.2){sc+=10;ev.push({b:true,t:`RBC ${d.rbc} ×10⁶/mm³ ต่ำ`});}
+    if(sc===0&&d.hb!==null)ev.push({b:false,t:`Hb ${d.hb} g/dL ปกติ`});
+    let note='';
+    if(sc>=35&&d.mcv!==null&&d.mcv<80&&d.mch!==null&&d.mch<27)
+      note=f&&(age||0)>35?'แบบแผน Microcytic Hypochromic — ควรพิจารณา Thalassemia trait':'แบบแผน Iron Deficiency Anemia (IDA) — พบบ่อยในหญิงวัยเจริญพันธุ์';
+    dis('anemia','โรคโลหิตจาง','ti-droplet',sc,sc>=50?'high':sc>=20?'medium':'low',ev,note);
+    /* CVD */
+    sc=0;ev=[];
+    if(d.chol!==null&&d.chol>200){sc+=40;ev.push({b:true,t:`Cholesterol ${d.chol} mg/dL เกินเกณฑ์ (>200)`});}
+    else if(d.chol!==null)ev.push({b:false,t:`Cholesterol ${d.chol} mg/dL ปกติ`});
+    if(d.tg!==null&&d.tg>150){sc+=25;ev.push({b:true,t:`Triglyceride ${d.tg} mg/dL เกินเกณฑ์`});}
+    else if(d.tg!==null)ev.push({b:false,t:`Triglyceride ${d.tg} mg/dL ปกติ`});
+    if(age&&age>=40){sc+=15;ev.push({b:null,t:`อายุ ${age} ปี — ความเสี่ยง CVD เพิ่มตามอายุ`});}
+    ev.push({b:null,t:'ควรตรวจ Full Lipid Profile (LDL, HDL) เพิ่มเติม'});
+    dis('cvd','โรคหัวใจและหลอดเลือด (CVD)','ti-heart',sc,sc>=50?'high':sc>=25?'medium':'low',ev,
+      sc>=40&&(age||0)>=40?'Cholesterol สูง + อายุ ≥40 ปี → ควรประเมิน Framingham CVD risk score':'');
+    /* เบาหวาน */
+    sc=0;ev=[];
+    if(d.fbs!==null&&d.fbs>=126){sc+=70;ev.push({b:true,t:`FBS ${d.fbs} mg/dL เกินเกณฑ์เบาหวาน (≥126)`});}
+    else if(d.fbs!==null&&d.fbs>=100){sc+=30;ev.push({b:null,t:`FBS ${d.fbs} mg/dL — Prediabetes (100–125)`});}
+    else if(d.fbs!==null)ev.push({b:false,t:`FBS ${d.fbs} mg/dL ปกติ (70–100)`});
+    else ev.push({b:null,t:'ไม่มีผล FBS ในรายงานนี้ — ควรตรวจเพิ่ม'});
+    if(!d.urineGlucose)ev.push({b:false,t:'น้ำตาลในปัสสาวะ: ไม่พบ (ดี)'});
+    dis('dm','เบาหวาน (Diabetes)','ti-activity',sc,sc>=50?'high':sc>=25?'medium':'low',ev,'');
+    /* ไต */
+    sc=0;ev=[];
+    if(d.egfr!==null&&d.egfr<60){sc+=50;ev.push({b:true,t:`eGFR ${d.egfr} mL/min — ต่ำ บ่งชี้ไตเสื่อม`});}
+    else if(d.egfr!==null&&d.egfr<90){sc+=15;ev.push({b:null,t:`eGFR ${d.egfr} mL/min — ลดลงเล็กน้อย (ควร >90)`});}
+    else if(d.egfr!==null)ev.push({b:false,t:`eGFR ${d.egfr} mL/min — ดีมาก`});
+    if(d.creat!==null){const cHi=f?1.0:1.2;if(d.creat>cHi){sc+=25;ev.push({b:true,t:`Creatinine ${d.creat} mg% สูงกว่าเกณฑ์`});}else ev.push({b:false,t:`Creatinine ${d.creat} mg% ปกติ`});}
+    if(d.urineBlood&&!d.urinePeriod){sc+=20;ev.push({b:true,t:'พบเลือดในปัสสาวะ — ควรตรวจซ้ำ'});}
+    if(d.urineBlood&&d.urinePeriod)ev.push({b:null,t:'พบเลือดในปัสสาวะ (มีประจำเดือน) — ตรวจซ้ำหลังหมด'});
+    if(!d.urineProtein)ev.push({b:false,t:'Protein ในปัสสาวะ: ไม่พบ (ดี)'});
+    dis('ckd','ภาวะไตเสื่อม (CKD)','ti-droplets',sc,sc>=50?'high':sc>=20?'medium':'low',ev,'');
+    /* ตับ */
+    sc=0;ev=[];const aHi=f?35:40;
+    if(d.alt!==null&&d.alt>aHi){sc+=35;ev.push({b:true,t:`ALT ${d.alt} U/L สูง`});}else if(d.alt!==null)ev.push({b:false,t:`ALT ${d.alt} U/L ปกติ`});
+    if(d.ast!==null&&d.ast>aHi){sc+=35;ev.push({b:true,t:`AST ${d.ast} U/L สูง`});}else if(d.ast!==null)ev.push({b:false,t:`AST ${d.ast} U/L ปกติ`});
+    if(d.alp!==null&&d.alp>120){sc+=20;ev.push({b:true,t:`ALP ${d.alp} U/L สูง`});}else if(d.alp!==null)ev.push({b:false,t:`ALP ${d.alp} U/L ปกติ`});
+    if(ev.length===0)ev.push({b:null,t:'ไม่มีข้อมูลเอนไซม์ตับ'});
+    dis('liver','โรคตับ','ti-shield',sc,sc>=50?'high':sc>=25?'medium':'low',ev,'');
+    const hiC=diseases.filter(x=>x.level==='high').length;
+    const mdC=diseases.filter(x=>x.level==='medium').length;
+    const overall=hiC>=2?'high':hiC>=1||mdC>=2?'medium':'low';
+    const recs=[];
+    if(diseases.find(x=>x.id==='anemia'&&x.level!=='low'))recs.push({u:'urgent',t:'ตรวจ Serum Iron, TIBC, Ferritin เพื่อยืนยันชนิดของโลหิตจาง'});
+    if(d.urineBlood&&d.urinePeriod)recs.push({u:'urgent',t:'ตรวจปัสสาวะซ้ำหลังหมดประจำเดือน'});
+    if(diseases.find(x=>x.id==='cvd'&&x.level!=='low'))recs.push({u:'urgent',t:'ตรวจ Full Lipid Profile และประเมิน Framingham CVD risk score'});
+    if(!d.fbs)recs.push({u:'soon',t:'ตรวจ FBS และ HbA1c เพิ่มเติม'});
+    if(!d.chol)recs.push({u:'soon',t:'ตรวจ Lipid Profile (Cholesterol, LDL, HDL) เพิ่มเติม'});
+    if(diseases.find(x=>x.id==='anemia'&&x.level!=='low'))recs.push({u:'lifestyle',t:'เพิ่มอาหารธาตุเหล็ก (ตับ, เนื้อแดง, ผักใบเขียว) และวิตามิน C'});
+    if(diseases.find(x=>x.id==='cvd'&&x.level!=='low'))recs.push({u:'lifestyle',t:'ลดไขมันอิ่มตัว เพิ่มใยอาหาร ออกกำลังกาย ≥150 นาที/สัปดาห์'});
+    if((age||0)>=40)recs.push({u:'followup',t:'ตรวจสุขภาพประจำปีต่อเนื่อง — ความดัน, HbA1c, eGFR ทุกปี'});
+    return{overall,diseases,recommendations:recs};
+  }
+
+  function labRow(name,sub,val,lo,hi,unit){
+    if(val===null)return'';
+    const isH=val>hi,isL=val<lo;
+    const cls=isH?'lm-lvh':isL?'lm-lvl':'lm-lvo';
+    const badge=isH||isL?`<span class="lm-b lm-babn">${isH?'สูง':'ต่ำ'}</span>`:`<span class="lm-b lm-bok">ปกติ</span>`;
+    return`<div class="lm-lr"><div><p class="lm-ln">${name}</p><p class="lm-ls">${sub}</p></div><div class="lm-lr-r"><span class="lm-lv ${cls}">${val}<span style="font-size:12px;font-weight:400"> ${unit}</span></span><div style="display:flex;gap:5px;align-items:center">${badge}<span class="lm-ref">${lo}–${hi}</span></div></div></div>`;
+  }
+
+  function buildHTML(d,gender,ncd){
+    const f=gender==='F';
+    const init=d.name?d.name.replace(/(?:ร|พ)\.[อต]\.(?:หญิง|ชาย)\s*/g,'').split(/\s+/).filter(Boolean).map(w=>w[0]).slice(0,2).join(''):'?';
+    const ovMap={high:{lbl:'ความเสี่ยงปานกลาง-สูง',cls:'lm-bh'},medium:{lbl:'ความเสี่ยงต่ำ-ปานกลาง',cls:'lm-bm'},low:{lbl:'ความเสี่ยงต่ำ',cls:'lm-bl'}};
+    const ov=ovMap[ncd.overall];
+    const km=[
+      {lbl:'Hb',val:d.hb,unit:'g/dL',lo:f?12:14,hi:f?16:18},
+      {lbl:d.chol!==null?'Cholesterol':d.fbs!==null?'FBS':'WBC',val:d.chol!==null?d.chol:d.fbs!==null?d.fbs:d.wbc,unit:'mg/dL',lo:d.chol!==null?0:d.fbs!==null?70:4,hi:d.chol!==null?200:d.fbs!==null?100:10},
+      {lbl:d.egfr!==null?'eGFR':'Platelet',val:d.egfr!==null?d.egfr:d.plt,unit:d.egfr!==null?'mL/min':'K',lo:d.egfr!==null?90:140,hi:d.egfr!==null?200:440},
+      {lbl:d.creat!==null?'Creatinine':'MCV',val:d.creat!==null?d.creat:d.mcv,unit:d.creat!==null?'mg%':'fL',lo:d.creat!==null?f?0.5:0.6:80,hi:d.creat!==null?f?1.0:1.2:95},
+    ];
+    const metH=km.filter(m=>m.val!==null).map(m=>{
+      const c=m.val<m.lo?'#185FA5':m.val>m.hi?'#A32D2D':'#1a1a1a';
+      const s=m.val<m.lo?'<span style="color:#A32D2D;font-size:11px">ต่ำ</span>':m.val>m.hi?'<span style="color:#A32D2D;font-size:11px">สูง</span>':'<span style="color:#3B6D11;font-size:11px">ปกติ</span>';
+      return`<div class="lm-mc"><div class="lm-mv" style="color:${c}">${m.val}</div><div class="lm-ml">${m.lbl}<br>${s}</div></div>`;
+    }).join('');
+    let cN=0,cH=0,cL=0;
+    function ck(v,lo,hi){if(v===null)return;v<lo?cL++:v>hi?cH++:cN++;}
+    ck(d.hb,f?12:14,f?16:18);ck(d.hct,f?36:40,f?48:52);ck(d.mcv,80,95);ck(d.mch,27,31);
+    ck(d.plt,140,440);ck(d.wbc,4,10);ck(d.chol,0,200);ck(d.tg,0,150);
+    ck(d.fbs,70,100);ck(d.uric,f?2.4:3.4,f?6.0:7.0);
+    ck(d.bun,6,20);ck(d.creat,f?0.5:0.6,f?1.0:1.2);ck(d.alt,0,f?35:40);ck(d.ast,0,f?35:40);
+    const lvMap={high:'เสี่ยงสูง',medium:'ควรติดตาม',low:'ความเสี่ยงต่ำ'};
+    const ncdH=ncd.diseases.map(dis=>{
+      const evH=dis.evidence.map(e=>`<div class="lm-ev ${e.b===true?'lm-evb':e.b===false?'lm-evo':'lm-evm'}"><span>${e.b===true?'✕':e.b===false?'✓':'△'}</span><span>${e.t}</span></div>`).join('');
+      const nt=dis.note?`<div class="lm-nt lm-nt${dis.level==='high'?'h':'m'}">${dis.note}</div>`:'';
+      return`<div class="lm-nr"><div class="lm-ni lm-ni${dis.level}"><i class="ti ${dis.icon}"></i></div><div style="flex:1;min-width:0"><div style="display:flex;align-items:center;flex-wrap:wrap;gap:5px;margin-bottom:3px"><span style="font-size:14px;font-weight:500">${dis.name}</span><span class="lm-b lm-b${dis.level}">${dis.id==='anemia'&&dis.level==='high'?'ตรวจพบแล้ว':lvMap[dis.level]}</span></div><div class="lm-bw"><div class="lm-bf lm-bf${dis.level}" style="width:${dis.score}%"></div></div>${evH}${nt}</div></div>`;
+    }).join('');
+    const tMap={urgent:['เร่งด่วน','lm-tgu'],soon:['ภายใน 1 เดือน','lm-tgs'],lifestyle:['ปรับวิถีชีวิต','lm-tgl'],followup:['ติดตาม','lm-tgf']};
+    const recH=ncd.recommendations.map(r=>{const[lbl,cls]=tMap[r.u]||['',''];return`<div class="lm-rr"><span class="lm-tg ${cls}">${lbl}</span><span>${r.t}</span></div>`;}).join('');
+    const cbc=[
+      labRow('ฮีโมโกลบิน (Hb)','โปรตีนขนส่งออกซิเจน',d.hb,f?12:14,f?16:18,'g/dL'),
+      labRow('ฮีมาโตคริต (Hct)','ร้อยละเม็ดเลือดแดง',d.hct,f?36:40,f?48:52,'%'),
+      labRow('เม็ดเลือดแดง (RBC)','',d.rbc,4.2,6.0,'×10⁶/mm³'),
+      labRow('MCV','ขนาดเม็ดเลือดแดง',d.mcv,80,95,'fL'),
+      labRow('MCH','Hb ต่อเซลล์',d.mch,27,31,'pg'),
+      labRow('MCHC','ความเข้มข้น Hb',d.mchc,31,35,'g/dL'),
+      labRow('เกล็ดเลือด (Platelet)','',d.plt,140,440,'K/mm³'),
+      labRow('เม็ดเลือดขาว (WBC)','สูง=อาจติดเชื้อ',d.wbc,4.0,10.0,'K/mm³'),
+      labRow('Neutrophil','ต้านแบคทีเรีย',d.neu,40,74,'%'),
+      labRow('Lymphocyte','ต้านไวรัส',d.lym,19,48,'%'),
+      labRow('Eosinophil','สูง=ภูมิแพ้/พยาธิ',d.eos,0,7,'%'),
+    ].filter(Boolean).join('');
+    const lipid=[labRow('คอเลสเตอรอล','สูงเสี่ยงหัวใจ',d.chol,0,200,'mg/dL'),labRow('ไตรกลีเซอไรด์','ไขมันจากอาหาร',d.tg,0,150,'mg/dL')].filter(Boolean).join('');
+    const met=[labRow('น้ำตาล FBS','หลังอดอาหาร 8 ชม.',d.fbs,70,100,'mg/dL'),labRow('กรดยูริก','สูง=เสี่ยงเกาต์',d.uric,f?2.4:3.4,f?6.0:7.0,'mg%')].filter(Boolean).join('');
+    const kidney=[
+      labRow('BUN','ของเสียไตกรอง',d.bun,6,20,'mg%'),
+      labRow('Creatinine','ของเสียจากกล้ามเนื้อ',d.creat,f?0.5:0.6,f?1.0:1.2,'mg%'),
+      d.egfr!==null?`<div class="lm-lr"><div><p class="lm-ln">eGFR</p><p class="lm-ls">อัตราการกรองไต — ยิ่งสูงยิ่งดี</p></div><div class="lm-lr-r"><span class="lm-lv ${d.egfr<60?'lm-lvh':'lm-lvo'}">${d.egfr}<span style="font-size:12px;font-weight:400"> mL/min</span></span><div style="display:flex;gap:5px;align-items:center"><span class="lm-b ${d.egfr>=90?'lm-bok':d.egfr>=60?'lm-bm':'lm-bh'}">${d.egfr>=90?'ปกติ':d.egfr>=60?'ลดลง':'ต่ำ'}</span><span class="lm-ref">&gt;90</span></div></div></div>`:''
+    ].filter(Boolean).join('');
+    const liver=[labRow('ALT (SGPT)','เอนไซม์ตับ',d.alt,0,f?35:40,'U/L'),labRow('AST (SGOT)','เอนไซม์ตับ',d.ast,0,f?35:40,'U/L'),labRow('ALP','เอนไซม์ตับ/กระดูก',d.alp,40,120,'U/L')].filter(Boolean).join('');
+    const urine=d.urineBlood!==undefined?`<div class="lm-card"><div class="lm-sec"><i class="ti ti-droplets"></i> การตรวจปัสสาวะ</div>${d.urinePeriod?'<div class="lm-alert" style="background:#FAEEDA;color:#633806">△ มีประจำเดือน — ผลปัสสาวะบางรายการอาจผิดปกติ ควรตรวจซ้ำ</div>':''}<div class="lm-lr"><div><p class="lm-ln">เลือดในปัสสาวะ</p></div><span class="lm-b ${d.urineBlood?d.urinePeriod?'lm-bm':'lm-bh':'lm-bok'}">${d.urineBlood?d.urinePeriod?'พบ (น่าจะจากประจำเดือน)':'พบ — ควรตรวจซ้ำ':'ไม่พบ (ปกติ)'}</span></div><div class="lm-lr"><div><p class="lm-ln">โปรตีนในปัสสาวะ</p></div><span class="lm-b ${d.urineProtein?'lm-bh':'lm-bok'}">${d.urineProtein?'พบ':'ไม่พบ (ปกติ)'}</span></div><div class="lm-lr"><div><p class="lm-ln">น้ำตาลในปัสสาวะ</p></div><span class="lm-b ${d.urineGlucose?'lm-bh':'lm-bok'}">${d.urineGlucose?'พบ':'ไม่พบ (ปกติ)'}</span></div></div>`:'';
+    return`<div class="lm"><div class="lm-card"><div style="display:flex;align-items:center;gap:12px;margin-bottom:.875rem"><div class="lm-av" style="background:#E6F1FB;color:#185FA5">${init}</div><div style="flex:1"><p style="font-weight:500;font-size:15px;margin:0">${d.name||'ผู้รับบริการ'}</p><p style="font-size:13px;color:#888;margin:0">${d.age?`อายุ ${d.age} ปี`:''}${d.date?` • ${d.date}`:''}</p></div><span class="lm-b ${ov.cls}">${ov.lbl}</span></div><div class="lm-mg">${metH}</div><div class="lm-sg"><div class="lm-sc"><div class="lm-sn" style="color:#3B6D11">${cN}</div><div class="lm-sl">รายการปกติ</div></div><div class="lm-sc"><div class="lm-sn" style="color:#A32D2D">${cH}</div><div class="lm-sl">สูงกว่าปกติ</div></div><div class="lm-sc"><div class="lm-sn" style="color:#185FA5">${cL}</div><div class="lm-sl">ต่ำกว่าปกติ</div></div><div class="lm-sc"><div class="lm-sn">${cN+cH+cL}</div><div class="lm-sl">รายการทั้งหมด</div></div></div></div>${cbc?`<div class="lm-card"><div class="lm-sec"><i class="ti ti-droplet"></i> ความสมบูรณ์ของเม็ดเลือด (CBC)</div>${cbc}</div>`:''}${lipid?`<div class="lm-card"><div class="lm-sec"><i class="ti ti-heart"></i> ไขมันในเลือด</div>${lipid}</div>`:''}${met?`<div class="lm-card"><div class="lm-sec"><i class="ti ti-activity"></i> เมตาบอลิซึม</div>${met}</div>`:''}${kidney?`<div class="lm-card"><div class="lm-sec"><i class="ti ti-droplets"></i> การทำงานของไต</div>${kidney}</div>`:''}${liver?`<div class="lm-card"><div class="lm-sec"><i class="ti ti-shield"></i> การทำงานของตับ</div>${liver}</div>`:''}${urine}<div class="lm-card"><div class="lm-sec"><i class="ti ti-virus"></i> การประเมินความเสี่ยง NCDs</div>${ncdH}</div>${recH?`<div class="lm-card"><div class="lm-sec"><i class="ti ti-checklist"></i> คำแนะนำสำหรับท่าน</div>${recH}</div>`:''}<p class="lm-dis">ผลการวิเคราะห์นี้ใช้เพื่อการคัดกรองเบื้องต้นเท่านั้น ไม่ใช่การวินิจฉัยโรค กรุณาปรึกษาแพทย์</p></div>`;
+  }
+
+  async function renderInto(containerId,src,gender){
+    const el=document.getElementById(containerId);
+    if(!el)return;
+    el.innerHTML='<div style="padding:1rem;text-align:center;color:#64748b;font-size:14px;">⏳ กำลังวิเคราะห์ผลตรวจ...</div>';
+    try{
+      const text=await pdfToText(src);
+      const lab=extractLab(text);
+      if(!gender)gender=lab.name&&lab.name.includes('หญิง')?'F':'M';
+      const ncd=analyzeNCD(lab,gender,lab.age);
+      el.innerHTML=buildHTML(lab,gender,ncd);
+      // คืนค่า lab summary สำหรับบันทึก
+      return{lab,ncd};
+    }catch(e){
+      el.innerHTML=`<div style="background:#FCEBEB;border-radius:8px;padding:1rem;color:#A32D2D;font-size:14px">ไม่สามารถอ่าน PDF ได้: ${e.message}</div>`;
+      return null;
+    }
+  }
+
+  G.LabModule={renderInto,analyzeNCD,extractLab,pdfToText};
+})(window);
+
+
+/* ══════════════════════════════════════════════════════════
+   CORE APP
+══════════════════════════════════════════════════════════ */
+let records=[],admins=[],currentRecord=null,lastId=null,currentAdmin=null;
+let _firebaseReady=false;
 
 function showLoadingOverlay(msg){
-  let el = document.getElementById('fb-loading-overlay');
-  if(!el){
-    el = document.createElement('div');
-    el.id = 'fb-loading-overlay';
-    el.style.cssText = 'position:fixed;inset:0;background:rgba(255,255,255,0.85);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;';
-    el.innerHTML = '<div style="font-size:36px;margin-bottom:12px;">⏳</div><div style="font-size:16px;font-weight:600;color:#1d4ed8;">'+msg+'</div>';
-    document.body.appendChild(el);
-  } else {
-    el.querySelector('div:last-child').textContent = msg;
-    el.style.display = 'flex';
-  }
+  let el=document.getElementById('fb-loading-overlay');
+  if(!el){el=document.createElement('div');el.id='fb-loading-overlay';el.style.cssText='position:fixed;inset:0;background:rgba(255,255,255,0.85);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;';el.innerHTML='<div style="font-size:36px;margin-bottom:12px;">⏳</div><div style="font-size:16px;font-weight:600;color:#1d4ed8;">'+msg+'</div>';document.body.appendChild(el);}
+  else{el.querySelector('div:last-child').textContent=msg;el.style.display='flex';}
 }
-function hideLoadingOverlay(){
-  const el = document.getElementById('fb-loading-overlay');
-  if(el) el.style.display = 'none';
-}
+function hideLoadingOverlay(){const el=document.getElementById('fb-loading-overlay');if(el)el.style.display='none';}
 
-window.loadFromFirebase = async function(){
+window.loadFromFirebase=async function(){
   showLoadingOverlay('กำลังโหลดข้อมูล...');
-  try {
-    const recSnap = await window._getDocs(window._col(window._db, 'hc_records'));
-    records = [];
-    recSnap.forEach(function(d){ records.push(d.data()); });
-    const admSnap = await window._getDocs(window._col(window._db, 'hc_admins'));
-    admins = [];
-    admSnap.forEach(function(d){ admins.push(d.data()); });
-    if(!admins.length){
-      admins = [{name:'Nurse Admin',username:'nurse',password:'nurse1',isDefault:true}];
-      await saveAdmins();
-    }
-    _firebaseReady = true;
-    hideLoadingOverlay();
-    if(!document.getElementById('page-admin').classList.contains('hidden')) renderAdmin();
-  } catch(e){
-    hideLoadingOverlay();
-    console.error('Firebase load error:', e);
-    alert('❌ ไม่สามารถเชื่อมต่อ Firebase ได้\n' + e.message);
-  }
+  try{
+    const recSnap=await window._getDocs(window._col(window._db,'hc_records'));
+    records=[];recSnap.forEach(d=>records.push(d.data()));
+    const admSnap=await window._getDocs(window._col(window._db,'hc_admins'));
+    admins=[];admSnap.forEach(d=>admins.push(d.data()));
+    if(!admins.length){admins=[{name:'Nurse Admin',username:'nurse',password:'nurse1',isDefault:true}];await saveAdmins();}
+    _firebaseReady=true;hideLoadingOverlay();
+    if(!document.getElementById('page-admin').classList.contains('hidden'))renderAdmin();
+  }catch(e){hideLoadingOverlay();console.error('Firebase load error:',e);alert('❌ ไม่สามารถเชื่อมต่อ Firebase ได้\n'+e.message);}
 };
 
-async function saveAll(){}
+async function saveRecordToFirebase(rec){try{await window._setDoc(window._doc(window._db,'hc_records',rec.id),rec);}catch(e){console.error('Save record error:',e);alert('❌ บันทึกไม่สำเร็จ: '+e.message);}}
+async function updateRecordInFirebase(rec){try{await window._setDoc(window._doc(window._db,'hc_records',rec.id),rec);}catch(e){console.error('Update record error:',e);}}
+async function saveAdmins(){try{for(const a of admins)await window._setDoc(window._doc(window._db,'hc_admins',a.username),a);}catch(e){console.error('Save admins error:',e);}}
+async function deleteAdminFromFirebase(username){try{await window._deleteDoc(window._doc(window._db,'hc_admins',username));}catch(e){console.error('Delete admin error:',e);}}
 
-async function saveRecordToFirebase(rec){
-  try {
-    await window._setDoc(window._doc(window._db, 'hc_records', rec.id), rec);
-  } catch(e){
-    console.error('Save record error:', e);
-    alert('❌ บันทึกข้อมูลไม่สำเร็จ: ' + e.message);
-  }
+const MONTHS_TH=['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+
+function initDOBDropdowns(dayId,monthId,yearId){
+  const dayEl=document.getElementById(dayId),monthEl=document.getElementById(monthId),yearEl=document.getElementById(yearId);
+  dayEl.innerHTML='<option value="">วัน</option>';for(let d=1;d<=31;d++)dayEl.innerHTML+='<option value="'+d+'">'+d+'</option>';
+  monthEl.innerHTML='<option value="">เดือน</option>';MONTHS_TH.forEach((m,i)=>monthEl.innerHTML+='<option value="'+(i+1)+'">'+m+'</option>');
+  yearEl.innerHTML='<option value="">ปี พ.ศ.</option>';const curBE=new Date().getFullYear()+543;for(let y=curBE;y>=curBE-100;y--)yearEl.innerHTML+='<option value="'+y+'">'+y+'</option>';
 }
+function getDOBValue(d,m,y){const dv=document.getElementById(d).value,mv=document.getElementById(m).value,yv=document.getElementById(y).value;if(!dv||!mv||!yv)return'';return yv+'-'+String(mv).padStart(2,'0')+'-'+String(dv).padStart(2,'0');}
+function dobToDisplay(val){if(!val)return'-';const p=val.split('-');if(p.length<3)return val;return parseInt(p[2])+' '+MONTHS_TH[parseInt(p[1])-1]+' '+p[0];}
 
-async function updateRecordInFirebase(rec){
-  try {
-    await window._setDoc(window._doc(window._db, 'hc_records', rec.id), rec);
-  } catch(e){
-    console.error('Update record error:', e);
-  }
-}
-
-async function saveAdmins(){
-  try {
-    for(const a of admins){
-      await window._setDoc(window._doc(window._db, 'hc_admins', a.username), a);
-    }
-  } catch(e){ console.error('Save admins error:', e); }
-}
-
-async function deleteAdminFromFirebase(username){
-  try {
-    await window._deleteDoc(window._doc(window._db, 'hc_admins', username));
-  } catch(e){ console.error('Delete admin error:', e); }
-}
-
-// ======= DOB =======
-const MONTHS_TH = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
-
-function initDOBDropdowns(dayId, monthId, yearId){
-  const dayEl = document.getElementById(dayId);
-  const monthEl = document.getElementById(monthId);
-  const yearEl = document.getElementById(yearId);
-  dayEl.innerHTML = '<option value="">วัน</option>';
-  for(let d=1;d<=31;d++) dayEl.innerHTML += '<option value="'+d+'">'+d+'</option>';
-  monthEl.innerHTML = '<option value="">เดือน</option>';
-  MONTHS_TH.forEach(function(m,i){ monthEl.innerHTML += '<option value="'+(i+1)+'">'+m+'</option>'; });
-  yearEl.innerHTML = '<option value="">ปี พ.ศ.</option>';
-  const curBE = new Date().getFullYear()+543;
-  for(let y=curBE;y>=curBE-100;y--) yearEl.innerHTML += '<option value="'+y+'">'+y+'</option>';
-}
-
-function getDOBValue(dayId, monthId, yearId){
-  const d = document.getElementById(dayId).value;
-  const m = document.getElementById(monthId).value;
-  const y = document.getElementById(yearId).value;
-  if(!d||!m||!y) return '';
-  return y+'-'+String(m).padStart(2,'0')+'-'+String(d).padStart(2,'0');
-}
-
-function setDOBValue(dayId, monthId, yearId, val){
-  if(!val) return;
-  const parts = val.split('-');
-  if(parts.length<3) return;
-  document.getElementById(yearId).value = parts[0];
-  document.getElementById(monthId).value = parseInt(parts[1]).toString();
-  document.getElementById(dayId).value = parseInt(parts[2]).toString();
-}
-
-function dobToDisplay(val){
-  if(!val) return '-';
-  const parts = val.split('-');
-  if(parts.length<3) return val;
-  return parseInt(parts[2])+' '+MONTHS_TH[parseInt(parts[1])-1]+' '+parts[0];
-}
-
-// ======= NAV =======
 function showPage(p){
-  ['home','register','login','result','success','admin','manage-admins'].forEach(function(x){
-    document.getElementById('page-'+x).classList.add('hidden');
-  });
+  ['home','register','login','result','success','admin','manage-admins'].forEach(x=>document.getElementById('page-'+x).classList.add('hidden'));
   document.getElementById('page-'+p).classList.remove('hidden');
-  if(p==='register'){ initQ(); goStep(1,true); initDOBDropdowns('f-dob-day','f-dob-month','f-dob-year'); }
-  if(p==='login'){ initDOBDropdowns('login-dob-day','login-dob-month','login-dob-year'); }
-  if(p==='admin'){ renderAdmin(); document.getElementById('admin-logged-as').textContent = currentAdmin?'เข้าสู่ระบบในฐานะ: '+currentAdmin.name:''; }
-  if(p==='manage-admins') renderAdminList();
+  if(p==='register'){initQ();goStep(1,true);initDOBDropdowns('f-dob-day','f-dob-month','f-dob-year');}
+  if(p==='login'){initDOBDropdowns('login-dob-day','login-dob-month','login-dob-year');}
+  if(p==='admin'){renderAdmin();document.getElementById('admin-logged-as').textContent=currentAdmin?'เข้าสู่ระบบในฐานะ: '+currentAdmin.name:'';}
+  if(p==='manage-admins')renderAdminList();
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
-// ======= ADMIN LOGIN =======
-function showAdminLogin(){
-  document.getElementById('admin-login-user').value='';
-  document.getElementById('admin-login-pass').value='';
-  document.getElementById('admin-login-error').classList.add('hidden');
-  document.getElementById('modal-admin-login').classList.remove('hidden');
-  setTimeout(function(){ document.getElementById('admin-login-user').focus(); },100);
-}
-function closeAdminLogin(){ document.getElementById('modal-admin-login').classList.add('hidden'); }
+function showAdminLogin(){document.getElementById('admin-login-user').value='';document.getElementById('admin-login-pass').value='';document.getElementById('admin-login-error').classList.add('hidden');document.getElementById('modal-admin-login').classList.remove('hidden');setTimeout(()=>document.getElementById('admin-login-user').focus(),100);}
+function closeAdminLogin(){document.getElementById('modal-admin-login').classList.add('hidden');}
 function doAdminLogin(){
-  const u = document.getElementById('admin-login-user').value.trim();
-  const p = document.getElementById('admin-login-pass').value;
-  const found = admins.find(function(a){ return a.username===u && a.password===p; });
-  if(found){
-    currentAdmin = found;
-    closeAdminLogin();
-    showPage('admin');
-  } else {
-    document.getElementById('admin-login-error').textContent = 'Username หรือ Password ไม่ถูกต้อง';
-    document.getElementById('admin-login-error').classList.remove('hidden');
-  }
+  const u=document.getElementById('admin-login-user').value.trim(),p=document.getElementById('admin-login-pass').value;
+  const found=admins.find(a=>a.username===u&&a.password===p);
+  if(found){currentAdmin=found;closeAdminLogin();showPage('admin');}
+  else{document.getElementById('admin-login-error').textContent='Username หรือ Password ไม่ถูกต้อง';document.getElementById('admin-login-error').classList.remove('hidden');}
 }
 
-// ======= MANAGE ADMINS =======
 function renderAdminList(){
-  const tbody = document.getElementById('admin-list-tbody');
-  tbody.innerHTML = admins.map(function(a,i){
-    return '<tr style="border-bottom:1px solid #f3f4f6;">'
-      +'<td style="padding:10px 12px;font-size:13px;">'+a.name+'</td>'
-      +'<td style="padding:10px 12px;font-size:13px;font-weight:600;">'+a.username+'</td>'
-      +'<td style="padding:10px 12px;font-size:13px;text-align:center;">'+(a.isDefault?'<span style="background:#ede9fe;color:#7c3aed;padding:2px 10px;border-radius:20px;font-size:12px;font-weight:600;">ค่าเริ่มต้น</span>':'<span style="background:#e0f2fe;color:#0369a1;padding:2px 10px;border-radius:20px;font-size:12px;font-weight:600;">เพิ่มเอง</span>')+'</td>'
-      +'<td style="padding:10px 12px;text-align:center;">'
-      +(a.username===currentAdmin.username?'<span style="color:#9ca3af;font-size:12px;">(ตัวเอง)</span>'
-        :'<button onclick="deleteAdmin('+i+')" style="background:#fee2e2;color:#dc2626;border:none;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;">ลบ</button>')
-      +'</td></tr>';
-  }).join('');
+  document.getElementById('admin-list-tbody').innerHTML=admins.map((a,i)=>'<tr style="border-bottom:1px solid #f3f4f6;"><td style="padding:10px 12px;font-size:13px;">'+a.name+'</td><td style="padding:10px 12px;font-size:13px;font-weight:600;">'+a.username+'</td><td style="padding:10px 12px;font-size:13px;text-align:center;">'+(a.isDefault?'<span style="background:#ede9fe;color:#7c3aed;padding:2px 10px;border-radius:20px;font-size:12px;font-weight:600;">ค่าเริ่มต้น</span>':'<span style="background:#e0f2fe;color:#0369a1;padding:2px 10px;border-radius:20px;font-size:12px;font-weight:600;">เพิ่มเอง</span>')+'</td><td style="padding:10px 12px;text-align:center;">'+(a.username===currentAdmin.username?'<span style="color:#9ca3af;font-size:12px;">(ตัวเอง)</span>':'<button onclick="deleteAdmin('+i+')" style="background:#fee2e2;color:#dc2626;border:none;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;">ลบ</button>')+'</td></tr>').join('');
 }
 
 function addAdmin(){
-  const name = document.getElementById('new-admin-name').value.trim();
-  const user = document.getElementById('new-admin-user').value.trim();
-  const pass = document.getElementById('new-admin-pass').value;
-  const errEl = document.getElementById('add-admin-error');
-  if(!name||!user||!pass){ errEl.textContent='กรุณากรอกข้อมูลให้ครบ'; errEl.classList.remove('hidden'); return; }
-  if(admins.find(function(a){ return a.username===user; })){ errEl.textContent='Username นี้มีอยู่แล้ว'; errEl.classList.remove('hidden'); return; }
+  const name=document.getElementById('new-admin-name').value.trim(),user=document.getElementById('new-admin-user').value.trim(),pass=document.getElementById('new-admin-pass').value;
+  const errEl=document.getElementById('add-admin-error');
+  if(!name||!user||!pass){errEl.textContent='กรุณากรอกข้อมูลให้ครบ';errEl.classList.remove('hidden');return;}
+  if(admins.find(a=>a.username===user)){errEl.textContent='Username นี้มีอยู่แล้ว';errEl.classList.remove('hidden');return;}
   errEl.classList.add('hidden');
-  const newAdmin = {name:name, username:user, password:pass, isDefault:false};
-  admins.push(newAdmin);
-  saveAdmins();
-  document.getElementById('new-admin-name').value='';
-  document.getElementById('new-admin-user').value='';
-  document.getElementById('new-admin-pass').value='';
+  const newAdmin={name,username:user,password:pass,isDefault:false};
+  admins.push(newAdmin);saveAdmins();
+  document.getElementById('new-admin-name').value='';document.getElementById('new-admin-user').value='';document.getElementById('new-admin-pass').value='';
   renderAdminList();
 }
+function deleteAdmin(i){if(!confirm('ยืนยันการลบแอดมิน "'+admins[i].name+'" ?'))return;const u=admins[i].username;admins.splice(i,1);deleteAdminFromFirebase(u);saveAdmins();renderAdminList();}
 
-function deleteAdmin(i){
-  if(!confirm('ยืนยันการลบแอดมิน "'+admins[i].name+'" ?')) return;
-  const username = admins[i].username;
-  admins.splice(i,1);
-  deleteAdminFromFirebase(username);
-  saveAdmins();
-  renderAdminList();
-}
-
-// ======= STEP =======
-function goStep(n, force){
-  if(!force && n>1 && !validateStep(n-1)) return;
-  [1,2,3,4].forEach(function(i){
+function goStep(n,force){
+  if(!force&&n>1&&!validateStep(n-1))return;
+  [1,2,3,4].forEach(i=>{
     document.getElementById('step'+i).classList.add('hidden');
-    const sd=document.getElementById('sd'+i);
-    const sl=document.getElementById('sl'+i);
+    const sd=document.getElementById('sd'+i),sl=document.getElementById('sl'+i);
     if(i<n){sd.className='sdot done';sd.innerHTML='✓';sl.style.color='#16a34a';}
     else if(i===n){sd.className='sdot active';sd.textContent=i;sl.style.color='#1d4ed8';sl.style.fontWeight='700';}
     else{sd.className='sdot pending';sd.textContent=i;sl.style.color='#9ca3af';sl.style.fontWeight='400';}
@@ -764,50 +878,26 @@ function goStep(n, force){
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
-// ======= VALIDATE =======
 function validateStep(n){
   if(n===1){
     const req=['f-prefix','f-fname','f-lname','f-idcard','f-gender','f-unit','f-right'];
     let ok=true;
-    req.forEach(function(id){
-      const el=document.getElementById(id);
-      if(!el.value.trim()){el.classList.add('err');ok=false;}else el.classList.remove('err');
-    });
-    const dobVal = getDOBValue('f-dob-day','f-dob-month','f-dob-year');
-    if(!dobVal){
-      ['f-dob-day','f-dob-month','f-dob-year'].forEach(function(id){document.getElementById(id).classList.add('err');});
-      ok=false;
-    } else {
-      ['f-dob-day','f-dob-month','f-dob-year'].forEach(function(id){document.getElementById(id).classList.remove('err');});
-    }
+    req.forEach(id=>{const el=document.getElementById(id);if(!el.value.trim()){el.classList.add('err');ok=false;}else el.classList.remove('err');});
+    const dobVal=getDOBValue('f-dob-day','f-dob-month','f-dob-year');
+    if(!dobVal){['f-dob-day','f-dob-month','f-dob-year'].forEach(id=>document.getElementById(id).classList.add('err'));ok=false;}
+    else['f-dob-day','f-dob-month','f-dob-year'].forEach(id=>document.getElementById(id).classList.remove('err'));
     if(!ok){alert('กรุณากรอกข้อมูลที่มีเครื่องหมาย * ให้ครบ');return false;}
     const id=document.getElementById('f-idcard').value;
-    if(id.length!==13){
-      document.getElementById('f-idcard').classList.add('err');
-      document.getElementById('id-hint').style.color='#ef4444';
-      document.getElementById('id-hint').textContent='❌ เลขบัตรประชาชนต้องครบ 13 หลัก';
-      alert('เลขบัตรประชาชนต้องครบ 13 หลัก');return false;
-    }
-    document.getElementById('id-hint').style.color='#16a34a';
-    document.getElementById('id-hint').textContent='✓ เลขบัตรประชาชนถูกต้อง';
+    if(id.length!==13){document.getElementById('f-idcard').classList.add('err');document.getElementById('id-hint').style.color='#ef4444';document.getElementById('id-hint').textContent='❌ เลขบัตรประชาชนต้องครบ 13 หลัก';alert('เลขบัตรประชาชนต้องครบ 13 หลัก');return false;}
+    document.getElementById('id-hint').style.color='#16a34a';document.getElementById('id-hint').textContent='✓ เลขบัตรประชาชนถูกต้อง';
   }
-  if(n===2){
-    if(!document.getElementById('f-weight').value||!document.getElementById('f-height').value){
-      alert('กรุณากรอกน้ำหนักและส่วนสูง');return false;
-    }
-  }
-  if(n===3){
-    if(!document.querySelector('input[name="ncd-none"]:checked')){
-      alert('กรุณาเลือกว่ามีหรือไม่มีโรคประจำตัว');return false;
-    }
-  }
+  if(n===2){if(!document.getElementById('f-weight').value||!document.getElementById('f-height').value){alert('กรุณากรอกน้ำหนักและส่วนสูง');return false;}}
+  if(n===3){if(!document.querySelector('input[name="ncd-none"]:checked')){alert('กรุณาเลือกว่ามีหรือไม่มีโรคประจำตัว');return false;}}
   return true;
 }
 
-// ======= BMI =======
 function calcBMI(){
-  const w=parseFloat(document.getElementById('f-weight').value);
-  const h=parseFloat(document.getElementById('f-height').value);
+  const w=parseFloat(document.getElementById('f-weight').value),h=parseFloat(document.getElementById('f-height').value);
   if(w>0&&h>0){
     const bmi=(w/((h/100)**2)).toFixed(1);
     document.getElementById('f-bmi').value=bmi;
@@ -820,184 +910,91 @@ function calcBMI(){
     document.getElementById('bmi-result').innerHTML='<span style="color:'+color+'">● BMI '+bmi+': '+txt+'</span>';
   }
 }
-function toggleNCD(show){
-  document.getElementById('ncd-options').classList.toggle('hidden',!show);
-  document.getElementById('medicine-section').classList.toggle('hidden',!show);
-}
+function toggleNCD(show){document.getElementById('ncd-options').classList.toggle('hidden',!show);document.getElementById('medicine-section').classList.toggle('hidden',!show);}
 function checkAddictions(){
-  const s=parseInt(document.getElementById('f-smoke').value);
-  const a=parseInt(document.getElementById('f-alcohol').value);
+  const s=parseInt(document.getElementById('f-smoke').value),a=parseInt(document.getElementById('f-alcohol').value);
   document.getElementById('smoke-assess').classList.toggle('hidden',s<2);
   document.getElementById('alcohol-assess').classList.toggle('hidden',a<2);
 }
 
-// ======= 9Q & 8Q =======
-const q9List=[
-  'เบื่อหน่าย หมดความสนใจในสิ่งที่เคยสนใจ หรือทำแล้วไม่มีความสุขเหมือนเดิม',
-  'รู้สึกหดหู่ เศร้า หรือสิ้นหวัง','นอนหลับยาก หลับๆ ตื่นๆ หรือนอนมากเกินไป',
-  'รู้สึกเหนื่อยล้า หมดแรง','เบื่ออาหาร หรือกินมากเกินไป',
-  'รู้สึกไม่ดีกับตัวเอง คิดว่าตัวเองล้มเหลว หรือเป็นภาระคนอื่น',
-  'มีความยากลำบากในการจดจ่อกับสิ่งที่ทำ เช่น อ่านหนังสือ หรือดูโทรทัศน์',
-  'พูดช้า เคลื่อนไหวช้าจนคนอื่นสังเกตเห็น หรือกระสับกระส่าย ไม่อยู่นิ่ง',
-  'มีความคิดทำร้ายตัวเองหรืออยากตาย'
-];
+const q9List=['เบื่อหน่าย หมดความสนใจในสิ่งที่เคยสนใจ หรือทำแล้วไม่มีความสุขเหมือนเดิม','รู้สึกหดหู่ เศร้า หรือสิ้นหวัง','นอนหลับยาก หลับๆ ตื่นๆ หรือนอนมากเกินไป','รู้สึกเหนื่อยล้า หมดแรง','เบื่ออาหาร หรือกินมากเกินไป','รู้สึกไม่ดีกับตัวเอง คิดว่าตัวเองล้มเหลว หรือเป็นภาระคนอื่น','มีความยากลำบากในการจดจ่อกับสิ่งที่ทำ เช่น อ่านหนังสือ หรือดูโทรทัศน์','พูดช้า เคลื่อนไหวช้าจนคนอื่นสังเกตเห็น หรือกระสับกระส่าย ไม่อยู่นิ่ง','มีความคิดทำร้ายตัวเองหรืออยากตาย'];
 const q9Opts=['ไม่เลย (0)','บางวัน (1)','บ่อยกว่าครึ่งของเวลาที่ผ่านมา (2)','แทบทุกวัน (3)'];
-const q8List=[
-  'คิดอยากตาย หรืออยากให้ตัวเองหายไป','อยากทำร้ายตัวเอง',
-  'คิดเกี่ยวกับการฆ่าตัวตาย','มีแผนที่จะฆ่าตัวตาย',
-  'เตรียมการจะฆ่าตัวตาย ตั้งใจให้ตายจริงๆ','ทำให้ตนเองบาดเจ็บ แต่ตั้งใจให้ตาย',
-  'พยายามฆ่าตัวตาย ตั้งใจให้ตาย','ตลอดชีวิตเคยพยายามฆ่าตัวตาย'
-];
+const q8List=['คิดอยากตาย หรืออยากให้ตัวเองหายไป','อยากทำร้ายตัวเอง','คิดเกี่ยวกับการฆ่าตัวตาย','มีแผนที่จะฆ่าตัวตาย','เตรียมการจะฆ่าตัวตาย ตั้งใจให้ตายจริงๆ','ทำให้ตนเองบาดเจ็บ แต่ตั้งใจให้ตาย','พยายามฆ่าตัวตาย ตั้งใจให้ตาย','ตลอดชีวิตเคยพยายามฆ่าตัวตาย'];
 
 function initQ(){
-  document.getElementById('q9-container').innerHTML = q9List.map(function(q,i){
-    return '<div style="border:1px solid #bbf7d0;border-radius:8px;padding:10px 12px;background:white;">'
-      +'<p style="font-size:13px;font-weight:600;color:#374151;margin:0 0 8px;">'+(i+1)+'. '+q+'</p>'
-      +'<div style="display:flex;gap:8px;flex-wrap:wrap;">'
-      +q9Opts.map(function(opt,v){
-        return '<label style="display:flex;align-items:center;gap:5px;cursor:pointer;padding:5px 10px;border:1.5px solid #d1d5db;border-radius:7px;font-size:13px;" class="q9-opt">'
-          +'<input type="radio" name="q9_'+i+'" value="'+v+'" onchange="updateQ9Score()" style="accent-color:#1d4ed8;"> '+opt+'</label>';
-      }).join('')+'</div></div>';
-  }).join('');
-  document.getElementById('q8-container').innerHTML = q8List.map(function(q,i){
-    return '<div style="border:1px solid #fecdd3;border-radius:8px;padding:10px 12px;background:white;">'
-      +'<p style="font-size:13px;font-weight:600;color:#374151;margin:0 0 8px;">'+(i+1)+'. '+q+'</p>'
-      +'<div style="display:flex;gap:10px;">'
-      +'<label style="display:flex;align-items:center;gap:5px;cursor:pointer;padding:5px 12px;border:1.5px solid #d1d5db;border-radius:7px;font-size:13px;" class="q9-opt"><input type="radio" name="q8_'+i+'" value="0" onchange="updateQ8Score()" style="accent-color:#1d4ed8;"> ไม่มี</label>'
-      +'<label style="display:flex;align-items:center;gap:5px;cursor:pointer;padding:5px 12px;border:1.5px solid #d1d5db;border-radius:7px;font-size:13px;" class="q9-opt"><input type="radio" name="q8_'+i+'" value="1" onchange="updateQ8Score()" style="accent-color:#dc2626;"> มี</label>'
-      +'</div></div>';
-  }).join('');
+  document.getElementById('q9-container').innerHTML=q9List.map((q,i)=>'<div style="border:1px solid #bbf7d0;border-radius:8px;padding:10px 12px;background:white;"><p style="font-size:13px;font-weight:600;color:#374151;margin:0 0 8px;">'+(i+1)+'. '+q+'</p><div style="display:flex;gap:8px;flex-wrap:wrap;">'+q9Opts.map((opt,v)=>'<label style="display:flex;align-items:center;gap:5px;cursor:pointer;padding:5px 10px;border:1.5px solid #d1d5db;border-radius:7px;font-size:13px;" class="q9-opt"><input type="radio" name="q9_'+i+'" value="'+v+'" onchange="updateQ9Score()" style="accent-color:#1d4ed8;"> '+opt+'</label>').join('')+'</div></div>').join('');
+  document.getElementById('q8-container').innerHTML=q8List.map((q,i)=>'<div style="border:1px solid #fecdd3;border-radius:8px;padding:10px 12px;background:white;"><p style="font-size:13px;font-weight:600;color:#374151;margin:0 0 8px;">'+(i+1)+'. '+q+'</p><div style="display:flex;gap:10px;"><label style="display:flex;align-items:center;gap:5px;cursor:pointer;padding:5px 12px;border:1.5px solid #d1d5db;border-radius:7px;font-size:13px;" class="q9-opt"><input type="radio" name="q8_'+i+'" value="0" onchange="updateQ8Score()" style="accent-color:#1d4ed8;"> ไม่มี</label><label style="display:flex;align-items:center;gap:5px;cursor:pointer;padding:5px 12px;border:1.5px solid #d1d5db;border-radius:7px;font-size:13px;" class="q9-opt"><input type="radio" name="q8_'+i+'" value="1" onchange="updateQ8Score()" style="accent-color:#dc2626;"> มี</label></div></div>').join('');
 }
 
-function updateQ9Score(){
-  let s=0;
-  for(let i=0;i<9;i++){const r=document.querySelector('input[name="q9_'+i+'"]:checked');if(r)s+=parseInt(r.value);}
-  const bar=document.getElementById('q9-score-bar');
-  let txt='',bg='',color='';
-  if(s<=6){txt='คะแนน 9Q: '+s+' — ซึมเศร้าเล็กน้อย';bg='#dcfce7';color='#166534';}
-  else if(s<=12){txt='คะแนน 9Q: '+s+' — ซึมเศร้าน้อย';bg='#fef9c3';color='#854d0e';}
-  else if(s<=18){txt='คะแนน 9Q: '+s+' — ซึมเศร้าปานกลาง';bg='#fed7aa';color='#c2410c';}
-  else{txt='คะแนน 9Q: '+s+' — ซึมเศร้ารุนแรง';bg='#fee2e2';color='#991b1b';}
-  bar.style.background=bg;bar.style.color=color;bar.textContent=txt;bar.classList.remove('hidden');
-}
+function updateQ9Score(){let s=0;for(let i=0;i<9;i++){const r=document.querySelector('input[name="q9_'+i+'"]:checked');if(r)s+=parseInt(r.value);}const bar=document.getElementById('q9-score-bar');let txt='',bg='',color='';if(s<=6){txt='คะแนน 9Q: '+s+' — ซึมเศร้าเล็กน้อย';bg='#dcfce7';color='#166534';}else if(s<=12){txt='คะแนน 9Q: '+s+' — ซึมเศร้าน้อย';bg='#fef9c3';color='#854d0e';}else if(s<=18){txt='คะแนน 9Q: '+s+' — ซึมเศร้าปานกลาง';bg='#fed7aa';color='#c2410c';}else{txt='คะแนน 9Q: '+s+' — ซึมเศร้ารุนแรง';bg='#fee2e2';color='#991b1b';}bar.style.background=bg;bar.style.color=color;bar.textContent=txt;bar.classList.remove('hidden');}
+function updateQ8Score(){let s=0;for(let i=0;i<8;i++){const r=document.querySelector('input[name="q8_'+i+'"]:checked');if(r)s+=parseInt(r.value);}const bar=document.getElementById('q8-score-bar');let txt='',bg='',color='';if(s===0){txt='คะแนน 8Q: '+s+' — ไม่มีแนวโน้มฆ่าตัวตาย';bg='#dcfce7';color='#166534';}else if(s<=8){txt='คะแนน 8Q: '+s+' — มีแนวโน้มระดับน้อย';bg='#fef9c3';color='#854d0e';}else if(s<=16){txt='คะแนน 8Q: '+s+' — มีแนวโน้มระดับปานกลาง';bg='#fed7aa';color='#c2410c';}else{txt='คะแนน 8Q: '+s+' — มีแนวโน้มระดับรุนแรง';bg='#fee2e2';color='#991b1b';}bar.style.background=bg;bar.style.color=color;bar.textContent=txt;bar.classList.remove('hidden');}
 
-function updateQ8Score(){
-  let s=0;
-  for(let i=0;i<8;i++){const r=document.querySelector('input[name="q8_'+i+'"]:checked');if(r)s+=parseInt(r.value);}
-  const bar=document.getElementById('q8-score-bar');
-  let txt='',bg='',color='';
-  if(s===0){txt='คะแนน 8Q: '+s+' — ไม่มีแนวโน้มฆ่าตัวตาย';bg='#dcfce7';color='#166534';}
-  else if(s<=8){txt='คะแนน 8Q: '+s+' — มีแนวโน้มระดับน้อย';bg='#fef9c3';color='#854d0e';}
-  else if(s<=16){txt='คะแนน 8Q: '+s+' — มีแนวโน้มระดับปานกลาง';bg='#fed7aa';color='#c2410c';}
-  else{txt='คะแนน 8Q: '+s+' — มีแนวโน้มระดับรุนแรง';bg='#fee2e2';color='#991b1b';}
-  bar.style.background=bg;bar.style.color=color;bar.textContent=txt;bar.classList.remove('hidden');
-}
-
-// ======= SUBMIT =======
 function submitForm(){
-  let q9=0;
-  for(let i=0;i<9;i++){const r=document.querySelector('input[name="q9_'+i+'"]:checked');if(r)q9+=parseInt(r.value);}
-  let q8=0;
-  for(let i=0;i<8;i++){const r=document.querySelector('input[name="q8_'+i+'"]:checked');if(r)q8+=parseInt(r.value);}
-  const ncds=[];
-  if(document.getElementById('ncd-yes').checked){
-    [1,2,3,4].forEach(function(n){if(document.getElementById('ncd'+n).checked)ncds.push(n);});
-  }
+  let q9=0;for(let i=0;i<9;i++){const r=document.querySelector('input[name="q9_'+i+'"]:checked');if(r)q9+=parseInt(r.value);}
+  let q8=0;for(let i=0;i<8;i++){const r=document.querySelector('input[name="q8_'+i+'"]:checked');if(r)q8+=parseInt(r.value);}
+  const ncds=[];if(document.getElementById('ncd-yes').checked)[1,2,3,4].forEach(n=>{if(document.getElementById('ncd'+n).checked)ncds.push(n);});
   const hasNCD=document.getElementById('ncd-yes').checked;
   const medEl=document.querySelector('input[name="medicine"]:checked');
   const smoke=parseInt(document.getElementById('f-smoke').value);
-  let fagScore=0;
-  if(smoke>=2){['fag1','fag2','fag3'].forEach(function(id){fagScore+=parseInt(document.getElementById(id).value||0);});}
+  let fagScore=0;if(smoke>=2)['fag1','fag2','fag3'].forEach(id=>fagScore+=parseInt(document.getElementById(id).value||0));
   const alc=parseInt(document.getElementById('f-alcohol').value);
-  let auditScore=0;
-  if(alc>=2){['audit1','audit2','audit3'].forEach(function(id){auditScore+=parseInt(document.getElementById(id).value||0);});}
-  let colorGroup='green';
-  if(q8>0||q9>=13) colorGroup='red';
-  else if(q9>=7) colorGroup='yellow';
-  const dobVal = getDOBValue('f-dob-day','f-dob-month','f-dob-year');
-  const beYear = dobVal ? parseInt(dobVal.split('-')[0]) : null;
-  const ceYear = beYear ? beYear-543 : null;
-  const age = ceYear ? new Date().getFullYear()-ceYear : '-';
+  let auditScore=0;if(alc>=2)['audit1','audit2','audit3'].forEach(id=>auditScore+=parseInt(document.getElementById(id).value||0));
+  let colorGroup='green';if(q8>0||q9>=13)colorGroup='red';else if(q9>=7)colorGroup='yellow';
+  const dobVal=getDOBValue('f-dob-day','f-dob-month','f-dob-year');
+  const beYear=dobVal?parseInt(dobVal.split('-')[0]):null;
+  const ceYear=beYear?beYear-543:null;
+  const age=ceYear?new Date().getFullYear()-ceYear:'-';
   const rec={
-    id:Date.now().toString(),
-    savedAt:new Date().toLocaleString('th-TH'),
+    id:Date.now().toString(),savedAt:new Date().toLocaleString('th-TH'),
     prefix:document.getElementById('f-prefix').value.trim(),
     fname:document.getElementById('f-fname').value.trim(),
     lname:document.getElementById('f-lname').value.trim(),
     idcard:document.getElementById('f-idcard').value.trim(),
-    dob:dobVal, age, gender:document.getElementById('f-gender').value,
+    dob:dobVal,age,gender:document.getElementById('f-gender').value,
     hn:document.getElementById('f-hn').value.trim(),
     unit:document.getElementById('f-unit').value.trim(),
     position:document.getElementById('f-position').value.trim(),
     attach:document.getElementById('f-attach').value.trim(),
     right:document.getElementById('f-right').value,
-    weight:document.getElementById('f-weight').value,
-    height:document.getElementById('f-height').value,
-    bmi:document.getElementById('f-bmi').value,
-    waist:document.getElementById('f-waist').value,
-    smoke, alcohol:alc,
-    exercise:parseInt(document.getElementById('f-exercise').value),
-    fagScore, auditScore, hasNCD, ncds,
+    weight:document.getElementById('f-weight').value,height:document.getElementById('f-height').value,
+    bmi:document.getElementById('f-bmi').value,waist:document.getElementById('f-waist').value,
+    smoke,alcohol:alc,exercise:parseInt(document.getElementById('f-exercise').value),
+    fagScore,auditScore,hasNCD,ncds,
     otherDisease:hasNCD?document.getElementById('f-other-disease').value.trim():'',
-    medicine:hasNCD&&medEl?medEl.value:'0',
-    q9, q8, colorGroup
+    medicine:hasNCD&&medEl?medEl.value:'0',q9,q8,colorGroup
   };
-  records.push(rec);
-  saveRecordToFirebase(rec);
-  lastId=rec.id;
-  showPage('success');
+  records.push(rec);saveRecordToFirebase(rec);lastId=rec.id;showPage('success');
 }
 
-function viewOwnResult(){
-  const r=records.find(function(x){return x.id===lastId;});
-  if(r){currentRecord=r;renderResult(r);showPage('result');}
-}
+function viewOwnResult(){const r=records.find(x=>x.id===lastId);if(r){currentRecord=r;renderResult(r);showPage('result');}}
 
-// ======= LOGIN =======
 function doLogin(){
   const id=document.getElementById('login-id').value.trim();
   const dobVal=getDOBValue('login-dob-day','login-dob-month','login-dob-year');
   const errEl=document.getElementById('login-error');
   if(!dobVal){errEl.textContent='กรุณาเลือกวันเกิดให้ครบ';errEl.classList.remove('hidden');return;}
-  const found=records.filter(function(x){return x.idcard===id&&x.dob===dobVal;});
-  if(found.length){
-    errEl.classList.add('hidden');
-    currentRecord=found[found.length-1];
-    renderResult(currentRecord);
-    showPage('result');
-  } else {
-    errEl.textContent='ไม่พบข้อมูล หรือเลขบัตร/วันเกิดไม่ถูกต้อง กรุณาตรวจสอบอีกครั้ง';
-    errEl.classList.remove('hidden');
-  }
+  const found=records.filter(x=>x.idcard===id&&x.dob===dobVal);
+  if(found.length){errEl.classList.add('hidden');currentRecord=found[found.length-1];renderResult(currentRecord);showPage('result');}
+  else{errEl.textContent='ไม่พบข้อมูล หรือเลขบัตร/วันเกิดไม่ถูกต้อง';errEl.classList.remove('hidden');}
 }
 
-// ======= RENDER RESULT =======
+/* ════ renderResult ════ */
 function renderResult(r){
   document.getElementById('result-name-hd').textContent=r.prefix+' '+r.fname+' '+r.lname+' | '+r.unit+' | บันทึกเมื่อ: '+r.savedAt;
   const bmi=parseFloat(r.bmi);
   const ncdNames=['ความดันโลหิตสูง','เบาหวาน','โรคหัวใจและหลอดเลือด','ไขมันในเลือดสูง'];
-  const ncdTxt=r.hasNCD&&r.ncds.length>0?r.ncds.map(function(n){return ncdNames[n-1];}).join(', '):'ไม่มีโรคประจำตัว';
+  const ncdTxt=r.hasNCD&&r.ncds.length>0?r.ncds.map(n=>ncdNames[n-1]).join(', '):'ไม่มีโรคประจำตัว';
   const smokeTxt=['ไม่เคยสูบ','เคยสูบ แต่เลิกแล้ว','สูบเป็นครั้งคราว','สูบเป็นประจำ'][r.smoke]||'-';
   const alcTxt=['ไม่เคยดื่ม','เคยดื่ม แต่เลิกแล้ว','ดื่มเป็นครั้งคราว','ดื่มเป็นประจำ'][r.alcohol]||'-';
   const exTxt=['ไม่ออกกำลังกาย','ออกกำลังกายต่ำกว่าเกณฑ์','ออกกำลังกายตามเกณฑ์'][r.exercise]||'-';
   const medTxt=r.hasNCD?(['','รับยาสม่ำเสมอ','รับยาไม่สม่ำเสมอ','ขาดยา'][r.medicine]||'ไม่ระบุ'):'ไม่มีโรคประจำตัว';
   const bmiTag=bmi<18.5?'tw':bmi<23?'tn':bmi<30?'tw':'ta';
-  const q9=parseInt(r.q9); const q8=parseInt(r.q8);
-  let q9Txt='',q9Tag='';
-  if(q9<=6){q9Txt='ซึมเศร้าเล็กน้อย';q9Tag='tn';}
-  else if(q9<=12){q9Txt='ซึมเศร้าน้อย';q9Tag='tw';}
-  else if(q9<=18){q9Txt='ซึมเศร้าปานกลาง';q9Tag='ta';}
-  else{q9Txt='ซึมเศร้ารุนแรง';q9Tag='ta';}
-  let q8Txt='',q8Tag='';
-  if(q8===0){q8Txt='ไม่มีแนวโน้ม';q8Tag='tn';}
-  else if(q8<=8){q8Txt='แนวโน้มน้อย';q8Tag='tw';}
-  else if(q8<=16){q8Txt='แนวโน้มปานกลาง';q8Tag='ta';}
-  else{q8Txt='แนวโน้มรุนแรง';q8Tag='ta';}
-  const colorBadge={
-    green:'<span style="background:#dcfce7;color:#166534;padding:4px 12px;border-radius:20px;font-weight:700;font-size:13px;">🟢 กลุ่มปกติ</span>',
-    yellow:'<span style="background:#fef9c3;color:#854d0e;padding:4px 12px;border-radius:20px;font-weight:700;font-size:13px;">🟡 กลุ่มเฝ้าระวัง</span>',
-    red:'<span style="background:#fee2e2;color:#991b1b;padding:4px 12px;border-radius:20px;font-weight:700;font-size:13px;">🔴 กลุ่มเสี่ยง</span>'
-  }[r.colorGroup]||'';
+  const q9=parseInt(r.q9),q8=parseInt(r.q8);
+  let q9Txt='',q9Tag='';if(q9<=6){q9Txt='ซึมเศร้าเล็กน้อย';q9Tag='tn';}else if(q9<=12){q9Txt='ซึมเศร้าน้อย';q9Tag='tw';}else if(q9<=18){q9Txt='ซึมเศร้าปานกลาง';q9Tag='ta';}else{q9Txt='ซึมเศร้ารุนแรง';q9Tag='ta';}
+  let q8Txt='',q8Tag='';if(q8===0){q8Txt='ไม่มีแนวโน้ม';q8Tag='tn';}else if(q8<=8){q8Txt='แนวโน้มน้อย';q8Tag='tw';}else if(q8<=16){q8Txt='แนวโน้มปานกลาง';q8Tag='ta';}else{q8Txt='แนวโน้มรุนแรง';q8Tag='ta';}
+  const colorBadge={green:'<span style="background:#dcfce7;color:#166534;padding:4px 12px;border-radius:20px;font-weight:700;font-size:13px;">🟢 กลุ่มปกติ</span>',yellow:'<span style="background:#fef9c3;color:#854d0e;padding:4px 12px;border-radius:20px;font-weight:700;font-size:13px;">🟡 กลุ่มเฝ้าระวัง</span>',red:'<span style="background:#fee2e2;color:#991b1b;padding:4px 12px;border-radius:20px;font-weight:700;font-size:13px;">🔴 กลุ่มเสี่ยง</span>'}[r.colorGroup]||'';
+  /* NCD Risk badge จากผล PDF */
+  const ncdRiskBadge=r.ncdRisk?{'high':'<span style="background:#FCEBEB;color:#791F1F;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;">🧬 NCDs เสี่ยงสูง</span>','medium':'<span style="background:#FAEEDA;color:#633806;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;">🧬 NCDs เสี่ยงปานกลาง</span>','low':'<span style="background:#EAF3DE;color:#27500A;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;">🧬 NCDs เสี่ยงต่ำ</span>'}[r.ncdRisk]||'':'';
   document.getElementById('result-content').innerHTML=
     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">'
     +'<div class="sc p-4"><h3 style="font-size:13px;font-weight:700;color:#374151;margin:0 0 10px;border-bottom:1px solid #e5e7eb;padding-bottom:6px;">👤 ข้อมูลส่วนตัว</h3>'
@@ -1025,8 +1022,9 @@ function renderResult(r){
     +'<tr><td style="color:#6b7280;padding:3px 0;">การรับยา</td><td>'+medTxt+'</td></tr>'
     +'</tbody></table></div>'
     +'<div class="sc p-4 mb-4">'
-    +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">'
-    +'<h3 style="font-size:13px;font-weight:700;color:#374151;margin:0;">🧠 ผลการประเมินสุขภาพจิต</h3>'+colorBadge+'</div>'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-bottom:12px;">'
+    +'<h3 style="font-size:13px;font-weight:700;color:#374151;margin:0;">🧠 ผลการประเมินสุขภาพจิต</h3>'
+    +'<div style="display:flex;gap:6px;flex-wrap:wrap;">'+colorBadge+ncdRiskBadge+'</div></div>'
     +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">'
     +'<div style="background:#f0fdf4;border-radius:10px;padding:14px;text-align:center;">'
     +'<div style="font-size:13px;color:#166534;font-weight:700;margin-bottom:6px;">📋 9Q (ซึมเศร้า)</div>'
@@ -1042,352 +1040,305 @@ function renderResult(r){
     +'<div style="font-size:11px;color:#6b7280;margin-top:8px;">0=ไม่มี | 1-8=น้อย | 9-16=ปานกลาง | 17-46=รุนแรง</div></div>'
     +'</div></div>';
 
-  // ════ แสดงผล Lab Module ถ้ามี PDF ════
-  const labSection = document.getElementById('lab-module-section');
-  const labContainer = document.getElementById('lab-result-container');
-  if(r.pdfData && window.LabModule){
+  /* ════ แสดงผล Lab Module ════ */
+  const labSection=document.getElementById('lab-module-section');
+  const labContainer=document.getElementById('lab-result-container');
+  if(r.pdfData&&window.LabModule){
     labSection.classList.remove('hidden');
-    labContainer.innerHTML = '<div style="padding:16px;text-align:center;color:#64748b;font-size:14px;">⏳ กำลังวิเคราะห์ผลตรวจเลือด...</div>';
-    const gender = r.gender === '1' ? 'M' : 'F';
-    window.LabModule.renderInto('lab-result-container', r.pdfData, gender);
-  } else {
+    const gender=r.gender==='1'?'M':'F';
+    window.LabModule.renderInto('lab-result-container',r.pdfData,gender);
+  }else{
     labSection.classList.add('hidden');
-    labContainer.innerHTML = '';
+    labContainer.innerHTML='';
   }
 }
 
-// ======= ADMIN RENDER =======
-let currentApptId = null;
+/* ════ Admin Render ════ */
+let currentApptId=null;
 
 function renderAdmin(){
   const total=records.length;
-  const q9high=records.filter(function(r){return parseInt(r.q9)>=13;}).length;
-  const q8pos=records.filter(function(r){return parseInt(r.q8)>0;}).length;
-  const attended=records.filter(function(r){return r.appointment&&r.appointment.attended;}).length;
+  const q9high=records.filter(r=>parseInt(r.q9)>=13).length;
+  const q8pos=records.filter(r=>parseInt(r.q8)>0).length;
+  const attended=records.filter(r=>r.appointment&&r.appointment.attended).length;
   document.getElementById('admin-stats').innerHTML=[
     ['ผู้เข้าตรวจทั้งหมด',total,'#1d4ed8','#eff6ff'],
     ['9Q ≥ 13 (ซึมเศร้า)',q9high,'#d97706','#fef9c3'],
     ['8Q > 0 (เสี่ยงฆ่าตัวตาย)',q8pos,'#dc2626','#fee2e2'],
     ['มาพบแพทย์ตามนัดแล้ว',attended,'#16a34a','#f0fdf4'],
-  ].map(function(x){
-    return '<div class="sc p-4" style="background:'+x[3]+';"><div style="font-size:12px;color:'+x[2]+';font-weight:600;">'+x[0]+'</div><div style="font-size:28px;font-weight:800;color:'+x[2]+';">'+x[1]+'</div></div>';
-  }).join('');
+  ].map(x=>'<div class="sc p-4" style="background:'+x[3]+';"><div style="font-size:12px;color:'+x[2]+';font-weight:600;">'+x[0]+'</div><div style="font-size:28px;font-weight:800;color:'+x[2]+';">'+x[1]+'</div></div>').join('');
 
+  /* โรคประจำตัว */
   const ncdNames=['ความดันโลหิตสูง','เบาหวาน','โรคหัวใจและหลอดเลือด','ไขมันในเลือดสูง'];
   const ncdColors=['#dc2626','#d97706','#be123c','#7c3aed'];
   const ncdCounts=[0,0,0,0];
   let medRegular=0,medIrregular=0,medMiss=0;
-  records.forEach(function(r){
-    if(r.hasNCD&&r.ncds){
-      r.ncds.forEach(function(n){if(n>=1&&n<=4)ncdCounts[n-1]++;});
-      const mv=parseInt(r.medicine);
-      if(mv===1)medRegular++;else if(mv===2)medIrregular++;else if(mv===3)medMiss++;
-    }
-  });
-  const otherDisease=records.filter(function(r){return r.otherDisease&&r.otherDisease.trim();}).length;
-  const diseaseEl=document.getElementById('disease-stats');
+  records.forEach(r=>{if(r.hasNCD&&r.ncds){r.ncds.forEach(n=>{if(n>=1&&n<=4)ncdCounts[n-1]++;});const mv=parseInt(r.medicine);if(mv===1)medRegular++;else if(mv===2)medIrregular++;else if(mv===3)medMiss++;}});
+  const otherDisease=records.filter(r=>r.otherDisease&&r.otherDisease.trim()).length;
   let dHtml='';
-  ncdNames.forEach(function(name,i){
-    const pct=total?Math.round(ncdCounts[i]/total*100):0;
-    dHtml+='<div style="display:flex;align-items:center;gap:8px;">'
-      +'<div style="font-size:12px;color:#374151;width:160px;flex-shrink:0;">'+name+'</div>'
-      +'<div style="flex:1;background:#f3f4f6;border-radius:99px;height:10px;overflow:hidden;">'
-      +'<div style="height:100%;background:'+ncdColors[i]+';border-radius:99px;width:'+pct+'%;transition:width .6s;"></div></div>'
-      +'<div style="font-size:12px;font-weight:700;color:'+ncdColors[i]+';width:28px;text-align:right;">'+ncdCounts[i]+'</div></div>';
-  });
-  if(otherDisease>0){
-    dHtml+='<div style="display:flex;align-items:center;gap:8px;">'
-      +'<div style="font-size:12px;color:#374151;width:160px;flex-shrink:0;">โรคอื่นๆ</div>'
-      +'<div style="flex:1;background:#f3f4f6;border-radius:99px;height:10px;overflow:hidden;">'
-      +'<div style="height:100%;background:#6b7280;border-radius:99px;width:'+(total?Math.round(otherDisease/total*100):0)+'%;transition:width .6s;"></div></div>'
-      +'<div style="font-size:12px;font-weight:700;color:#6b7280;width:28px;text-align:right;">'+otherDisease+'</div></div>';
-  }
-  dHtml+='<div style="margin-top:8px;padding-top:8px;border-top:1px solid #e5e7eb;display:flex;gap:12px;font-size:11px;color:#6b7280;">'
-    +'<span>💊 รับยาสม่ำเสมอ: <b style="color:#16a34a;">'+medRegular+'</b></span>'
-    +'<span>⚠️ ไม่สม่ำเสมอ: <b style="color:#d97706;">'+medIrregular+'</b></span>'
-    +'<span>❌ ขาดยา: <b style="color:#dc2626;">'+medMiss+'</b></span></div>';
-  diseaseEl.innerHTML=dHtml;
+  ncdNames.forEach((name,i)=>{const pct=total?Math.round(ncdCounts[i]/total*100):0;dHtml+='<div style="display:flex;align-items:center;gap:8px;"><div style="font-size:12px;color:#374151;width:160px;flex-shrink:0;">'+name+'</div><div style="flex:1;background:#f3f4f6;border-radius:99px;height:10px;overflow:hidden;"><div style="height:100%;background:'+ncdColors[i]+';border-radius:99px;width:'+pct+'%;transition:width .6s;"></div></div><div style="font-size:12px;font-weight:700;color:'+ncdColors[i]+';width:28px;text-align:right;">'+ncdCounts[i]+'</div></div>';});
+  if(otherDisease>0)dHtml+='<div style="display:flex;align-items:center;gap:8px;"><div style="font-size:12px;color:#374151;width:160px;flex-shrink:0;">โรคอื่นๆ</div><div style="flex:1;background:#f3f4f6;border-radius:99px;height:10px;overflow:hidden;"><div style="height:100%;background:#6b7280;border-radius:99px;width:'+(total?Math.round(otherDisease/total*100):0)+'%;"></div></div><div style="font-size:12px;font-weight:700;color:#6b7280;width:28px;text-align:right;">'+otherDisease+'</div></div>';
+  dHtml+='<div style="margin-top:8px;padding-top:8px;border-top:1px solid #e5e7eb;display:flex;gap:12px;font-size:11px;color:#6b7280;"><span>💊 สม่ำเสมอ: <b style="color:#16a34a;">'+medRegular+'</b></span><span>⚠️ ไม่สม่ำเสมอ: <b style="color:#d97706;">'+medIrregular+'</b></span><span>❌ ขาดยา: <b style="color:#dc2626;">'+medMiss+'</b></span></div>';
+  document.getElementById('disease-stats').innerHTML=dHtml;
 
-  const healthy=records.filter(function(r){return r.colorGroup==='green';}).length;
-  const atRisk=records.filter(function(r){return r.colorGroup==='yellow'&&(!r.appointment||r.appointment.type==='none');}).length;
-  const needDoctor=records.filter(function(r){return r.colorGroup==='red';}).length;
+  const healthy=records.filter(r=>r.colorGroup==='green').length;
+  const atRisk=records.filter(r=>r.colorGroup==='yellow'&&(!r.appointment||r.appointment.type==='none')).length;
+  const needDoctor=records.filter(r=>r.colorGroup==='red').length;
   document.getElementById('health-group-stats').innerHTML=[
     ['🟢 สุขภาพดี',healthy,'#dcfce7','#166534'],
     ['🟡 กลุ่มเสี่ยง*',atRisk,'#fef9c3','#854d0e'],
     ['🔴 พบแพทย์',needDoctor,'#fee2e2','#991b1b'],
-  ].map(function(x){
-    return '<div style="background:'+x[2]+';border-radius:10px;padding:10px;text-align:center;">'
-      +'<div style="font-size:11px;color:'+x[3]+';font-weight:600;margin-bottom:4px;">'+x[0]+'</div>'
-      +'<div style="font-size:26px;font-weight:800;color:'+x[3]+';">'+x[1]+'</div></div>';
-  }).join('')+'<div style="grid-column:span 3;font-size:10px;color:#9ca3af;">*ผิดปกติแต่ยังไม่มีนัด</div>';
+  ].map(x=>'<div style="background:'+x[2]+';border-radius:10px;padding:10px;text-align:center;"><div style="font-size:11px;color:'+x[3]+';font-weight:600;margin-bottom:4px;">'+x[0]+'</div><div style="font-size:26px;font-weight:800;color:'+x[3]+';">'+x[1]+'</div></div>').join('')+'<div style="grid-column:span 3;font-size:10px;color:#9ca3af;">*ผิดปกติแต่ยังไม่มีนัด</div>';
 
   const bmiGroups=[0,0,0,0];
-  records.forEach(function(r){
-    const b=parseFloat(r.bmi);
-    if(isNaN(b))return;
-    if(b<18.5)bmiGroups[0]++;else if(b<23)bmiGroups[1]++;else if(b<25)bmiGroups[2]++;else bmiGroups[3]++;
-  });
+  records.forEach(r=>{const b=parseFloat(r.bmi);if(isNaN(b))return;if(b<18.5)bmiGroups[0]++;else if(b<23)bmiGroups[1]++;else if(b<25)bmiGroups[2]++;else bmiGroups[3]++;});
   document.getElementById('bmi-group-stats').innerHTML=[
     ['ผอม','< 18.5',bmiGroups[0],'#fef3c7','#92400e'],
     ['ปกติ','18.5-22.9',bmiGroups[1],'#dcfce7','#166534'],
     ['ท้วม','23-24.9',bmiGroups[2],'#fff7ed','#c2410c'],
     ['อ้วน','≥ 25',bmiGroups[3],'#fee2e2','#991b1b'],
-  ].map(function(x){
-    return '<div style="background:'+x[3]+';border-radius:10px;padding:8px;text-align:center;">'
-      +'<div style="font-size:11px;font-weight:700;color:'+x[4]+';margin-bottom:1px;">'+x[0]+'</div>'
-      +'<div style="font-size:10px;color:'+x[4]+';opacity:.7;margin-bottom:4px;">BMI '+x[1]+'</div>'
-      +'<div style="font-size:22px;font-weight:800;color:'+x[4]+';">'+x[2]+'</div></div>';
-  }).join('');
+  ].map(x=>'<div style="background:'+x[3]+';border-radius:10px;padding:8px;text-align:center;"><div style="font-size:11px;font-weight:700;color:'+x[4]+';margin-bottom:1px;">'+x[0]+'</div><div style="font-size:10px;color:'+x[4]+';opacity:.7;margin-bottom:4px;">BMI '+x[1]+'</div><div style="font-size:22px;font-weight:800;color:'+x[4]+';">'+x[2]+'</div></div>').join('');
 
+  /* ════ NCD Dashboard จาก PDF ════ */
+  renderNcdDashboard();
+
+  /* ════ ตาราง ════ */
   const tbody=document.getElementById('admin-tbody');
   if(!records.length){tbody.innerHTML='<tr><td colspan="11" style="text-align:center;padding:24px;color:#9ca3af;">ยังไม่มีข้อมูล</td></tr>';return;}
-  tbody.innerHTML=records.map(function(r,i){
+  tbody.innerHTML=records.map((r,i)=>{
     const q9=parseInt(r.q9),q8=parseInt(r.q8);
-    const q9tag=q9<=6?'tn':q9<=12?'tw':'ta';
-    const q8tag=q8===0?'tn':q8<=8?'tw':'ta';
+    const q9tag=q9<=6?'tn':q9<=12?'tw':'ta',q8tag=q8===0?'tn':q8<=8?'tw':'ta';
     const hasPdf=r.pdfData;
+    const ncdBadge=r.ncdRisk?{'high':'<span style="font-size:10px;background:#FCEBEB;color:#791F1F;padding:1px 6px;border-radius:10px;font-weight:600;">NCDs⬆</span>','medium':'<span style="font-size:10px;background:#FAEEDA;color:#633806;padding:1px 6px;border-radius:10px;font-weight:600;">NCDs~</span>','low':''}[r.ncdRisk]||'':'';
     const pdfBadge=hasPdf
       ?'<button onclick="viewAdminPdf(\''+r.id+'\')" style="background:#dcfce7;color:#166534;border:none;border-radius:8px;padding:4px 8px;font-size:11px;font-weight:700;cursor:pointer;font-family:Sarabun,sans-serif;" title="ดู PDF + วิเคราะห์ Lab">🔬 Lab</button>'
+        +ncdBadge
         +'<button onclick="openPdfModal(\''+r.id+'\')" style="background:#f3f4f6;color:#6b7280;border:none;border-radius:8px;padding:4px 6px;font-size:11px;cursor:pointer;font-family:Sarabun,sans-serif;margin-left:3px;">✎</button>'
       :'<button onclick="openPdfModal(\''+r.id+'\')" style="background:#fef9c3;color:#92400e;border:1.5px dashed #fcd34d;border-radius:8px;padding:4px 8px;font-size:11px;font-weight:600;cursor:pointer;font-family:Sarabun,sans-serif;">📎 แนบ PDF</button>';
     const appt=r.appointment;
     let apptBadge='';
-    if(appt&&appt.type==='appt'&&appt.date){
-      apptBadge='<div style="display:flex;flex-direction:column;align-items:center;gap:2px;">'
-        +'<span style="background:#dbeafe;color:#1d4ed8;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:700;">📅 '+appt.date+'</span>'
-        +(appt.note?'<span style="font-size:10px;color:#6b7280;">'+appt.note+'</span>':'')+'</div>';
-    } else {
-      apptBadge='<span style="background:#f3f4f6;color:#9ca3af;padding:2px 8px;border-radius:12px;font-size:11px;">ไม่นัด</span>';
-    }
+    if(appt&&appt.type==='appt'&&appt.date){apptBadge='<div style="display:flex;flex-direction:column;align-items:center;gap:2px;"><span style="background:#dbeafe;color:#1d4ed8;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:700;">📅 '+appt.date+'</span>'+(appt.note?'<span style="font-size:10px;color:#6b7280;">'+appt.note+'</span>':'')+'</div>';}
+    else apptBadge='<span style="background:#f3f4f6;color:#9ca3af;padding:2px 8px;border-radius:12px;font-size:11px;">ไม่นัด</span>';
     const hasAppt=appt&&appt.type==='appt'&&appt.date;
     let attendedBadge='<span style="color:#d1d5db;font-size:12px;">—</span>';
-    if(hasAppt){
-      attendedBadge=appt.attended
-        ?'<span style="background:#dcfce7;color:#166534;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:700;cursor:pointer;" onclick="toggleAttended(\''+r.id+'\')">✅ มาแล้ว</span>'
-        :'<span style="background:#fee2e2;color:#dc2626;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:700;cursor:pointer;" onclick="toggleAttended(\''+r.id+'\')">❌ ยังไม่มา</span>';
-    }
-    return '<tr style="border-bottom:1px solid #f3f4f6;'+(i%2?'background:#f9fafb':'')+'">'
-      +'<td style="padding:8px 10px;font-size:13px;text-align:center;color:#9ca3af;font-weight:600;">'+(i+1)+'</td>'
-      +'<td style="padding:8px 12px;font-size:13px;"><button onclick="viewAdmin(\''+r.id+'\')" style="background:none;border:none;color:#1d4ed8;font-weight:600;cursor:pointer;font-size:13px;font-family:Sarabun,sans-serif;text-align:left;padding:0;text-decoration:underline;text-underline-offset:2px;">'+r.prefix+' '+r.fname+' '+r.lname+'</button></td>'
-      +'<td style="padding:8px 12px;font-size:13px;">'+r.idcard+'</td>'
-      +'<td style="padding:8px 12px;font-size:13px;">'+r.unit+'</td>'
-      +'<td style="padding:8px 10px;font-size:13px;text-align:center;">'+r.bmi+'</td>'
-      +'<td style="padding:8px 10px;font-size:13px;text-align:center;"><span class="rt '+q9tag+'">'+r.q9+'</span></td>'
-      +'<td style="padding:8px 10px;font-size:13px;text-align:center;"><span class="rt '+q8tag+'">'+r.q8+'</span></td>'
-      +'<td style="padding:8px 10px;font-size:13px;text-align:center;">'+({green:'🟢',yellow:'🟡',red:'🔴'}[r.colorGroup]||'')+'</td>'
-      +'<td style="padding:8px 10px;text-align:center;">'+pdfBadge+'</td>'
-      +'<td style="padding:8px 10px;text-align:center;"><button onclick="openAppt(\''+r.id+'\')" style="background:none;border:none;cursor:pointer;padding:2px;">'+apptBadge+'</button></td>'
-      +'<td style="padding:8px 10px;text-align:center;">'+attendedBadge+'</td>'
-      +'</tr>';
+    if(hasAppt)attendedBadge=appt.attended?'<span style="background:#dcfce7;color:#166534;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:700;cursor:pointer;" onclick="toggleAttended(\''+r.id+'\')">✅ มาแล้ว</span>':'<span style="background:#fee2e2;color:#dc2626;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:700;cursor:pointer;" onclick="toggleAttended(\''+r.id+'\')">❌ ยังไม่มา</span>';
+    return '<tr style="border-bottom:1px solid #f3f4f6;'+(i%2?'background:#f9fafb':'')+'"><td style="padding:8px 10px;font-size:13px;text-align:center;color:#9ca3af;font-weight:600;">'+(i+1)+'</td><td style="padding:8px 12px;font-size:13px;"><button onclick="viewAdmin(\''+r.id+'\')" style="background:none;border:none;color:#1d4ed8;font-weight:600;cursor:pointer;font-size:13px;font-family:Sarabun,sans-serif;text-align:left;padding:0;text-decoration:underline;text-underline-offset:2px;">'+r.prefix+' '+r.fname+' '+r.lname+'</button></td><td style="padding:8px 12px;font-size:13px;">'+r.idcard+'</td><td style="padding:8px 12px;font-size:13px;">'+r.unit+'</td><td style="padding:8px 10px;font-size:13px;text-align:center;">'+r.bmi+'</td><td style="padding:8px 10px;font-size:13px;text-align:center;"><span class="rt '+q9tag+'">'+r.q9+'</span></td><td style="padding:8px 10px;font-size:13px;text-align:center;"><span class="rt '+q8tag+'">'+r.q8+'</span></td><td style="padding:8px 10px;font-size:13px;text-align:center;">'+({green:'🟢',yellow:'🟡',red:'🔴'}[r.colorGroup]||'')+'</td><td style="padding:8px 10px;text-align:center;">'+pdfBadge+'</td><td style="padding:8px 10px;text-align:center;"><button onclick="openAppt(\''+r.id+'\')" style="background:none;border:none;cursor:pointer;padding:2px;">'+apptBadge+'</button></td><td style="padding:8px 10px;text-align:center;">'+attendedBadge+'</td></tr>';
   }).join('');
 }
 
-// ======= ดู PDF + Lab จาก Admin table =======
-function viewAdminPdf(id){
-  const r=records.find(function(x){return x.id===id;});
-  if(!r||!r.pdfData)return;
-  currentRecord=r;
-  renderResult(r);
-  showPage('result');
-}
-
-function viewAdmin(id){
-  const r=records.find(function(x){return x.id===id;});
-  if(r){currentRecord=r;renderResult(r);showPage('result');}
-}
-
-// ======= APPOINTMENT =======
-function openAppt(id){
-  currentApptId=id;
-  const r=records.find(function(x){return x.id===id;});
-  if(!r)return;
-  document.getElementById('appt-person-name').textContent=r.prefix+' '+r.fname+' '+r.lname+' | '+r.unit;
-  const appt=r.appointment;
-  document.querySelectorAll('input[name="appt-type"]').forEach(function(el){el.checked=false;});
-  if(appt&&appt.type==='appt'){
-    document.querySelector('input[name="appt-type"][value="appt"]').checked=true;
-    document.getElementById('appt-date-input').value=appt.date||'';
-    document.getElementById('appt-note-input').value=appt.note||'';
-  } else {
-    document.querySelector('input[name="appt-type"][value="none"]').checked=true;
-    document.getElementById('appt-date-input').value='';
-    document.getElementById('appt-note-input').value='';
+/* ════ NCD Dashboard (จากข้อมูล PDF ที่วิเคราะห์แล้ว) ════ */
+function renderNcdDashboard(){
+  const el=document.getElementById('ncd-dashboard');
+  if(!el)return;
+  const total=records.length;
+  const hasPdf=records.filter(r=>r.pdfData).length;
+  const ncdHigh=records.filter(r=>r.ncdRisk==='high').length;
+  const ncdMed=records.filter(r=>r.ncdRisk==='medium').length;
+  const ncdLow=records.filter(r=>r.ncdRisk==='low').length;
+  const bmiOver=records.filter(r=>parseFloat(r.bmi||0)>25).length;
+  const alcoholReg=records.filter(r=>parseInt(r.alcohol||0)>=3).length;
+  const smokeReg=records.filter(r=>parseInt(r.smoke||0)>=3).length;
+  const pct=(n,d)=>d>0?Math.round(n/d*100):0;
+  function sc(icon,label,val,color,outOf){
+    const p=pct(val,outOf||total);
+    return`<div class="ncd-stat-card"><div style="display:flex;align-items:center;gap:7px;margin-bottom:.4rem"><span style="font-size:18px">${icon}</span><span style="font-size:12px;color:#6b7280">${label}</span></div><div class="ncd-stat-num" style="color:${color}">${val} <span style="font-size:13px;font-weight:400;color:#9ca3af">คน</span></div><div class="ncd-pbar"><div class="ncd-pbar-fill" style="width:${p}%;background:${color}"></div></div><div style="font-size:11px;color:#aaa;margin-top:2px">${p}% จาก ${outOf||total} คน</div></div>`;
   }
-  toggleApptDate();
-  document.getElementById('modal-appt').classList.remove('hidden');
-}
-function toggleApptDate(){
-  const val=document.querySelector('input[name="appt-type"]:checked');
-  const show=val&&val.value==='appt';
-  document.getElementById('appt-date-wrap').style.display=show?'':'none';
-  document.getElementById('appt-note-wrap').style.display=show?'':'none';
-}
-function closeAppt(){document.getElementById('modal-appt').classList.add('hidden');}
-function saveAppt(){
-  const r=records.find(function(x){return x.id===currentApptId;});
-  if(!r)return;
-  const typeEl=document.querySelector('input[name="appt-type"]:checked');
-  if(!typeEl){alert('กรุณาเลือกสถานะนัด');return;}
-  if(typeEl.value==='appt'){
-    const d=document.getElementById('appt-date-input').value;
-    if(!d){alert('กรุณาเลือกวันที่นัด');return;}
-    r.appointment={type:'appt',date:d,note:document.getElementById('appt-note-input').value.trim()};
-  } else {
-    r.appointment={type:'none'};
-  }
-  updateRecordInFirebase(r);
-  closeAppt();
-  renderAdmin();
+  el.innerHTML=`<div class="ncd-stat-grid">
+    ${sc('📄','มีผลตรวจ PDF',hasPdf,'#185FA5')}
+    ${sc('🔴','NCDs เสี่ยงสูง (จาก PDF)',ncdHigh,'#E24B4A',hasPdf||1)}
+    ${sc('🟡','NCDs เสี่ยงปานกลาง',ncdMed,'#EF9F27',hasPdf||1)}
+    ${sc('🟢','NCDs เสี่ยงต่ำ',ncdLow,'#639922',hasPdf||1)}
+    ${sc('⚖️','BMI เกิน 25',bmiOver,'#854F0B')}
+    ${sc('🍺','ดื่มสุราเป็นประจำ',alcoholReg,'#6C3483')}
+    ${sc('🚬','สูบบุหรี่เป็นประจำ',smokeReg,'#374151')}
+  </div>
+  <p style="font-size:11px;color:#bbb;text-align:right;margin:0">*ข้อมูล NCDs จากการวิเคราะห์ PDF เฉพาะรายที่อัพโหลดแล้ว | อัพเดท: ${new Date().toLocaleString('th-TH')}</p>`;
 }
 
-function toggleAttended(id){
-  const r=records.find(function(x){return x.id===id;});
-  if(!r||!r.appointment||r.appointment.type!=='appt')return;
-  r.appointment.attended=!r.appointment.attended;
-  updateRecordInFirebase(r);
-  renderAdmin();
-}
-
-// ======= PDF MODAL (Admin แนบ PDF) =======
-let currentPdfModalId=null, pendingPdfBase64=null, pendingPdfName=null;
+/* ════ PDF ใน Admin ════ */
+let currentPdfModalId=null,pendingPdfBase64=null,pendingPdfName=null;
 
 function openPdfModal(id){
-  currentPdfModalId=id;
-  pendingPdfBase64=null; pendingPdfName=null;
-  const r=records.find(function(x){return x.id===id;});
-  if(!r)return;
+  currentPdfModalId=id;pendingPdfBase64=null;pendingPdfName=null;
+  const r=records.find(x=>x.id===id);if(!r)return;
   document.getElementById('pdf-person-name').textContent=r.prefix+' '+r.fname+' '+r.lname;
   document.getElementById('pdf-preview-wrap').classList.add('hidden');
   document.getElementById('pdf-err').classList.add('hidden');
   document.getElementById('pdf-lab-preview').classList.add('hidden');
   document.getElementById('pdf-lab-preview-content').innerHTML='';
   document.getElementById('pdf-file-input').value='';
-  if(r.pdfData){
-    document.getElementById('pdf-current-wrap').classList.remove('hidden');
-    document.getElementById('pdf-current-name').textContent=r.pdfName||'ไฟล์ PDF';
-    document.getElementById('pdf-current-date').textContent=r.pdfDate||'';
-  } else {
-    document.getElementById('pdf-current-wrap').classList.add('hidden');
-  }
+  document.getElementById('pdf-lab-loading').textContent='';
+  if(r.pdfData){document.getElementById('pdf-current-wrap').classList.remove('hidden');document.getElementById('pdf-current-name').textContent=r.pdfName||'ไฟล์ PDF';document.getElementById('pdf-current-date').textContent=r.pdfDate||'';}
+  else document.getElementById('pdf-current-wrap').classList.add('hidden');
   document.getElementById('modal-pdf').classList.remove('hidden');
 }
-
-function closePdfModal(){ document.getElementById('modal-pdf').classList.add('hidden'); }
-function clearPdfPreview(){
-  pendingPdfBase64=null; pendingPdfName=null;
-  document.getElementById('pdf-preview-wrap').classList.add('hidden');
-  document.getElementById('pdf-lab-preview').classList.add('hidden');
-  document.getElementById('pdf-lab-preview-content').innerHTML='';
-}
-function handlePdfSelect(evt){ processPdfFile(evt.target.files[0]); }
-function handlePdfDrop(evt){ evt.preventDefault(); if(evt.dataTransfer.files[0]) processPdfFile(evt.dataTransfer.files[0]); }
+function closePdfModal(){document.getElementById('modal-pdf').classList.add('hidden');}
+function clearPdfPreview(){pendingPdfBase64=null;pendingPdfName=null;document.getElementById('pdf-preview-wrap').classList.add('hidden');document.getElementById('pdf-lab-preview').classList.add('hidden');document.getElementById('pdf-lab-preview-content').innerHTML='';}
+function handlePdfSelect(evt){processPdfFile(evt.target.files[0]);}
+function handlePdfDrop(evt){evt.preventDefault();if(evt.dataTransfer.files[0])processPdfFile(evt.dataTransfer.files[0]);}
 
 function processPdfFile(file){
-  if(!file||!file.name.endsWith('.pdf')){
-    document.getElementById('pdf-err').textContent='รองรับเฉพาะไฟล์ .pdf';
-    document.getElementById('pdf-err').classList.remove('hidden'); return;
-  }
-  if(file.size>10*1024*1024){
-    document.getElementById('pdf-err').textContent='ไฟล์ขนาดใหญ่เกิน 10MB';
-    document.getElementById('pdf-err').classList.remove('hidden'); return;
-  }
+  if(!file||!file.name.endsWith('.pdf')){document.getElementById('pdf-err').textContent='รองรับเฉพาะไฟล์ .pdf';document.getElementById('pdf-err').classList.remove('hidden');return;}
+  if(file.size>10*1024*1024){document.getElementById('pdf-err').textContent='ไฟล์ขนาดใหญ่เกิน 10MB';document.getElementById('pdf-err').classList.remove('hidden');return;}
   document.getElementById('pdf-err').classList.add('hidden');
   const reader=new FileReader();
-  reader.onload=function(e){
-    pendingPdfBase64=e.target.result;
-    pendingPdfName=file.name;
+  reader.onload=e=>{
+    pendingPdfBase64=e.target.result;pendingPdfName=file.name;
     document.getElementById('pdf-preview-name').textContent=file.name;
     document.getElementById('pdf-preview-size').textContent=Math.round(file.size/1024)+' KB';
     document.getElementById('pdf-preview-wrap').classList.remove('hidden');
-    // ════ Preview Lab วิเคราะห์ทันที ════
-    previewLabFromPdf(pendingPdfBase64, currentPdfModalId);
+    previewLabFromPdf(pendingPdfBase64);
   };
   reader.readAsDataURL(file);
 }
 
-// วิเคราะห์ Lab preview ใน modal ก่อน save
-function previewLabFromPdf(pdfBase64, recordId){
-  if(!window.LabModule) return;
-  const r=records.find(function(x){return x.id===recordId;});
-  const gender = r ? (r.gender==='1' ? 'M' : 'F') : 'M';
-  const labSection = document.getElementById('pdf-lab-preview');
-  const loadingEl = document.getElementById('pdf-lab-loading');
-  const contentEl = document.getElementById('pdf-lab-preview-content');
+function previewLabFromPdf(pdfBase64){
+  if(!window.LabModule)return;
+  const r=records.find(x=>x.id===currentPdfModalId);
+  const gender=r?(r.gender==='1'?'M':'F'):'M';
+  const labSection=document.getElementById('pdf-lab-preview');
+  const loadingEl=document.getElementById('pdf-lab-loading');
   labSection.classList.remove('hidden');
   loadingEl.textContent='กำลังอ่าน PDF...';
-  contentEl.innerHTML='';
-  // renderFromFile ต้องการ File object; ใช้ renderInto กับ base64 แทน
-  window.LabModule.renderInto('pdf-lab-preview-content', pdfBase64, gender)
-    .then(function(){ loadingEl.textContent='✅ วิเคราะห์สำเร็จ'; })
-    .catch(function(){ loadingEl.textContent='⚠️ อ่านข้อมูลได้บางส่วน'; });
+  window.LabModule.renderInto('pdf-lab-preview-content',pdfBase64,gender)
+    .then(result=>{
+      loadingEl.textContent='✅ วิเคราะห์สำเร็จ';
+      // เก็บ ncdRisk ชั่วคราวเพื่อบันทึกพร้อม PDF
+      if(result&&result.ncd){
+        window._pendingNcdRisk=result.ncd.overall;
+        window._pendingNcdDiseases=result.ncd.diseases.filter(x=>x.level==='high').map(x=>x.name);
+        window._pendingLab={hb:result.lab.hb,chol:result.lab.chol,fbs:result.lab.fbs,egfr:result.lab.egfr};
+      }
+    })
+    .catch(()=>{loadingEl.textContent='⚠️ อ่านข้อมูลได้บางส่วน';});
 }
 
-function savePdf(){
-  if(!pendingPdfBase64){ alert('กรุณาเลือกไฟล์ PDF'); return; }
-  const r=records.find(function(x){return x.id===currentPdfModalId;});
-  if(!r)return;
-  r.pdfData=pendingPdfBase64; r.pdfName=pendingPdfName; r.pdfDate=new Date().toLocaleString('th-TH');
-  updateRecordInFirebase(r);
-  closePdfModal();
-  renderAdmin();
+async function savePdf(){
+  if(!pendingPdfBase64){alert('กรุณาเลือกไฟล์ PDF');return;}
+  const r=records.find(x=>x.id===currentPdfModalId);if(!r)return;
+  r.pdfData=pendingPdfBase64;r.pdfName=pendingPdfName;r.pdfDate=new Date().toLocaleString('th-TH');
+  // บันทึก NCD risk จากการวิเคราะห์
+  if(window._pendingNcdRisk){r.ncdRisk=window._pendingNcdRisk;r.ncdHighDiseases=window._pendingNcdDiseases||[];if(window._pendingLab){r.labHb=window._pendingLab.hb;r.labChol=window._pendingLab.chol;r.labFbs=window._pendingLab.fbs;r.labEgfr=window._pendingLab.egfr;}window._pendingNcdRisk=null;}
+  await updateRecordInFirebase(r);
+  closePdfModal();renderAdmin();
 }
 
 function removePdf(){
-  const r=records.find(function(x){return x.id===currentPdfModalId;});
-  if(!r)return;
-  delete r.pdfData; delete r.pdfName; delete r.pdfDate;
-  updateRecordInFirebase(r);
-  document.getElementById('pdf-current-wrap').classList.add('hidden');
-  renderAdmin();
+  const r=records.find(x=>x.id===currentPdfModalId);if(!r)return;
+  delete r.pdfData;delete r.pdfName;delete r.pdfDate;delete r.ncdRisk;delete r.ncdHighDiseases;delete r.labHb;delete r.labChol;delete r.labFbs;delete r.labEgfr;
+  updateRecordInFirebase(r);document.getElementById('pdf-current-wrap').classList.add('hidden');renderAdmin();
 }
 
-function viewPdfCurrent(){
-  const r=records.find(function(x){return x.id===currentPdfModalId;});
-  if(!r||!r.pdfData)return;
-  const w=window.open();
-  w.document.write('<iframe src="'+r.pdfData+'" width="100%" height="100%" style="border:none;"></iframe>');
-}
-function closePdfViewer(){}
+function viewPdfCurrent(){const r=records.find(x=>x.id===currentPdfModalId);if(!r||!r.pdfData)return;const w=window.open();w.document.write('<iframe src="'+r.pdfData+'" width="100%" height="100%" style="border:none;"></iframe>');}
+function viewAdminPdf(id){const r=records.find(x=>x.id===id);if(!r||!r.pdfData)return;currentRecord=r;renderResult(r);showPage('result');}
+function viewAdmin(id){const r=records.find(x=>x.id===id);if(r){currentRecord=r;renderResult(r);showPage('result');}}
 
-// ======= EXPORT =======
-function exportAllExcel(){
-  if(!records.length){alert('ยังไม่มีข้อมูล');return;}
-  doExport(records,'รง_ผสต11_'+fmtDate()+'.xlsx');
+/* ════ Appointment ════ */
+function openAppt(id){
+  currentApptId=id;const r=records.find(x=>x.id===id);if(!r)return;
+  document.getElementById('appt-person-name').textContent=r.prefix+' '+r.fname+' '+r.lname+' | '+r.unit;
+  const appt=r.appointment;
+  document.querySelectorAll('input[name="appt-type"]').forEach(el=>el.checked=false);
+  if(appt&&appt.type==='appt'){document.querySelector('input[name="appt-type"][value="appt"]').checked=true;document.getElementById('appt-date-input').value=appt.date||'';document.getElementById('appt-note-input').value=appt.note||'';}
+  else{document.querySelector('input[name="appt-type"][value="none"]').checked=true;document.getElementById('appt-date-input').value='';document.getElementById('appt-note-input').value='';}
+  toggleApptDate();document.getElementById('modal-appt').classList.remove('hidden');
 }
-function exportSingleExcel(){
-  if(!currentRecord)return;
-  doExport([currentRecord],'ผลตรวจ_'+currentRecord.fname+'_'+currentRecord.lname+'.xlsx');
+function toggleApptDate(){const val=document.querySelector('input[name="appt-type"]:checked');const show=val&&val.value==='appt';document.getElementById('appt-date-wrap').style.display=show?'':'none';document.getElementById('appt-note-wrap').style.display=show?'':'none';}
+function closeAppt(){document.getElementById('modal-appt').classList.add('hidden');}
+function saveAppt(){
+  const r=records.find(x=>x.id===currentApptId);if(!r)return;
+  const typeEl=document.querySelector('input[name="appt-type"]:checked');if(!typeEl){alert('กรุณาเลือกสถานะนัด');return;}
+  if(typeEl.value==='appt'){const d=document.getElementById('appt-date-input').value;if(!d){alert('กรุณาเลือกวันที่นัด');return;}r.appointment={type:'appt',date:d,note:document.getElementById('appt-note-input').value.trim()};}
+  else r.appointment={type:'none'};
+  updateRecordInFirebase(r);closeAppt();renderAdmin();
 }
-function fmtDate(){
-  const d=new Date();
-  return (d.getFullYear()+543)+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');
-}
+function toggleAttended(id){const r=records.find(x=>x.id===id);if(!r||!r.appointment||r.appointment.type!=='appt')return;r.appointment.attended=!r.appointment.attended;updateRecordInFirebase(r);renderAdmin();}
+
+/* ════ Export Excel รง.ผสต.11 (เพิ่มคอลัมน์ Lab + NCDs) ════ */
+function exportAllExcel(){if(!records.length){alert('ยังไม่มีข้อมูล');return;}doExport(records,'รง_ผสต11_'+fmtDate()+'.xlsx');}
+function exportSingleExcel(){if(!currentRecord)return;doExport([currentRecord],'ผลตรวจ_'+currentRecord.fname+'_'+currentRecord.lname+'.xlsx');}
+function fmtDate(){const d=new Date();return(d.getFullYear()+543)+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');}
+
 function doExport(recs,fn){
-  const h=['ลำดับ','คำนำหน้า/ยศ','ชื่อ','นามสกุล','HN','เลขบัตรประชาชน','หน่วยต้นสังกัด','ตำแหน่ง','ช่วยราชการ','อายุ','เพศ','สิทธิเบิก','น้ำหนัก(kg)','ส่วนสูง(cm)','BMI','รอบเอว(cm)','โรคประจำตัว','โรคอื่นๆ','การรับยา','การสูบบุหรี่','คะแนน Fagerstrom','การดื่มสุรา','คะแนน AUDIT-C','การออกกำลังกาย','9Q (ซึมเศร้า)','ระดับ 9Q','8Q (ฆ่าตัวตาย)','ระดับ 8Q','กลุ่มสี','วันเกิด (พ.ศ.)','วันที่บันทึก'];
+  const h=[
+    'ลำดับ','คำนำหน้า/ยศ','ชื่อ','นามสกุล','HN','เลขบัตรประชาชน','หน่วยต้นสังกัด','ตำแหน่ง','ช่วยราชการ',
+    'อายุ','เพศ','สิทธิเบิก','น้ำหนัก(kg)','ส่วนสูง(cm)','BMI','รอบเอว(cm)',
+    'โรคประจำตัว','โรคอื่นๆ','การรับยา',
+    'การสูบบุหรี่','คะแนน Fagerstrom','การดื่มสุรา','คะแนน AUDIT-C','การออกกำลังกาย',
+    '9Q','ระดับ 9Q','8Q','ระดับ 8Q','กลุ่มสี',
+    // ── คอลัมน์ Lab ใหม่ ──
+    'Hb (g/dL)','Cholesterol (mg/dL)','FBS (mg/dL)','eGFR (mL/min)',
+    'ความเสี่ยง NCDs (จาก Lab)','โรค NCDs ที่พบ (สูง)',
+    // ──────────────────────
+    'วันเกิด (พ.ศ.)','วันที่บันทึก','นัดหมาย','มาตามนัด'
+  ];
   const ncdNames=['ความดันโลหิตสูง','เบาหวาน','โรคหัวใจและหลอดเลือด','ไขมันในเลือดสูง'];
-  const rows=[h].concat(recs.map(function(r,i){
-    const ncdTxt=r.hasNCD&&r.ncds.length>0?r.ncds.map(function(n){return ncdNames[n-1];}).join(', '):'ไม่มี';
+  const rows=[h].concat(recs.map((r,i)=>{
+    const ncdTxt=r.hasNCD&&r.ncds&&r.ncds.length>0?r.ncds.map(n=>ncdNames[n-1]).join(', '):'ไม่มี';
     const q9l=parseInt(r.q9)<=6?'เล็กน้อย':parseInt(r.q9)<=12?'น้อย':parseInt(r.q9)<=18?'ปานกลาง':'รุนแรง';
     const q8l=parseInt(r.q8)===0?'ไม่มีแนวโน้ม':parseInt(r.q8)<=8?'น้อย':parseInt(r.q8)<=16?'ปานกลาง':'รุนแรง';
-    return [i+1,r.prefix,r.fname,r.lname,r.hn||'',r.idcard,r.unit,r.position||'',r.attach||'',r.age,
-      r.gender=='1'?'ชาย':'หญิง',['','ข้าราชการ','รัฐวิสาหกิจ','ปกส.','สปสช.','อื่นๆ'][r.right]||'',
+    const ncdRiskLabel=r.ncdRisk?{high:'เสี่ยงสูง',medium:'เสี่ยงปานกลาง',low:'เสี่ยงต่ำ'}[r.ncdRisk]||'-':'-';
+    const ncdDiseases=Array.isArray(r.ncdHighDiseases)?r.ncdHighDiseases.join(', '):(r.ncdHighDiseases||'-');
+    const appt=r.appointment;
+    const apptDate=appt&&appt.type==='appt'?appt.date:'ไม่นัด';
+    const apptCame=appt&&appt.type==='appt'?(appt.attended?'✅ มาแล้ว':'❌ ยังไม่มา'):'-';
+    return[
+      i+1,r.prefix,r.fname,r.lname,r.hn||'',r.idcard,r.unit,r.position||'',r.attach||'',r.age,
+      r.gender=='1'?'ชาย':'หญิง',(['','ข้าราชการ','รัฐวิสาหกิจ','ปกส.','สปสช.','อื่นๆ'][r.right]||''),
       r.weight,r.height,r.bmi,r.waist||'',ncdTxt,r.otherDisease||'',
-      ['','สม่ำเสมอ','ไม่สม่ำเสมอ','ขาดยา'][r.medicine]||'ไม่มีโรค',
-      ['ไม่เคยสูบ','เคยสูบ เลิกแล้ว','สูบครั้งคราว','สูบประจำ'][r.smoke]||'',r.fagScore||0,
-      ['ไม่เคยดื่ม','เคยดื่ม เลิกแล้ว','ดื่มครั้งคราว','ดื่มประจำ'][r.alcohol]||'',r.auditScore||0,
-      ['ไม่ออก','ต่ำกว่าเกณฑ์','ตามเกณฑ์'][r.exercise]||'',
+      (['','สม่ำเสมอ','ไม่สม่ำเสมอ','ขาดยา'][r.medicine]||'ไม่มีโรค'),
+      (['ไม่เคยสูบ','เคยสูบ เลิกแล้ว','สูบครั้งคราว','สูบประจำ'][r.smoke]||''),r.fagScore||0,
+      (['ไม่เคยดื่ม','เคยดื่ม เลิกแล้ว','ดื่มครั้งคราว','ดื่มประจำ'][r.alcohol]||''),r.auditScore||0,
+      (['ไม่ออก','ต่ำกว่าเกณฑ์','ตามเกณฑ์'][r.exercise]||''),
       r.q9,q9l,r.q8,q8l,
       {green:'กลุ่มปกติ',yellow:'กลุ่มเฝ้าระวัง',red:'กลุ่มเสี่ยง'}[r.colorGroup]||'',
-      dobToDisplay(r.dob), r.savedAt];
+      // Lab columns
+      r.labHb||'',r.labChol||'',r.labFbs||'',r.labEgfr||'',
+      ncdRiskLabel,ncdDiseases,
+      // ──────────
+      dobToDisplay(r.dob),r.savedAt,apptDate,apptCame
+    ];
   }));
+
+  /* Sheet 1: รายบุคคล */
   const wb=XLSX.utils.book_new();
   const ws=XLSX.utils.aoa_to_sheet(rows);
-  ws['!cols']=h.map(function(){return{wch:16};});
+  ws['!cols']=h.map(()=>({wch:16}));
   XLSX.utils.book_append_sheet(wb,ws,'รง.ผสต.11');
+
+  /* Sheet 2: สรุปสถิติ */
+  const totalN=recs.length;
+  const ncdH=recs.filter(r=>r.ncdRisk==='high').length;
+  const ncdM=recs.filter(r=>r.ncdRisk==='medium').length;
+  const bmiOver=recs.filter(r=>parseFloat(r.bmi||0)>25).length;
+  const alcoholReg=recs.filter(r=>parseInt(r.alcohol||0)>=3).length;
+  const smokeReg=recs.filter(r=>parseInt(r.smoke||0)>=3).length;
+  const dep9=recs.filter(r=>parseInt(r.q9||0)>6).length;
+  const suicide8=recs.filter(r=>parseInt(r.q8||0)>0).length;
+  const p=(n,d)=>d>0?+((n/d*100).toFixed(1)):0;
+  const sum=[
+    ['รายงานสรุปผลการตรวจสุขภาพประจำปี'],
+    ['โรงพยาบาลค่ายพระยอดเมืองขวาง จังหวัดนครพนม'],
+    ['วันที่ออกรายงาน: '+new Date().toLocaleDateString('th-TH',{year:'numeric',month:'long',day:'numeric'})],
+    [],
+    ['หัวข้อ','จำนวน (คน)','ร้อยละ (%)'],
+    ['ผู้เข้ารับการตรวจสุขภาพทั้งหมด',totalN,100],
+    ['กลุ่มเสี่ยง NCDs สูง (Lab)',ncdH,p(ncdH,totalN)],
+    ['กลุ่มเสี่ยง NCDs ปานกลาง (Lab)',ncdM,p(ncdM,totalN)],
+    ['BMI เกิน 25 (น้ำหนักเกิน/อ้วน)',bmiOver,p(bmiOver,totalN)],
+    ['ดื่มแอลกอฮอล์เป็นประจำ',alcoholReg,p(alcoholReg,totalN)],
+    ['สูบบุหรี่เป็นประจำ',smokeReg,p(smokeReg,totalN)],
+    ['ซึมเศร้าระดับน้อยขึ้นไป (9Q>6)',dep9,p(dep9,totalN)],
+    ['เสี่ยงฆ่าตัวตาย (8Q>0)',suicide8,p(suicide8,totalN)],
+  ];
+  const ws2=XLSX.utils.aoa_to_sheet(sum);
+  ws2['!cols']=[{wch:40},{wch:15},{wch:12}];
+  XLSX.utils.book_append_sheet(wb,ws2,'สรุปสถิติ');
+
   XLSX.writeFile(wb,fn);
 }
 
-window.addEventListener('load', function(){
+window.addEventListener('load',function(){
   initDOBDropdowns('login-dob-day','login-dob-month','login-dob-year');
   showLoadingOverlay('กำลังโหลดข้อมูล...');
 });
