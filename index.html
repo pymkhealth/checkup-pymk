@@ -1,549 +1,261 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบบริหารจัดการสุขภาพและวิเคราะห์ผลตรวจ (NCDs & Lab Module)</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;700&display=swap" rel="stylesheet">
-    
-    <style>
-        body {
-            font-family: 'Sarabun', sans-serif;
-            background-color: #f8fafc;
-            color: #334155;
-            margin: 0;
-            padding: 20px;
-        }
-        .sc {
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
-        .p-4 { padding: 16px; }
-        .p-6 { padding: 24px; }
-        .mb-2 { margin-bottom: 8px; }
-        .mb-4 { margin-bottom: 16px; }
-        .hidden { display: none !important; }
-        
-        /* Modal Overlay Styles */
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(4px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-        }
-        
-        /* Lab Result Layout Styles */
-        .lab-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 16px;
-        }
-        @media(min-width: 768px) {
-            .lab-grid { grid-template-columns: 2fr 1fr; }
-        }
-        
-        .table-lab {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 14px;
-        }
-        .table-lab th, .table-lab td {
-            padding: 10px 12px;
-            border-bottom: 1px solid #f1f5f9;
-            text-align: left;
-        }
-        .table-lab th {
-            background-color: #f8fafc;
-            color: #64748b;
-            font-weight: 600;
-        }
-        
-        /* Status Badges */
-        .badge {
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 500;
-            display: inline-block;
-        }
-        .badge-normal { background: #e2fbe8; color: #1e7e34; }
-        .badge-high { background: #fff1f2; color: #e11d48; }
-        .badge-low { background: #eff6ff; color: #1d4ed8; }
-        
-        /* Action Buttons */
-        .btn-action {
-            cursor: pointer;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 13px;
-            border: 1px solid #cbd5e1;
-            background: #fff;
-            transition: all 0.2s;
-        }
-        .btn-action:hover { background: #f1f5f9; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ระบบตรวจสุขภาพประจำปี - รพ.ค่ายพระยอดเมืองขวาง</title>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/tabler-icons.min.css">
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getFirestore, collection, doc, setDoc, getDocs, updateDoc, deleteDoc, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { getStorage, ref as storageRef, uploadString, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+  const firebaseConfig = {
+    apiKey: "AIzaSyAh_U2SfI-8mj5voLR17ZqYr3-EkywAHng",
+    authDomain: "pymk-health.firebaseapp.com",
+    projectId: "pymk-health",
+    storageBucket: "pymk-health.firebasestorage.app",
+    messagingSenderId: "314295525314",
+    appId: "1:314295525314:web:21b4e8fdc763792bd9405b",
+    measurementId: "G-5VW0RZ4PYK"
+  };
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app, 'pymkhealth');
+  window._db = db;
+  window._col = collection;
+  window._doc = doc;
+  window._setDoc = setDoc;
+  const storage = getStorage(app);
+  window._storage = storage;
+  window._storageRef = storageRef;
+  window._uploadString = uploadString;
+  window._getDownloadURL = getDownloadURL;
+  window._deleteObject = deleteObject;
+  window._getDocs = getDocs;
+  window._updateDoc = updateDoc;
+  window._deleteDoc = deleteDoc;
+  window._query = query;
+  window._where = where;
+  window._onSnapshot = onSnapshot;
+  window._firebaseModuleReady = true;
+  function tryLoad() {
+    if (typeof window.loadFromFirebase === 'function') {
+      window.loadFromFirebase();
+    } else {
+      setTimeout(tryLoad, 50);
+    }
+  }
+  if (document.readyState === 'complete') {
+    tryLoad();
+  } else {
+    window.addEventListener('load', tryLoad);
+  }
+</script>
+<style>
+.p-4{padding:1rem!important}.p-6{padding:1.5rem!important}.p-8{padding:2rem!important}
+.p-2{padding:.5rem!important}.p-3{padding:.75rem!important}
+.mb-4{margin-bottom:1rem!important}.mb-2{margin-bottom:.5rem!important}
+.mt-4{margin-top:1rem!important}.mt-2{margin-top:.5rem!important}
+.hidden{display:none!important}
+</style>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap');
+*{font-family:'Sarabun',sans-serif;}
+.sc{background:white;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);border:1px solid #e5e7eb;}
+.sdot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0;}
+.sdot.active{background:#1d4ed8;color:white;} .sdot.done{background:#16a34a;color:white;} .sdot.pending{background:#e5e7eb;color:#9ca3af;}
+.fl{font-size:14px;font-weight:600;color:#374151;margin-bottom:4px;display:block;}
+.fi{width:100%;padding:8px 12px;border:1.5px solid #d1d5db;border-radius:8px;font-size:15px;font-family:'Sarabun',sans-serif;transition:border-color .2s;box-sizing:border-box;}
+.fi:focus{outline:none;border-color:#1d4ed8;} .fi.err{border-color:#ef4444;}
+.bp{background:#1d4ed8;color:white;padding:10px 24px;border-radius:8px;font-weight:600;font-size:15px;cursor:pointer;border:none;font-family:'Sarabun',sans-serif;}
+.bp:hover{background:#1e40af;}
+.bs{background:#f3f4f6;color:#374151;padding:10px 24px;border-radius:8px;font-weight:600;font-size:15px;cursor:pointer;border:none;font-family:'Sarabun',sans-serif;}
+.bs:hover{background:#e5e7eb;}
+.bg{background:#16a34a;color:white;padding:10px 24px;border-radius:8px;font-weight:600;font-size:15px;cursor:pointer;border:none;font-family:'Sarabun',sans-serif;}
+.bg:hover{background:#15803d;}
+.br{background:#dc2626;color:white;padding:10px 24px;border-radius:8px;font-weight:600;font-size:15px;cursor:pointer;border:none;font-family:'Sarabun',sans-serif;}
+.br:hover{background:#b91c1c;}
+.rg{display:flex;gap:10px;flex-wrap:wrap;}
+.rb{display:flex;align-items:center;gap:6px;cursor:pointer;padding:6px 12px;border:1.5px solid #d1d5db;border-radius:8px;font-size:14px;transition:all .15s;user-select:none;}
+.rb:has(input:checked){border-color:#1d4ed8;background:#eff6ff;color:#1d4ed8;} .rb input{accent-color:#1d4ed8;}
+.cb{display:flex;align-items:center;gap:8px;cursor:pointer;padding:6px 0;font-size:14px;user-select:none;}
+.cb input{accent-color:#1d4ed8;width:16px;height:16px;}
+.rt{display:inline-block;padding:3px 10px;border-radius:20px;font-size:13px;font-weight:600;}
+.tn{background:#dcfce7;color:#166534;} .tw{background:#fef9c3;color:#854d0e;} .ta{background:#fee2e2;color:#991b1b;}
+.hidden{display:none!important;}
+.q9-opt:has(input:checked){border-color:#1d4ed8;background:#eff6ff;}
+.dob-wrap{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;}
+.dob-wrap select{padding:8px 10px;border:1.5px solid #d1d5db;border-radius:8px;font-size:14px;font-family:'Sarabun',sans-serif;background:white;}
+.dob-wrap select:focus{outline:none;border-color:#1d4ed8;}
+.dob-wrap select.err{border-color:#ef4444;}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:1000;}
+#lab-module-section{margin-top:1rem;}
+</style>
+<style id="lm-css">
+.lm{font-family:-apple-system,'Sarabun',sans-serif;font-size:15px;color:#1a1a1a}
+.lm-card{background:#fff;border:1px solid #e8e8e4;border-radius:12px;padding:1rem 1.25rem;margin-bottom:.875rem}
+.lm-sec{font-size:13px;font-weight:500;color:#888;margin-bottom:.7rem;display:flex;align-items:center;gap:6px}
+.lm-b{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:500;padding:3px 10px;border-radius:20px;white-space:nowrap}
+.lm-bh{background:#FCEBEB;color:#791F1F}.lm-bm{background:#FAEEDA;color:#633806}
+.lm-bl{background:#EAF3DE;color:#27500A}.lm-bn{background:#F1EFE8;color:#5F5E5A}
+.lm-bok{background:#EAF3DE;color:#27500A}.lm-babn{background:#FCEBEB;color:#791F1F}
+.lm-mg{display:grid;grid-template-columns:repeat(auto-fit,minmax(105px,1fr));gap:8px;margin-bottom:.875rem}
+.lm-mc{background:#f7f7f5;border-radius:8px;padding:.6rem .7rem;text-align:center}
+.lm-mv{font-size:20px;font-weight:500}.lm-ml{font-size:11px;color:#888;margin-top:2px}
+.lm-nr{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid #f0f0ec}
+.lm-nr:last-child{border-bottom:none}
+.lm-ni{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:17px}
+.lm-nih{background:#FCEBEB;color:#A32D2D}.lm-nim{background:#FAEEDA;color:#854F0B}.lm-nil{background:#EAF3DE;color:#3B6D11}
+.lm-bw{height:6px;background:#ebebeb;border-radius:4px;overflow:hidden;margin:4px 0}
+.lm-bf{height:100%;border-radius:4px;transition:width .5s}
+.lm-bfh{background:#E24B4A}.lm-bfm{background:#EF9F27}.lm-bfl{background:#639922}
+.lm-ev{font-size:12px;padding:1px 0;display:flex;gap:5px;align-items:flex-start}
+.lm-evb{color:#A32D2D}.lm-evm{color:#854F0B}.lm-evo{color:#3B6D11}
+.lm-nt{margin-top:6px;font-size:12px;border-radius:6px;padding:5px 8px}
+.lm-nth{background:#FCEBEB;color:#791F1F}.lm-ntm{background:#FAEEDA;color:#633806}
+.lm-rr{font-size:13px;padding:6px 0;border-bottom:1px solid #f0f0ec;display:flex;gap:8px;align-items:flex-start}
+.lm-rr:last-child{border-bottom:none}
+.lm-tg{display:inline-block;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:500;white-space:nowrap;flex-shrink:0}
+.lm-tgu{background:#FCEBEB;color:#791F1F}.lm-tgs{background:#FAEEDA;color:#633806}
+.lm-tgl{background:#EAF3DE;color:#27500A}.lm-tgf{background:#E6F1FB;color:#185FA5}
+.lm-lr{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid #f0f0ec}
+.lm-lr:last-child{border-bottom:none}
+.lm-ln{font-size:14px;margin:0}.lm-ls{font-size:12px;color:#888;margin:0}
+.lm-lr-r{display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+.lm-lv{font-size:15px;font-weight:500}
+.lm-lvh{color:#A32D2D}.lm-lvl{color:#185FA5}.lm-lvo{color:#1a1a1a}
+.lm-ref{font-size:11px;color:#aaa}
+.lm-av{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:500;font-size:15px;flex-shrink:0}
+.lm-sg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:.875rem}
+.lm-sc{background:#f7f7f5;border-radius:8px;padding:.55rem;text-align:center}
+.lm-sn{font-size:21px;font-weight:500}.lm-sl{font-size:11px;color:#888;margin-top:1px}
+.lm-dis{font-size:11px;color:#bbb;margin-top:.875rem;text-align:center;border-top:1px solid #f0f0ec;padding-top:.7rem}
+.lm-alert{border-radius:8px;padding:.7rem .9rem;font-size:13px;margin-bottom:.75rem}
+@media(max-width:480px){.lm-sg{grid-template-columns:repeat(2,1fr)}.lm-mg{grid-template-columns:repeat(2,1fr)}}
+</style>
 </head>
-<body>
-
-    <!-- ================================================================= -->
-    <!-- 1. HTML STRUCTURE & UI COMPONENTS                                 -->
-    <!-- ================================================================= -->
-
-    <!-- NCD DASHBOARD CONTAINER (แสดงด้านบนสุดในหน้าแอดมินเพื่อดูภาพรวม) -->
-    <div id="ncd-dashboard" style="margin-bottom:12px;"></div>
-
-    <!-- ตู้จำลองตารางรายชื่อผู้ป่วย (ฝั่ง Admin) -->
-    <div class="sc p-4 mb-4">
-        <h3 style="font-size:15px; font-weight:700; margin:0 0 12px;">📋 รายชื่อผู้เข้ารับการตรวจสุขภาพ (ตัวอย่างระบบหลังบ้าน)</h3>
-        <table class="table-lab">
-            <thead>
-                <tr>
-                    <th>ชื่อ-นามสกุล</th>
-                    <th>หน่วยงาน</th>
-                    <th>ความเสี่ยง NCDs</th>
-                    <th>การจัดการ</th>
-                </tr>
-            </thead>
-            <tbody id="admin-table-body">
-                <!-- ข้อมูลจะถูกเรนเดอร์ผ่านฟังก์ชัน renderAdminList() -->
-            </tbody>
-        </table>
-    </div>
-
-    <!-- หน้าแสดงผลหลักฝั่งผู้รับบริการ (ผลการประเมินและวิเคราะห์ผลเลือด) -->
-    <div id="page-result" class="sc p-6 mb-4">
-        <h2 style="font-size:18px; font-weight:700; color:#1e293b; margin:0 0 16px; border-bottom:2px solid #e2e8f0; padding-bottom:8px;">
-            🩺 ผลการวิเคราะห์สุขภาพบุคคลและคำแนะนำเชิงลึก
-        </h2>
-        
-        <!-- ข้อมูลส่วนตัวพื้นฐาน -->
-        <div id="patient-info-summary" class="mb-4" style="background:#f8fafc; padding:12px; border-radius:8px; font-size:14px;"></div>
-
-        <!-- รายละเอียดความเสี่ยงเดิมนิติกรรม -->
-        <div id="lifestyle-advice-container" class="mb-4"></div>
-
-        <!-- LAB MODULE SECTION (ส่วนแสดงผลตรวจเลือดเชิงลึกที่แกะจาก PDF) -->
-        <div id="lab-module-section" class="hidden">
-            <h3 style="font-size:16px; font-weight:700; color:#0f172a; margin:24px 0 12px;">🔬 ผลการวิเคราะห์ผลตรวจทางห้องปฏิบัติการ (Lab ผลเลือด)</h3>
-            <div id="lab-result-container"></div>
-        </div>
-    </div>
-
-    <!-- MODAL ดู PDF --> 
-    <div id="modal-pdf-viewer" class="hidden modal-overlay" style="padding:16px;"> 
-        <div style="background:white;border-radius:12px;width:90vw;max-width:860px;height:90vh;display:flex;flex-direction:column;overflow:hidden;"> 
-            <div style="padding:14px 20px;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;justify-content:space-between;"> 
-                <div style="font-size:15px;font-weight:700;color:#1e293b;" id="pdf-viewer-title">ผลตรวจสุขภาพ (ไฟล์ต้นฉบับ PDF)</div> 
-                <button onclick="closePdfViewer()" style="background:#f3f4f6;border:none;border-radius:8px;padding:6px 14px;font-size:13px;cursor:pointer;font-family:Sarabun,sans-serif;">✕ ปิด</button> 
-            </div> 
-            <iframe id="pdf-viewer-frame" style="flex:1;border:none;width:100%;"></iframe> 
-        </div> 
-    </div>
-
-    <!-- MODAL นัดหมายแพทย์/พยาบาล --> 
-    <div id="modal-appt" class="hidden modal-overlay"> 
-        <div class="sc p-6" style="width:400px;max-width:95vw;background:#fff;"> 
-            <h3 style="font-size:16px;font-weight:700;color:#1e293b;margin:0 0 4px;">📅 จัดการนัดหมายติดตามอาการ</h3> 
-            <p id="appt-person-name" style="font-size:13px;color:#64748b;margin:0 0 18px;"></p>
-            
-            <div style="margin-bottom:12px;">
-                <label style="display:block;font-size:13px;font-weight:600;margin-bottom:4px;">เลือกวันที่นัดพบแพทย์</label>
-                <input type="date" id="appt-date" style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-family:Sarabun;">
-            </div>
-            <div style="margin-bottom:16px;">
-                <label style="display:block;font-size:13px;font-weight:600;margin-bottom:4px;">หมายเหตุ / คลินิกนัดหมาย</label>
-                <select id="appt-clinic" style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-family:Sarabun;">
-                    <option value="คลินิกโรคเรื้อรัง (NCDs)">คลินิกโรคเรื้อรัง (NCDs)</option>
-                    <option value="คลินิกโภชนาการและการปรับพฤติกรรม">คลินิกโภชนาการและการปรับพฤติกรรม</option>
-                    <option value="พบแพทย์ตรวจทั่วไป">พบแพทย์ตรวจทั่วไป</option>
-                </select>
-            </div>
-            
-            <div style="display:flex;justify-content:flex-end;gap:8px;">
-                <button onclick="closeApptModal()" style="padding:6px 12px;background:#f1f5f9;border:none;border-radius:6px;cursor:pointer;font-family:Sarabun;">ยกเลิก</button>
-                <button onclick="saveAppointment()" style="padding:6px 12px;background:#1d4ed8;color:#fff;border:none;border-radius:6px;cursor:pointer;font-family:Sarabun;">บันทึกตารางนัด</button>
-            </div>
-        </div> 
-    </div>
-
-
-    <!-- ================================================================= -->
-    <!-- 2. JAVASCRIPT LOGIC & CORE ENGINES                                -->
-    <!-- ================================================================= -->
-
-    <!-- เรียกใช้งานไลบรารี PDF.js (แบบ CDN เพื่อใช้ประมวลผลอ่านไฟล์ PDF ในบราวเซอร์) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
-    <script>
-        // ตั้งค่า Worker ของ PDF.js
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
-
-        // -----------------------------------------------------------------
-        // ข้อมูลจำลองระบบข้อมูลผู้เข้ารับบริการ (Mock Data สำหรับการรันระบบทดสอบ)
-        // -----------------------------------------------------------------
-        let records = [
-            {
-                id: "REC001", prefix: "นาย", fname: "สมชาย", lname: "สายลุย", gender: "1", age: 45, unit: "ฝ่ายผลิต A",
-                bmi: "26.5", alcohol: "4", smoke: "4", ncdRisk: "high",
-                pdfData: "" // ใส่ Base64 หรือ URL ตัวอย่างไฟล์ตรวจเลือดได้ที่นี่
-            },
-            {
-                id: "REC002", prefix: "นางสาว", fname: "สมศรี", lname: "ดีพร้อม", gender: "2", age: 38, unit: "ฝ่ายการเงิน",
-                bmi: "22.0", alcohol: "1", smoke: "0", ncdRisk: "low",
-                pdfData: "JVBERi0xLjQK... (ข้อมูล base64 สมมุติของไฟล์ผลเลือด)"
-            },
-            {
-                id: "REC003", prefix: "ร.ต.", fname: "สมศักดิ์", lname: "รักดี", gender: "1", age: 52, unit: "ฝ่ายความมั่นคง",
-                bmi: "24.8", alcohol: "3", smoke: "2", ncdRisk: "medium",
-                pdfData: ""
-            }
-        ];
-
-        let currentRecord = null;
-        let currentApptId = null;
-
-        // -----------------------------------------------------------------
-        // 3. LAB MODULE: PDF EXTRACTOR & INTERPRETER ENGINE
-        // -----------------------------------------------------------------
-        (function(global){
-            
-            // ฟังก์ชันในการแกะ Text ออกมาจากไฟล์ PDF
-            async function pdfToText(src){ 
-                let p;
-                if(typeof src === 'string' && src.startsWith('data:application/pdf;base64,')) {
-                    const base64Content = src.split(',')[1];
-                    const raw = window.atob(base64Content);
-                    const rawLength = raw.length;
-                    const array = new Uint8Array(new ArrayBuffer(rawLength));
-                    for(let i = 0; i < rawLength; i++) { array[i] = raw.charCodeAt(i); }
-                    p = await pdfjsLib.getDocument({data: array}).promise;
-                } else if (typeof src === 'string') {
-                    p = await pdfjsLib.getDocument({url:src}).promise; 
-                } else {
-                    p = await pdfjsLib.getDocument({data:src}).promise;
-                }
-                
-                let t = '';
-                for(let i=1; i<=p.numPages; i++){
-                    const pg = await p.getPage(i);
-                    const tc = await pg.getTextContent();
-                    t += tc.items.map(x => x.str).join(' ') + '\n';
-                } 
-                return t; 
-            } 
-
-            function n(text, re){
-                const m = text.match(re);
-                return m ? parseFloat(m[1]) : null;
-            } 
-
-            // ฟังก์ชันจัดกลุ่ม Regex เพื่อดึงผลแลปเลือด
-            function extractLab(text, gender){ 
-                const d = {};
-                const nm = text.match(/ชื่อ\s*:\s*([^\n\r]+)/) || text.match(/((?:ร|พ)\.[อต]\.(?:หญิง|ชาย)\s+\S+\s+\S+|นาย\s+\S+\s+\S+|นาง(?:สาว)?\s+\S+\s+\S+)/); 
-                d.name = nm ? nm[1].trim() : "ไม่ระบุชื่อ"; 
-                const am = text.match(/อายุ\s*:\s*(\d+)\s*ป/);
-                d.age = am ? parseInt(am[1]) : null; 
-                
-                // ค้นหาดัชนีชี้วัดที่มักเจอในใบรายงานผลเลือด
-                d.fbs = n(text, /(?:FBS|Glucose)\s+([\d.]+)/i);
-                d.cholesterol = n(text, /(?:Cholesterol|Total Cholesterol)\s+([\d.]+)/i);
-                d.triglyceride = n(text, /(?:Triglyceride|TG)\s+([\d.]+)/i);
-                d.hdl = n(text, /HDL-C\s+([\d.]+)/i);
-                d.ldl = n(text, /LDL-C\s+([\d.]+)/i);
-                d.bun = n(text, /BUN\s+([\d.]+)/i);
-                d.creatinine = n(text, /Creatinine\s+([\d.]+)/i);
-                
-                // ส่วนของความเข้มข้นโลหิต (CBC)
-                d.hb = n(text, /Hb\s+([\d.]+)/); 
-                d.hct = n(text, /Hct\s+([\d.]+)/); 
-                d.wbc = n(text, /WBC\s+(?:count\s+)?([\d.]+)/i); 
-                d.plt = n(text, /Platelet\s+(?:Count\s+)?([\d.]+)/i); 
-                return d;
-            }
-
-            // คำนวณวิเคราะห์ความเสี่ยงและแปลผลอ้างอิงช่วงวิกฤต
-            function analyzeLab(lab, gender) {
-                const r = {};
-                if(lab.fbs) r.fbsStatus = lab.fbs > 100 ? 'high' : 'normal';
-                if(lab.cholesterol) r.cholStatus = lab.cholesterol > 200 ? 'high' : 'normal';
-                if(lab.triglyceride) r.tgStatus = lab.triglyceride > 150 ? 'high' : 'normal';
-                if(lab.ldl) r.ldlStatus = lab.ldl > 130 ? 'high' : 'normal';
-                
-                if(lab.creatinine) {
-                    // ประเมินไตเบื้องต้น
-                    r.egfrEst = lab.creatinine > 1.2 ? 'ควรเฝ้าระวังหน้าที่ไตเสริม' : 'ปกติ';
-                }
-                return r;
-            }
-
-            // ประกอบ HTML ตารางแสดงผล Lab ในรายงานฝั่งผู้ใช้
-            function buildHTML(lab, gender, analysis){
-                let h = `<div class="lab-grid">
-                    <div>
-                        <table class="table-lab">
-                            <thead>
-                                <tr><th>รายการตรวจเลือด</th><th>ผลที่ได้</th><th>เกณฑ์มาตรฐาน</th><th>สถานะ</th></tr>
-                            </thead>
-                            <tbody>`;
-                
-                if(lab.fbs) {
-                    h += `<tr><td>น้ำตาลในเลือด (FBS)</td><td><b>${lab.fbs}</b> mg/dL</td><td>70 - 100</td><td>${lab.fbs > 100 ? '<span class="badge badge-high">สูงกว่าเกณฑ์</span>':'<span class="badge badge-normal">ปกติ</span>'}</td></tr>`;
-                }
-                if(lab.cholesterol) {
-                    h += `<tr><td>ไขมันคอเลสเตอรอลรวม</td><td><b>${lab.cholesterol}</b> mg/dL</td><td>< 200</td><td>${lab.cholesterol > 200 ? '<span class="badge badge-high">สูงกว่าเกณฑ์</span>':'<span class="badge badge-normal">ปกติ</span>'}</td></tr>`;
-                }
-                if(lab.triglyceride) {
-                    h += `<tr><td>ไขมันไตรกลีเซอไรด์</td><td><b>${lab.triglyceride}</b> mg/dL</td><td>< 150</td><td>${lab.triglyceride > 150 ? '<span class="badge badge-high">สูงกว่าเกณฑ์</span>':'<span class="badge badge-normal">ปกติ</span>'}</td></tr>`;
-                }
-                if(lab.ldl) {
-                    h += `<tr><td>ไขมันชนิดไม่ดี (LDL)</td><td><b>${lab.ldl}</b> mg/dL</td><td>< 130</td><td>${lab.ldl > 130 ? '<span class="badge badge-high">สูงกว่าเกณฑ์</span>':'<span class="badge badge-normal">ปกติ</span>'}</td></tr>`;
-                }
-                if(!lab.fbs && !lab.cholesterol) {
-                    h += `<tr><td colspan="4" style="text-align:center; color:#888;">⚠️ ตรวจพบข้อมูล CBC ทั่วไป ไม่พบตัวชี้วัดเคมีคลินิกหลักเบื้องต้น (FBS/Chol) ในข้อความ PDF</td></tr>`;
-                }
-                
-                h += `    </tbody>
-                        </table>
-                    </div>
-                    <div style="background:#f1f5f9; padding:16px; border-radius:10px; font-size:13px;">
-                        <h4 style="margin-top:0; color:#1e293b;">💡 บทสรุปการวิเคราะห์จากห้องแลป</h4>
-                        <p>จากผลการวิเคราะห์ระดับโมเลกุลในกระแสเลือด พบความสอดคล้องทางพฤติกรรมภาพรวม โดยมีแนวทางปฏิบัติเพิ่มเติมดังนี้:</p>
-                        <ul>
-                            ${lab.fbs > 100 ? '<li style="color:#b91c1c; font-weight:bold;">ควบคุมกลุ่มอาหารคาร์โบไฮเดรตเชิงเดี่ยวและน้ำตาลอย่างเข้มงวด</li>': '<li>รักษาระดับการบริโภคคาร์โบไฮเดรตชนิดดีต่อไป</li>'}
-                            ${lab.ldl > 130 || lab.cholesterol > 200 ? '<li style="color:#b91c1c; font-weight:bold;">เพิ่มการออกกำลังกายประเภทคาดิโอเพื่อกระตุ้นการสร้างไขมันชนิดดี (HDL)</li>': '<li>ดัชนีไขมันอยู่ในระดับพึงประสงค์</li>'}
-                        </ul>
-                    </div>
-                </div>`;
-                return h;
-            }
-
-            async function renderInto(containerId, src, gender){ 
-                const el = document.getElementById(containerId); 
-                if(!el) return; 
-                el.innerHTML = '<p style="color:#888;font-size:14px;padding:1rem;text-align:center"> ⏳ กำลังอ่านประมวลผลข้อความจาก PDF ผลตรวจเลือด...</p>'; 
-                try { 
-                    // ถ้าในเคสจำลองไม่มีข้อมูลผูกไว้ ให้แสดงผลหลอกเพื่อความสมบูรณ์ในการสาธิต
-                    if(!src || src.length < 50) {
-                        const mockLab = { fbs: 112, cholesterol: 215, triglyceride: 135, ldl: 142 };
-                        el.innerHTML = buildHTML(mockLab, gender, {});
-                        return;
-                    }
-                    const text = await pdfToText(src);
-                    let g = gender; 
-                    if(!g){
-                        const nmTmp = text.match(/((?:ร|พ)\.[อต]\.หญิง|นาง(?:สาว)?)/);
-                        g = nmTmp ? 'F' : 'M';
-                    } 
-                    const lab = extractLab(text, g); 
-                    const analysis = analyzeLab(lab, g);
-                    el.innerHTML = buildHTML(lab, g, analysis); 
-                } catch(e) { 
-                    // Fallback แสดงข้อมูลกรณีพาร์สล้มเหลว
-                    const mockLab = { fbs: 98, cholesterol: 185, triglyceride: 110, ldl: 115 };
-                    el.innerHTML = buildHTML(mockLab, gender, {});
-                } 
-            } 
-
-            global.LabModule = { renderInto }; 
-        })(window);
-
-
-        // -----------------------------------------------------------------
-        // 4. LIFESTYLE ADVICE & RESULT INTERPRETATION
-        // -----------------------------------------------------------------
-        function buildLifestyleAdviceHTML(r) {
-            let riskColor = r.ncdRisk === 'high' ? '#e11d48' : (r.ncdRisk === 'medium' ? '#d97706' : '#16a34a');
-            let riskText = r.ncdRisk === 'high' ? 'ความเสี่ยงสูง (High Risk)' : (r.ncdRisk === 'medium' ? 'ความเสี่ยงปานกลาง' : 'ความเสี่ยงต่ำ');
-            
-            let html = `<div style="background:#fff; border:1px solid #cbd5e1; border-left:6px solid ${riskColor}; padding:14px; border-radius:8px; margin-bottom:12px;">
-                <div style="font-weight:700; font-size:15px; color:${riskColor}; margin-bottom:6px;">📈 ผลการวิเคราะห์ระดับความเสี่ยงโรค NCDs: ${riskText}</div>
-                <div style="font-size:13px; color:#475569;">
-                    <b>พฤติกรรมเสี่ยงสะสม:</b> ดัชนีมวลกาย (BMI) อยู่ที่ ${r.bmi || 'ไม่ระบุ'} | คะแนนสุรา: ${r.alcohol}/46 | คะแนนบุหรี่: ${r.smoke}/46
-                </div>
-            </div>`;
-            return html;
-        }
-
-        function renderResult(r) {
-            // แสดงข้อมูลส่วนบุคคล
-            document.getElementById('patient-info-summary').innerHTML = `
-                <b>ผู้เข้ารับการตรวจ:</b> ${r.prefix}${r.fname} ${r.lname} &nbsp;&nbsp;|&nbsp;&nbsp; 
-                <b>อายุ:</b> ${r.age} ปี &nbsp;&nbsp;|&nbsp;&nbsp; 
-                <b>สังกัด/หน่วยงาน:</b> ${r.unit}
-            `;
-            
-            // แสดงคำแนะนำพฤติกรรม
-            document.getElementById('lifestyle-advice-container').innerHTML = buildLifestyleAdviceHTML(r);
-            
-            // ส่วนแสดงผลแลปจาก PDF (Lab Module)
-            const labSection = document.getElementById('lab-module-section');
-            const labContainer = document.getElementById('lab-result-container'); 
-            
-            if(r.pdfData !== undefined && window.LabModule){ 
-                labSection.classList.remove('hidden'); 
-                labContainer.innerHTML = '<div style="padding:16px;text-align:center;color:#64748b;font-size:14px;"> ⏳ กำลังวิเคราะห์ผลตรวจเลือดร่วมกับแลปโมดูล...</div>';
-                const gender = r.gender === '1' ? 'M' : 'F'; 
-                window.LabModule.renderInto('lab-result-container', r.pdfData, gender); 
-            } else { 
-                labSection.classList.add('hidden'); 
-                labContainer.innerHTML = '';
-            }
-        }
-
-
-        // -----------------------------------------------------------------
-        // 5. NCD DASHBOARD ENGINE (Admin View)
-        // -----------------------------------------------------------------
-        window.renderAdminNcdDashboard = async function(records) { 
-            const el = document.getElementById('ncd-dashboard'); 
-            if (!el) return;
-
-            const stats = { total: records.length, hasPdf: 0, ncdHigh: 0, ncdMedium: 0, bmiOver: 0, alcohol: 0, smoke: 0 };
-
-            records.forEach(r => { 
-                if (r.pdfData && r.pdfData.length > 0) stats.hasPdf++; 
-                const bmi = parseFloat(r.bmi || 0); 
-                if (bmi > 25) stats.bmiOver++; 
-                const alc = parseInt(r.alcohol || 0); 
-                if (alc >= 3) stats.alcohol++; 
-                const smk = parseInt(r.smoke || 0); 
-                if (smk >= 3) stats.smoke++; 
-                if (r.ncdRisk === 'high') stats.ncdHigh++; 
-                else if (r.ncdRisk === 'medium') stats.ncdMedium++; 
-            });
-
-            function statCard(icon, label, val, total, color) { 
-                const p = total > 0 ? Math.round(val / total * 100) : 0; 
-                return `<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:12px 14px"> 
-                    <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"> 
-                        <span style="font-size:18px">${icon}</span> 
-                        <span style="font-size:12px;color:#64748b;font-weight:600;">${label}</span> 
-                    </div> 
-                    <div style="font-size:24px;font-weight:700;color:${color}">${val} <span style="font-size:13px;font-weight:400;color:#94a3b8">คน</span></div> 
-                    <div style="height:5px;background:#f1f5f9;border-radius:4px;margin-top:6px;overflow:hidden"> 
-                        <div style="height:100%;width:${p}%;background:${color};border-radius:4px;"></div> 
-                    </div> 
-                    <div style="font-size:11px;color:#94a3b8;margin-top:4px">${p}% จากยอดรวม</div> 
-                </div>`;
-            } 
-
-            el.innerHTML = ` 
-            <div class="sc p-4 mb-2" style="background:#fff;"> 
-                <h3 style="font-size:14px;font-weight:700;color:#1e293b;margin:0 0 12px;display:flex;align-items:center;gap:6px;">📊 ศูนย์ควบคุมแดชบอร์ดภาพรวมผู้ป่วย (NCD Dashboard)</h3> 
-                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;"> 
-                    ${statCard('🏥', 'ผู้รับบริการทั้งหมด', stats.total, stats.total, '#1e40af')} 
-                    ${statCard('📄', 'มีเอกสารแลป PDF', stats.hasPdf, stats.total, '#15803d')} 
-                    ${statCard('🔴', 'กลุ่มเสี่ยง NCDs สูง', stats.ncdHigh, stats.total, '#b91c1c')} 
-                    ${statCard('🟡', 'กลุ่มเสี่ยงปานกลาง', stats.ncdMedium, stats.total, '#b45309')} 
-                    ${statCard('⚖️', 'ค่า BMI เกิน 25', stats.bmiOver, stats.total, '#a16207')} 
-                    ${statCard('🍺', 'ดื่มแอลกอฮอล์สูง', stats.alcohol, stats.total, '#6b21a8')} 
-                </div> 
-            </div>`;
-        };
-
-
-        // -----------------------------------------------------------------
-        // 6. VIEW CONTROLLERS & INTERACTION ACTIONS
-        // -----------------------------------------------------------------
-        function renderAdminList() {
-            const tbody = document.getElementById('admin-table-body');
-            tbody.innerHTML = '';
-            
-            records.forEach(r => {
-                let riskBadge = r.ncdRisk === 'high' ? '<span class="badge badge-high">เสี่ยงสูง</span>' : (r.ncdRisk === 'medium' ? '<span class="badge badge-low" style="background:#fef3c7; color:#d97706;">เสี่ยงปานกลาง</span>' : '<span class="badge badge-normal">เสี่ยงต่ำ</span>');
-                
-                let tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><b>${r.prefix}${r.fname} ${r.lname}</b> (อายุ ${r.age} ปี)</td>
-                    <td>${r.unit}</td>
-                    <td>${riskBadge}</td>
-                    <td>
-                        <button class="btn-action" onclick="viewPatientDetail('${r.id}')">🔍 ดูผลวิเคราะห์</button>
-                        <button class="btn-action" onclick="openApptModal('${r.id}')">📅 นัดหมาย</button>
-                        <button class="btn-action" onclick="openPdfViewer('${r.id}')" ${r.pdfData?'':'disabled'} style="${r.pdfData?'color:#1d4ed8;':'color:#94a3b8;cursor:not-allowed;'}">📄 ไฟล์ PDF</button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        function viewPatientDetail(id) {
-            const r = records.find(x => x.id === id);
-            if(!r) return;
-            currentRecord = r;
-            renderResult(r);
-            document.getElementById('page-result').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        // --- PDF Viewer Control ---
-        function openPdfViewer(id) {
-            const r = records.find(x => x.id === id);
-            if(!r || !r.pdfData) return;
-            
-            document.getElementById('pdf-viewer-title').textContent = `ผลตรวจสุขภาพฉบับจริง PDF: ${r.prefix}${r.fname} ${r.lname}`;
-            
-            // จัดการเปิดการจำลอง iframe ดูไฟล์
-            const frame = document.getElementById('pdf-viewer-frame');
-            if(r.pdfData.startsWith('data:application/pdf;base64,')) {
-                frame.src = r.pdfData;
-            } else {
-                // หากไม่มี base64 ตรงให้ใช้ blob viewer หรือหน้าจอจำลอง
-                frame.srcdoc = `<div style="font-family:sans-serif; padding:40px; text-align:center; color:#64748b;">
-                    <h3>[ PDF VIEWER SIMULATOR ]</h3>
-                    <p>จำลองการเปิดไฟล์ต้นฉบับอิเล็กทรอนิกส์ของโรงพยาบาล</p>
-                    <p style="font-size:12px; color:#94a3b8;">Base64 String Length: ${r.pdfData.length} characters</p>
-                </div>`;
-            }
-            document.getElementById('modal-pdf-viewer').classList.remove('hidden');
-        }
-
-        function closePdfViewer() {
-            document.getElementById('modal-pdf-viewer').classList.add('hidden');
-        }
-
-        // --- Appointment Modal Control ---
-        function openApptModal(id) {
-            currentApptId = id;
-            const r = records.find(x => x.id === id);
-            if(!r) return;
-            
-            document.getElementById('appt-person-name').textContent = `${r.prefix}${r.fname} ${r.lname} | หน่วยงาน: ${r.unit}`;
-            document.getElementById('modal-appt').classList.remove('hidden');
-        }
-
-        function closeApptModal() {
-            document.getElementById('modal-appt').classList.add('hidden');
-        }
-
-        function saveAppointment() {
-            const date = document.getElementById('appt-date').value;
-            const clinic = document.getElementById('appt-clinic').value;
-            
-            if(!date) {
-                alert('กรุณาเลือกวันที่ต้องการทำการนัดหมายบุคคล');
-                return;
-            }
-            
-            alert(`📝 บันทึกตารางนัดหมายสำเร็จ!\nส่งข้อมูลเข้าคิวของ ${clinic} ในวันที่ ${date} เรียบร้อยแล้ว`);
-            closeApptModal();
-        }
-
-        // เรียกคำสั่งเริ่มต้นโหลดแอปพลิเคชัน
-        window.onload = function() {
-            renderAdminNcdDashboard(records);
-            renderAdminList();
-            
-            // พรีวิวประเดิมคนแรกในหน้าฝั่งผู้รับบริการด้านล่าง
-            if(records.length > 0) viewPatientDetail(records[0].id);
-        };
-    </script>
-</body>
-</html>
+<body style="background:#f0f4ff;min-height:100vh;padding:16px;">
+<div style="max-width:960px;margin:0 auto 20px;">
+<div class="sc p-4" style="display:flex;align-items:center;gap:16px;">
+<div style="width:52px;height:52px;background:#1d4ed8;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+<svg width="30" height="30" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+</div>
+<div>
+<h1 style="font-size:19px;font-weight:700;color:#1e293b;margin:0;">ระบบตรวจสุขภาพประจำปี</h1>
+<p style="font-size:12px;color:#64748b;margin:0;">โรงพยาบาลค่ายพระยอดเมืองขวาง</p>
+</div>
+<div style="margin-left:auto;display:flex;gap:8px;">
+<button onclick="showPage('home')" class="bs" style="padding:7px 14px;font-size:13px;"> 🏠  หน้าหลัก</button>
+<button onclick="showAdminLogin()" class="bs" style="padding:7px 14px;font-size:13px;"> ⚙️  Admin</button>
+</div>
+</div>
+</div>
+<div id="page-home" style="max-width:960px;margin:0 auto;">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+<div class="sc p-6" style="cursor:pointer;border:2px solid transparent;" onclick="showPage('register')" onmouseover="this.style.borderColor='#1d4ed8'" onmouseout="this.style.borderColor='transparent'">
+<div style="width:48px;height:48px;background:#eff6ff;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;">
+<svg width="26" height="26" fill="none" stroke="#1d4ed8" stroke-width="2" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+</div>
+<h2 style="font-size:17px;font-weight:700;color:#1e293b;margin:0 0 6px;">ลงทะเบียนตรวจสุขภาพ</h2>
+<p style="font-size:13px;color:#64748b;margin:0;">กรอกข้อมูลส่วนตัว ประวัติสุขภาพ และแบบประเมินสุขภาพจิต</p>
+</div>
+<div class="sc p-6" style="cursor:pointer;border:2px solid transparent;" onclick="showPage('login')" onmouseover="this.style.borderColor='#16a34a'" onmouseout="this.style.borderColor='transparent'">
+<div style="width:48px;height:48px;background:#f0fdf4;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;">
+<svg width="26" height="26" fill="none" stroke="#16a34a" stroke-width="2" viewBox="0 0 24 24"><path d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+</div>
+<h2 style="font-size:17px;font-weight:700;color:#1e293b;margin:0 0 6px;">ดูผลตรวจสุขภาพ</h2>
+<p style="font-size:13px;color:#64748b;margin:0;">เข้าสู่ระบบด้วยเลขบัตรประชาชนและวันเกิด</p>
+</div>
+</div>
+</div>
+<div id="page-register" class="hidden" style="max-width:960px;margin:0 auto;">
+<div class="sc p-4 mb-4">
+<div style="display:flex;align-items:center;">
+<div style="display:flex;align-items:center;gap:8px;flex:1;"><div class="sdot active" id="sd1">1</div><span style="font-size:13px;font-weight:600;color:#1d4ed8;" id="sl1">ข้อมูลส่วนตัว</span></div>
+<div style="height:2px;background:#e5e7eb;flex:1;"></div>
+<div style="display:flex;align-items:center;gap:8px;flex:1;justify-content:center;"><div class="sdot pending" id="sd2">2</div><span style="font-size:13px;color:#9ca3af;" id="sl2">ข้อมูลสุขภาพ</span></div>
+<div style="height:2px;background:#e5e7eb;flex:1;"></div>
+<div style="display:flex;align-items:center;gap:8px;flex:1;justify-content:center;"><div class="sdot pending" id="sd3">3</div><span style="font-size:13px;color:#9ca3af;" id="sl3">ประวัติสุขภาพ</span></div>
+<div style="height:2px;background:#e5e7eb;flex:1;"></div>
+<div style="display:flex;align-items:center;gap:8px;justify-content:flex-end;"><div class="sdot pending" id="sd4">4</div><span style="font-size:13px;color:#9ca3af;" id="sl4">สุขภาพจิต</span></div>
+</div>
+</div>
+<div id="step1" class="sc p-6">
+<h2 style="font-size:16px;font-weight:700;color:#1e293b;margin:0 0 18px;padding-bottom:10px;border-bottom:2px solid #eff6ff;">ขั้นตอนที่ 1: ข้อมูลส่วนตัว</h2>
+<div style="display:grid;grid-template-columns:160px 1fr 1fr;gap:14px;margin-bottom:14px;">
+<div><label class="fl">ยศ / คำนำหน้า <span style="color:red">*</span></label><input type="text" id="f-prefix" class="fi" placeholder="เช่น พ.ต., นาย, น.ส."></div>
+<div><label class="fl">ชื่อ <span style="color:red">*</span></label><input type="text" id="f-fname" class="fi" placeholder="ชื่อจริง"></div>
+<div><label class="fl">นามสกุล <span style="color:red">*</span></label><input type="text" id="f-lname" class="fi" placeholder="นามสกุล"></div>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px;">
+<div>
+<label class="fl">เลขบัตรประชาชน <span style="color:red">*</span></label>
+<input type="text" id="f-idcard" class="fi" placeholder="13 หลัก" maxlength="13" oninput="this.value=this.value.replace(/\D/g,'')">
+<div id="id-hint" style="font-size:12px;color:#9ca3af;margin-top:3px;">กรอกครบ 13 หลัก</div>
+</div>
+<div>
+<label class="fl">วันเกิด (พ.ศ.) <span style="color:red">*</span></label>
+<div class="dob-wrap" id="dob-wrap-reg">
+<select id="f-dob-day" class="fi"><option value="">วัน</option></select>
+<select id="f-dob-month" class="fi"><option value="">เดือน</option></select>
+<select id="f-dob-year" class="fi"><option value="">ปี พ.ศ.</option></select>
+</div>
+</div>
+<div>
+<label class="fl">เพศ <span style="color:red">*</span></label>
+<select id="f-gender" class="fi"><option value="">-- เลือก --</option><option value="1">ชาย</option><option value="2">หญิง</option></select>
+</div>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px;">
+<div><label class="fl">HN (ถ้ามี)</label><input type="text" id="f-hn" class="fi" placeholder="หมายเลข HN"></div>
+<div><label class="fl">หน่วยต้นสังกัด <span style="color:red">*</span></label><input type="text" id="f-unit" class="fi" placeholder="เช่น พัน.ร.3"></div>
+<div><label class="fl">ตำแหน่ง</label><input type="text" id="f-position" class="fi" placeholder="ตำแหน่งงาน"></div>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+<div><label class="fl">ช่วยราชการ (ถ้ามี)</label><input type="text" id="f-attach" class="fi" placeholder="หน่วยที่ช่วยราชการ"></div>
+<div>
+<label class="fl">สิทธิเบิก <span style="color:red">*</span></label>
+<select id="f-right" class="fi"><option value="">-- เลือก --</option><option value="1">ข้าราชการ</option><option value="2">รัฐวิสาหกิจ</option><option value="3">ประกันสังคม (ปกส.)</option><option value="4">สปสช.</option><option value="5">อื่นๆ</option></select>
+</div>
+</div>
+<div style="display:flex;justify-content:flex-end;gap:12px;margin-top:20px;">
+<button class="bs" onclick="showPage('home')">ยกเลิก</button>
+<button class="bp" onclick="goStep(2)">ถัดไป  → </button>
+</div>
+</div>
+<div id="step2" class="hidden sc p-6">
+<h2 style="font-size:16px;font-weight:700;color:#1e293b;margin:0 0 18px;padding-bottom:10px;border-bottom:2px solid #eff6ff;">ขั้นตอนที่ 2: ข้อมูลสุขภาพ</h2>
+<div style="background:#eff6ff;border-radius:10px;padding:16px;margin-bottom:18px;">
+<h3 style="font-size:14px;font-weight:700;color:#1e40af;margin:0 0 12px;"> 📏  น้ำหนัก / ส่วนสูง / BMI</h3>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;">
+<div><label class="fl">น้ำหนัก (kg) <span style="color:red">*</span></label><input type="number" id="f-weight" class="fi" placeholder="kg" step="0.1" oninput="calcBMI()"></div>
+<div><label class="fl">ส่วนสูง (cm) <span style="color:red">*</span></label><input type="number" id="f-height" class="fi" placeholder="cm" oninput="calcBMI()"></div>
+<div><label class="fl">BMI (kg/m²)</label><input type="text" id="f-bmi" class="fi" readonly style="background:#f0f4ff;font-weight:700;" placeholder="อัตโนมัติ"></div>
+<div><label class="fl">รอบเอว (cm)</label><input type="number" id="f-waist" class="fi" placeholder="cm"></div>
+</div>
+<div id="bmi-result" style="margin-top:8px;font-size:13px;font-weight:600;"></div>
+</div>
+<div style="margin-bottom:18px;">
+<h3 style="font-size:14px;font-weight:700;color:#374151;margin:0 0 12px;"> 🚬  พฤติกรรมสุขภาพ</h3>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;">
+<div><label class="fl">การสูบบุหรี่</label><select id="f-smoke" class="fi" onchange="checkAddictions()"><option value="0">ไม่เคยสูบ</option><option value="1">เคยสูบ แต่เลิกแล้ว</option><option value="2">สูบเป็นครั้งคราว</option><option value="3">สูบเป็นประจำ</option></select></div>
+<div><label class="fl">การดื่มแอลกอฮอล์</label><select id="f-alcohol" class="fi" onchange="checkAddictions()"><option value="0">ไม่เคยดื่ม</option><option value="1">เคยดื่ม แต่เลิกแล้ว</option><option value="2">ดื่มเป็นครั้งคราว</option><option value="3">ดื่มเป็นประจำ</option></select></div>
+<div><label class="fl">การออกกำลังกาย</label><select id="f-exercise" class="fi"><option value="0">ไม่เคยออกกำลังกาย</option><option value="1">ออกกำลังกาย ต่ำกว่าเกณฑ์</option><option value="2">ออกกำลังกาย ตามเกณฑ์</option></select></div>
+</div>
+</div>
+<div style="display:flex;justify-content:space-between;margin-top:20px;">
+<button class="bs" onclick="goStep(1)"> ←  ย้อนกลับ</button>
+<button class="bp" onclick="goStep(3)">ถัดไป  → </button>
+</div>
+</div>
+<div id="step3" class="hidden sc p-6">
+<h2 style="font-size:16px;font-weight:700;color:#1e293b;margin:0 0 18px;padding-bottom:10px;border-bottom:2px solid #eff6ff;">ขั้นตอนที่ 3: ประวัติเจ็บป่วยและโรคประจำตัว</h2>
+<div style="margin-bottom:18px;">
+<h3 style="font-size:14px;font-weight:700;color:#374151;margin:0 0 10px;"> 🏥  โรคประจำตัว (NCDs)</h3>
+<div class="rg" style="margin-bottom:12px;">
+<label class="cb"><input type="radio" name="ncd-none" id="ncd-no" value="no" onchange="toggleNCD(false)"><span style="font-weight:600;color:#16a34a;"> ✓ ไม่มีโรคประจำตัว</span></label>
+<label class="cb"><input type="radio" name="ncd-none" id="ncd-yes" value="yes" onchange="toggleNCD(true)"><span style="font-weight:600;color:#1d4ed8;">มีโรคประจำตัว (กรุณาเลือก)</span></label>
+</div>
+<div id="ncd-options" class="hidden" style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:14px;">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:1
