@@ -1,14 +1,21 @@
 <!DOCTYPE html>
+
 <html lang="th">
+
 <head>
+
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>ระบบตรวจสุขภาพประจำปี - รพ.ค่ายพระยอดเมืองขวาง</title>
+
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
-<!-- Tabler Icons (ใช้โดย lab-result-module) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<!-- Tabler Icons -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/tabler-icons.min.css">
-<!-- โมดูลผลตรวจ Lab -->
-<script src="lab-result-module.js"></script>
+
 <!-- Firebase SDK -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -53,6 +60,7 @@
     window.addEventListener('load', tryLoad);
   }
 </script>
+
 <style>
 .p-4{padding:1rem!important}.p-6{padding:1.5rem!important}.p-8{padding:2rem!important}
 .p-2{padding:.5rem!important}.p-3{padding:.75rem!important}
@@ -60,6 +68,7 @@
 .mt-4{margin-top:1rem!important}.mt-2{margin-top:.5rem!important}
 .hidden{display:none!important}
 </style>
+
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap');
 *{font-family:'Sarabun',sans-serif;}
@@ -91,10 +100,55 @@
 .dob-wrap select:focus{outline:none;border-color:#1d4ed8;}
 .dob-wrap select.err{border-color:#ef4444;}
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:1000;}
-/* ── Lab module card ── */
 #lab-module-section{margin-top:1rem;}
 </style>
+
+<!-- Lab Module CSS -->
+<style id="lm-css">
+  .lm{font-family:-apple-system,'Sarabun',sans-serif;font-size:15px;color:#1a1a1a}
+  .lm-card{background:#fff;border:1px solid #e8e8e4;border-radius:12px;padding:1rem 1.25rem;margin-bottom:.875rem}
+  .lm-sec{font-size:13px;font-weight:500;color:#888;margin-bottom:.7rem;display:flex;align-items:center;gap:6px}
+  .lm-b{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:500;padding:3px 10px;border-radius:20px;white-space:nowrap}
+  .lm-bh{background:#FCEBEB;color:#791F1F}.lm-bm{background:#FAEEDA;color:#633806}
+  .lm-bl{background:#EAF3DE;color:#27500A}.lm-bn{background:#F1EFE8;color:#5F5E5A}
+  .lm-bok{background:#EAF3DE;color:#27500A}.lm-babn{background:#FCEBEB;color:#791F1F}
+  .lm-mg{display:grid;grid-template-columns:repeat(auto-fit,minmax(105px,1fr));gap:8px;margin-bottom:.875rem}
+  .lm-mc{background:#f7f7f5;border-radius:8px;padding:.6rem .7rem;text-align:center}
+  .lm-mv{font-size:20px;font-weight:500}.lm-ml{font-size:11px;color:#888;margin-top:2px}
+  .lm-nr{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid #f0f0ec}
+  .lm-nr:last-child{border-bottom:none}
+  .lm-ni{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:17px}
+  .lm-nih{background:#FCEBEB;color:#A32D2D}.lm-nim{background:#FAEEDA;color:#854F0B}.lm-nil{background:#EAF3DE;color:#3B6D11}
+  .lm-bw{height:6px;background:#ebebeb;border-radius:4px;overflow:hidden;margin:4px 0}
+  .lm-bf{height:100%;border-radius:4px;transition:width .5s}
+  .lm-bfh{background:#E24B4A}.lm-bfm{background:#EF9F27}.lm-bfl{background:#639922}
+  .lm-ev{font-size:12px;padding:1px 0;display:flex;gap:5px;align-items:flex-start}
+  .lm-evb{color:#A32D2D}.lm-evm{color:#854F0B}.lm-evo{color:#3B6D11}
+  .lm-nt{margin-top:6px;font-size:12px;border-radius:6px;padding:5px 8px}
+  .lm-nth{background:#FCEBEB;color:#791F1F}.lm-ntm{background:#FAEEDA;color:#633806}
+  .lm-rr{font-size:13px;padding:6px 0;border-bottom:1px solid #f0f0ec;display:flex;gap:8px;align-items:flex-start}
+  .lm-rr:last-child{border-bottom:none}
+  .lm-tg{display:inline-block;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:500;white-space:nowrap;flex-shrink:0}
+  .lm-tgu{background:#FCEBEB;color:#791F1F}.lm-tgs{background:#FAEEDA;color:#633806}
+  .lm-tgl{background:#EAF3DE;color:#27500A}.lm-tgf{background:#E6F1FB;color:#185FA5}
+  .lm-lr{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid #f0f0ec}
+  .lm-lr:last-child{border-bottom:none}
+  .lm-ln{font-size:14px;margin:0}.lm-ls{font-size:12px;color:#888;margin:0}
+  .lm-lr-r{display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+  .lm-lv{font-size:15px;font-weight:500}
+  .lm-lvh{color:#A32D2D}.lm-lvl{color:#185FA5}.lm-lvo{color:#1a1a1a}
+  .lm-ref{font-size:11px;color:#aaa}
+  .lm-av{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:500;font-size:15px;flex-shrink:0}
+  .lm-sg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:.875rem}
+  .lm-sc{background:#f7f7f5;border-radius:8px;padding:.55rem;text-align:center}
+  .lm-sn{font-size:21px;font-weight:500}.lm-sl{font-size:11px;color:#888;margin-top:1px}
+  .lm-dis{font-size:11px;color:#bbb;margin-top:.875rem;text-align:center;border-top:1px solid #f0f0ec;padding-top:.7rem}
+  .lm-alert{border-radius:8px;padding:.7rem .9rem;font-size:13px;margin-bottom:.75rem}
+  @media(max-width:480px){.lm-sg{grid-template-columns:repeat(2,1fr)}.lm-mg{grid-template-columns:repeat(2,1fr)}}
+</style>
+
 </head>
+
 <body style="background:#f0f4ff;min-height:100vh;padding:16px;">
 
 <!-- HEADER -->
@@ -334,16 +388,16 @@
       <button class="bg" style="font-size:13px;padding:7px 14px;" onclick="exportSingleExcel()">⬇ ดาวน์โหลด Excel</button>
     </div>
   </div>
-  <!-- ข้อมูลทั่วไป -->
   <div id="result-content"></div>
-  <!-- ════ ส่วนผลตรวจ Lab (โมดูล) ════ -->
+
+  <!-- ════ ส่วนผลตรวจ Lab ════ -->
   <div id="lab-module-section" class="hidden">
     <div class="sc p-4 mb-2" style="background:#eff6ff;border-color:#bfdbfe;">
       <h3 style="font-size:15px;font-weight:700;color:#1e40af;margin:0;display:flex;align-items:center;gap:8px;">
         🔬 ผลตรวจเลือด / ปัสสาวะ — วิเคราะห์ NCDs
       </h3>
     </div>
-    <div id="lab-result-container"></div>
+    <div id="lab-result-container" style="padding:.5rem 0"></div>
   </div>
 </div>
 
@@ -376,8 +430,10 @@
     </div>
   </div>
 
-  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:12px;" id="admin-stats"></div>
+  <!-- NCD Dashboard (ใหม่) -->
+  <div id="ncd-dashboard" style="margin-bottom:12px;"></div>
 
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:12px;" id="admin-stats"></div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
     <div class="sc p-4">
       <h3 style="font-size:13px;font-weight:700;color:#374151;margin:0 0 12px;display:flex;align-items:center;gap:6px;">🏥 ยอดผู้ป่วยแต่ละโรคประจำตัว</h3>
@@ -417,7 +473,7 @@
   </div>
 </div>
 
-<!-- MODAL แนบ PDF ผลตรวจ -->
+<!-- MODAL แนบ PDF -->
 <div id="modal-pdf" class="hidden modal-overlay">
   <div class="sc p-6" style="width:520px;max-width:95vw;max-height:90vh;overflow-y:auto;">
     <h3 style="font-size:16px;font-weight:700;color:#1e293b;margin:0 0 4px;">📎 แนบผลตรวจสุขภาพประจำปี (PDF)</h3>
@@ -449,7 +505,7 @@
       </div>
       <button onclick="clearPdfPreview()" style="background:none;border:none;color:#9ca3af;font-size:18px;cursor:pointer;">✕</button>
     </div>
-    <!-- ════ Preview ผลวิเคราะห์ Lab (ก่อน save) ════ -->
+    <!-- Preview Lab -->
     <div id="pdf-lab-preview" class="hidden" style="margin-top:16px;border-top:2px solid #eff6ff;padding-top:14px;">
       <div style="font-size:13px;font-weight:700;color:#1e40af;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
         🔬 ตัวอย่างการวิเคราะห์ผลตรวจ
@@ -554,6 +610,431 @@
 </div>
 
 <script>
+// ======= LAB MODULE =======
+(function(global){
+  'use strict';
+  const PDFJS_URL='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+  const PDFJS_WK='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  function loadPdfJs(){
+    return new Promise(res=>{
+      if(global.pdfjsLib){res(global.pdfjsLib);return;}
+      const s=document.createElement('script');s.src=PDFJS_URL;
+      s.onload=()=>{global.pdfjsLib.GlobalWorkerOptions.workerSrc=PDFJS_WK;res(global.pdfjsLib);};
+      document.head.appendChild(s);
+    });
+  }
+  async function pdfToText(src){
+    const lib=await loadPdfJs();
+    const p=await lib.getDocument(typeof src==='string'?{url:src}:{data:src}).promise;
+    let t='';
+    for(let i=1;i<=p.numPages;i++){const pg=await p.getPage(i);const tc=await pg.getTextContent();t+=tc.items.map(x=>x.str).join(' ')+'\n';}
+    return t;
+  }
+  function n(text,re){const m=text.match(re);return m?parseFloat(m[1]):null;}
+  function extractLab(text){
+    const d={};
+    const nm=text.match(/ชื่อ\s*:\s*([^\n\r]+)/)||text.match(/((?:ร|พ)\.[อต]\.(?:หญิง|ชาย)\s+\S+\s+\S+|นาย\s+\S+\s+\S+|นาง(?:สาว)?\s+\S+\s+\S+)/);
+    d.name=nm?nm[1].trim():null;
+    const am=text.match(/อายุ\s*:\s*(\d+)\s*ป/);d.age=am?parseInt(am[1]):null;
+    const dm=text.match(/(\d+\s+(?:มกราคม|กุมภาพันธ์|มีนาคม|เมษายน|พฤษภาคม|มิถุนายน|กรกฎาคม|สิงหาคม|กันยายน|ตุลาคม|พฤศจิกายน|ธันวาคม)\s+\d{4})/);
+    d.date=dm?dm[1]:null;
+    d.hb=n(text,/Hb\s+([\d.]+)/);d.hct=n(text,/Hct\s+([\d.]+)/);
+    d.rbc=n(text,/RBC count\s+([\d.]+)/);d.mcv=n(text,/MCV\s+([\d.]+)/);
+    d.mch=n(text,/MCH\s+([\d.]+)/);d.mchc=n(text,/MCHC\s+([\d.]+)/);
+    d.plt=n(text,/Platelet Count\s+([\d.]+)/);d.wbc=n(text,/WBC count\s+([\d.]+)/);
+    d.neu=n(text,/Neutrophil\s+([\d.]+)/);d.lym=n(text,/Lymphocyte\s+([\d.]+)/);
+    d.eos=n(text,/Eosinophil\s+([\d.]+)/);d.mono=n(text,/Monocyte\s+([\d.]+)/);
+    d.chol=n(text,/Cholesterol\s+([\d.]+)/);d.tg=n(text,/Triglyceride\s+([\d.]+)/);
+    d.fbs=n(text,/Glucose\(FBS\)\s+([\d.]+)/)||n(text,/Glucose\s+([\d.]+)/);
+    d.uric=n(text,/Uric acid\.\.\s+([\d.]+)/);
+    d.bun=n(text,/BUN[^\d]*([\d.]+)/);d.creat=n(text,/Creatinine[^\d]*([\d.]+)/);
+    d.egfr=n(text,/eGFR[^\d]*([\d.]+)/);
+    d.alt=n(text,/SGPT\(ALT\)[^\d]*([\d.]+)/);d.ast=n(text,/SGOT\(AST\)[^\d]*([\d.]+)/);d.alp=n(text,/ALP[^\d]*([\d.]+)/);
+    d.urineBlood=/3\+\s*Blood|2\+\s*Blood|1\+\s*Blood/.test(text);
+    d.urineProtein=!/Negative Protein/.test(text)&&/Protein/.test(text);
+    d.urineGlucose=!/Glucose Negative/.test(text)&&/Glucose/.test(text);
+    d.urineRBC=n(text,/(\d+)-\d+\s+RBC\s+0\s*-\s*2/);
+    d.urinePeriod=/มีประจำเดือน|มีประจําเดือน/.test(text);
+    return d;
+  }
+  function analyzeNCD(d,gender,age){
+    const f=gender==='F';
+    const diseases=[];
+    function dis(id,name,icon,score,level,evidence,note){diseases.push({id,name,icon,score:Math.min(score,100),level,evidence,note});}
+    let sc=0,ev=[];
+    const hbLo=f?12:14,hctLo=f?36:40;
+    if(d.hb!==null&&d.hb<hbLo){sc+=35;ev.push({b:true,t:`Hb ${d.hb} g/dL ต่ำกว่าเกณฑ์ (${hbLo}–${f?16:18})`});}
+    if(d.hct!==null&&d.hct<hctLo){sc+=20;ev.push({b:true,t:`Hct ${d.hct}% ต่ำกว่าเกณฑ์`});}
+    if(d.mcv!==null&&d.mcv<80){sc+=20;ev.push({b:true,t:`MCV ${d.mcv} fL ต่ำ — เม็ดเลือดแดงขนาดเล็ก`});}
+    if(d.mch!==null&&d.mch<27){sc+=15;ev.push({b:true,t:`MCH ${d.mch} pg ต่ำ — บ่งชี้ขาดธาตุเหล็ก`});}
+    if(d.rbc!==null&&d.rbc<4.2){sc+=10;ev.push({b:true,t:`RBC ${d.rbc} ×10⁶/mm³ ต่ำ`});}
+    if(sc===0&&d.hb!==null)ev.push({b:false,t:`Hb ${d.hb} g/dL ปกติ`});
+    let note='';
+    if(sc>=35&&d.mcv!==null&&d.mcv<80&&d.mch!==null&&d.mch<27)
+      note=f&&(age||0)>35?'แบบแผน Microcytic Hypochromic — ควรพิจารณาตรวจ Thalassemia trait ด้วย':'แบบแผน Iron Deficiency Anemia (IDA) — พบบ่อยในหญิงวัยเจริญพันธุ์';
+    dis('anemia','โรคโลหิตจาง','ti-droplet',sc,sc>=50?'high':sc>=20?'medium':'low',ev,note);
+    sc=0;ev=[];
+    if(d.chol!==null&&d.chol>200){sc+=40;ev.push({b:true,t:`Cholesterol ${d.chol} mg/dL เกินเกณฑ์ (>200)`});}
+    else if(d.chol!==null)ev.push({b:false,t:`Cholesterol ${d.chol} mg/dL ปกติ`});
+    if(d.tg!==null&&d.tg>150){sc+=25;ev.push({b:true,t:`Triglyceride ${d.tg} mg/dL เกินเกณฑ์`});}
+    else if(d.tg!==null)ev.push({b:false,t:`Triglyceride ${d.tg} mg/dL ปกติ`});
+    if(age&&age>=40){sc+=15;ev.push({b:null,t:`อายุ ${age} ปี — ความเสี่ยง CVD เพิ่มตามอายุ`});}
+    ev.push({b:null,t:'ควรตรวจ Full Lipid Profile (LDL, HDL) เพิ่มเติม'});
+    const cvdNote=sc>=40&&(age||0)>=40?'Cholesterol สูง + อายุ ≥40 ปี → ควรประเมิน Framingham CVD risk score':'';
+    dis('cvd','โรคหัวใจและหลอดเลือด (CVD)','ti-heart',sc,sc>=50?'high':sc>=25?'medium':'low',ev,cvdNote);
+    sc=0;ev=[];
+    if(d.fbs!==null&&d.fbs>=126){sc+=70;ev.push({b:true,t:`FBS ${d.fbs} mg/dL เกินเกณฑ์เบาหวาน (≥126)`});}
+    else if(d.fbs!==null&&d.fbs>=100){sc+=30;ev.push({b:null,t:`FBS ${d.fbs} mg/dL — Prediabetes (100–125)`});}
+    else if(d.fbs!==null)ev.push({b:false,t:`FBS ${d.fbs} mg/dL ปกติ (70–100)`});
+    else ev.push({b:null,t:'ไม่มีผล FBS ในรายงานนี้ — ควรตรวจเพิ่ม'});
+    if(!d.urineGlucose)ev.push({b:false,t:'น้ำตาลในปัสสาวะ: ไม่พบ (ดี)'});
+    dis('dm','เบาหวาน (Diabetes)','ti-activity',sc,sc>=50?'high':sc>=25?'medium':'low',ev,'');
+    sc=0;ev=[];
+    if(d.egfr!==null&&d.egfr<60){sc+=50;ev.push({b:true,t:`eGFR ${d.egfr} mL/min — ต่ำ บ่งชี้ไตเสื่อม`});}
+    else if(d.egfr!==null&&d.egfr<90){sc+=15;ev.push({b:null,t:`eGFR ${d.egfr} mL/min — ลดลงเล็กน้อย (ควร >90)`});}
+    else if(d.egfr!==null)ev.push({b:false,t:`eGFR ${d.egfr} mL/min — ดีมาก`});
+    if(d.creat!==null){const cLo=f?0.5:0.6,cHi=f?1.0:1.2;if(d.creat>cHi){sc+=25;ev.push({b:true,t:`Creatinine ${d.creat} mg% สูงกว่าเกณฑ์`});}else ev.push({b:false,t:`Creatinine ${d.creat} mg% ปกติ`});}
+    if(d.urineBlood&&!d.urinePeriod){sc+=20;ev.push({b:true,t:'พบเลือดในปัสสาวะ — ควรตรวจซ้ำ'});}
+    if(d.urineBlood&&d.urinePeriod)ev.push({b:null,t:'พบเลือดในปัสสาวะ (มีประจำเดือน) — ตรวจซ้ำหลังหมด'});
+    if(!d.urineProtein)ev.push({b:false,t:'Protein ในปัสสาวะ: ไม่พบ (ดี)'});
+    dis('ckd','ภาวะไตเสื่อม (CKD)','ti-droplets',sc,sc>=50?'high':sc>=20?'medium':'low',ev,'');
+    sc=0;ev=[];
+    const aHi=f?35:40;
+    if(d.alt!==null&&d.alt>aHi){sc+=35;ev.push({b:true,t:`ALT ${d.alt} U/L สูง — อาจบ่งชี้ตับอักเสบ`});}
+    else if(d.alt!==null)ev.push({b:false,t:`ALT ${d.alt} U/L ปกติ`});
+    if(d.ast!==null&&d.ast>aHi){sc+=35;ev.push({b:true,t:`AST ${d.ast} U/L สูง`});}
+    else if(d.ast!==null)ev.push({b:false,t:`AST ${d.ast} U/L ปกติ`});
+    if(d.alp!==null&&d.alp>120){sc+=20;ev.push({b:true,t:`ALP ${d.alp} U/L สูง (40–120)`});}
+    else if(d.alp!==null)ev.push({b:false,t:`ALP ${d.alp} U/L ปกติ`});
+    if(ev.length===0)ev.push({b:null,t:'ไม่มีข้อมูลเอนไซม์ตับ — ควรตรวจ'});
+    dis('liver','โรคตับ','ti-shield',sc,sc>=50?'high':sc>=25?'medium':'low',ev,'');
+    const hiC=diseases.filter(x=>x.level==='high').length;
+    const mdC=diseases.filter(x=>x.level==='medium').length;
+    const overall=hiC>=2?'high':hiC>=1||mdC>=2?'medium':'low';
+    const recs=[];
+    if(diseases.find(x=>x.id==='anemia'&&x.level!=='low'))recs.push({u:'urgent',t:'ตรวจ Serum Iron, TIBC, Ferritin เพื่อยืนยันชนิดของโลหิตจาง'});
+    if(d.urineBlood&&d.urinePeriod)recs.push({u:'urgent',t:'ตรวจปัสสาวะซ้ำหลังหมดประจำเดือน'});
+    if(diseases.find(x=>x.id==='cvd'&&x.level!=='low'))recs.push({u:'urgent',t:'ตรวจ Full Lipid Profile และประเมิน Framingham CVD risk score'});
+    if(!d.fbs)recs.push({u:'soon',t:'ตรวจ FBS และ HbA1c เพิ่มเติม'});
+    if(!d.chol)recs.push({u:'soon',t:'ตรวจ Lipid Profile (Cholesterol, LDL, HDL) เพิ่มเติม'});
+    if(diseases.find(x=>x.id==='anemia'&&x.level!=='low'))recs.push({u:'lifestyle',t:'เพิ่มอาหารธาตุเหล็ก (ตับ, เนื้อแดง, ผักใบเขียว) และวิตามิน C'});
+    if(diseases.find(x=>x.id==='cvd'&&x.level!=='low'))recs.push({u:'lifestyle',t:'ลดไขมันอิ่มตัว เพิ่มใยอาหาร ออกกำลังกาย ≥150 นาที/สัปดาห์'});
+    if((age||0)>=40)recs.push({u:'followup',t:'ตรวจสุขภาพประจำปีต่อเนื่อง — ความดัน, HbA1c, eGFR ทุกปี'});
+    return {overall,diseases,recommendations:recs};
+  }
+  function labRow(name,sub,val,lo,hi,unit){
+    if(val===null)return'';
+    const isH=val>hi,isL=val<lo;
+    const cls=isH?'lm-lvh':isL?'lm-lvl':'lm-lvo';
+    const badge=isH||isL?`<span class="lm-b lm-babn">${isH?'สูง':'ต่ำ'}</span>`:`<span class="lm-b lm-bok">ปกติ</span>`;
+    return`<div class="lm-lr"><div><p class="lm-ln">${name}</p><p class="lm-ls">${sub}</p></div><div class="lm-lr-r"><span class="lm-lv ${cls}">${val}<span style="font-size:12px;font-weight:400"> ${unit}</span></span><div style="display:flex;gap:5px;align-items:center">${badge}<span class="lm-ref">${lo}–${hi}</span></div></div></div>`;
+  }
+  function buildHTML(d,gender,ncd){
+    const f=gender==='F';
+    const init=d.name?d.name.replace(/(?:ร|พ)\.[อต]\.(?:หญิง|ชาย)\s*/g,'').split(/\s+/).filter(Boolean).map(w=>w[0]).slice(0,2).join(''):'?';
+    const ovMap={high:{lbl:'ความเสี่ยงปานกลาง-สูง',cls:'lm-bh'},medium:{lbl:'ความเสี่ยงต่ำ-ปานกลาง',cls:'lm-bm'},low:{lbl:'ความเสี่ยงต่ำ',cls:'lm-bl'}};
+    const ov=ovMap[ncd.overall];
+    const km=[
+      {lbl:'Hb',val:d.hb,unit:'g/dL',lo:f?12:14,hi:f?16:18},
+      {lbl:d.chol!==null?'Cholesterol':d.fbs!==null?'FBS':'WBC',val:d.chol!==null?d.chol:d.fbs!==null?d.fbs:d.wbc,unit:'mg/dL',lo:d.chol!==null?0:d.fbs!==null?70:4,hi:d.chol!==null?200:d.fbs!==null?100:10},
+      {lbl:d.egfr!==null?'eGFR':'Platelet',val:d.egfr!==null?d.egfr:d.plt,unit:d.egfr!==null?'mL/min':'K',lo:d.egfr!==null?90:140,hi:d.egfr!==null?200:440},
+      {lbl:d.creat!==null?'Creatinine':'MCV',val:d.creat!==null?d.creat:d.mcv,unit:d.creat!==null?'mg%':'fL',lo:d.creat!==null?f?0.5:0.6:80,hi:d.creat!==null?f?1.0:1.2:95},
+    ];
+    const metH=km.filter(m=>m.val!==null).map(m=>{
+      const c=m.val<m.lo?'#185FA5':m.val>m.hi?'#A32D2D':'#1a1a1a';
+      const s=m.val<m.lo?'<span style="color:#A32D2D;font-size:11px">ต่ำ</span>':m.val>m.hi?'<span style="color:#A32D2D;font-size:11px">สูง</span>':'<span style="color:#3B6D11;font-size:11px">ปกติ</span>';
+      return`<div class="lm-mc"><div class="lm-mv" style="color:${c}">${m.val}</div><div class="lm-ml">${m.lbl}<br>${s}</div></div>`;
+    }).join('');
+    let cN=0,cH=0,cL=0;
+    function ck(v,lo,hi){if(v===null)return;v<lo?cL++:v>hi?cH++:cN++;}
+    ck(d.hb,f?12:14,f?16:18);ck(d.hct,f?36:40,f?48:52);ck(d.mcv,80,95);ck(d.mch,27,31);
+    ck(d.plt,140,440);ck(d.wbc,4,10);ck(d.chol,0,200);ck(d.tg,0,150);
+    ck(d.fbs,70,100);ck(d.uric,f?2.4:3.4,f?6.0:7.0);
+    ck(d.bun,6,20);ck(d.creat,f?0.5:0.6,f?1.0:1.2);ck(d.alt,0,f?35:40);ck(d.ast,0,f?35:40);
+    const lvMap={high:'เสี่ยงสูง',medium:'ควรติดตาม',low:'ความเสี่ยงต่ำ'};
+    const ncdH=ncd.diseases.map(dis=>{
+      const evH=dis.evidence.map(e=>{
+        const ec=e.b===true?'lm-evb':e.b===false?'lm-evo':'lm-evm';
+        return`<div class="lm-ev ${ec}"><span>${e.b===true?'✕':e.b===false?'✓':'△'}</span><span>${e.t}</span></div>`;
+      }).join('');
+      const nt=dis.note?`<div class="lm-nt lm-nt${dis.level==='high'?'h':'m'}">${dis.note}</div>`:'';
+      return`<div class="lm-nr">
+        <div class="lm-ni lm-ni${dis.level}"><i class="ti ${dis.icon}" aria-hidden="true"></i></div>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;flex-wrap:wrap;gap:5px;margin-bottom:3px">
+            <span style="font-size:14px;font-weight:500">${dis.name}</span>
+            <span class="lm-b lm-b${dis.level}">${dis.id==='anemia'&&dis.level==='high'?'ตรวจพบแล้ว':lvMap[dis.level]}</span>
+          </div>
+          <div class="lm-bw"><div class="lm-bf lm-bf${dis.level}" style="width:${dis.score}%"></div></div>
+          ${evH}${nt}
+        </div>
+      </div>`;
+    }).join('');
+    const tMap={urgent:['เร่งด่วน','lm-tgu'],soon:['ภายใน 1 เดือน','lm-tgs'],lifestyle:['ปรับวิถีชีวิต','lm-tgl'],followup:['ติดตาม','lm-tgf']};
+    const recH=ncd.recommendations.map(r=>{
+      const[lbl,cls]=tMap[r.u]||['',''];
+      return`<div class="lm-rr"><span class="lm-tg ${cls}">${lbl}</span><span>${r.t}</span></div>`;
+    }).join('');
+    const cbc=[
+      labRow('ฮีโมโกลบิน (Hb)','โปรตีนขนส่งออกซิเจน',d.hb,f?12:14,f?16:18,'g/dL'),
+      labRow('ฮีมาโตคริต (Hct)','ร้อยละเม็ดเลือดแดง',d.hct,f?36:40,f?48:52,'%'),
+      labRow('เม็ดเลือดแดง (RBC)','',d.rbc,4.2,6.0,'×10⁶/mm³'),
+      labRow('MCV','ขนาดเม็ดเลือดแดง — ต่ำ=ขาด Fe',d.mcv,80,95,'fL'),
+      labRow('MCH','Hb ต่อเซลล์',d.mch,27,31,'pg'),
+      labRow('MCHC','ความเข้มข้น Hb',d.mchc,31,35,'g/dL'),
+      labRow('เกล็ดเลือด (Platelet)','ช่วยแข็งตัวของเลือด',d.plt,140,440,'K/mm³'),
+      labRow('เม็ดเลือดขาว (WBC)','สูง=อาจติดเชื้อ',d.wbc,4.0,10.0,'K/mm³'),
+      labRow('Neutrophil','ต้านแบคทีเรีย',d.neu,40,74,'%'),
+      labRow('Lymphocyte','ต้านไวรัส',d.lym,19,48,'%'),
+      labRow('Eosinophil','สูง=ภูมิแพ้/พยาธิ',d.eos,0,7,'%'),
+    ].filter(Boolean).join('');
+    const lipid=[
+      labRow('คอเลสเตอรอล','ไขมันรวม — สูงเสี่ยงหัวใจ',d.chol,0,200,'mg/dL'),
+      labRow('ไตรกลีเซอไรด์','ไขมันจากอาหาร/น้ำตาล',d.tg,0,150,'mg/dL'),
+    ].filter(Boolean).join('');
+    const met=[
+      labRow('น้ำตาลในเลือด (FBS)','ตรวจหลังอดอาหาร 8 ชม.',d.fbs,70,100,'mg/dL'),
+      labRow('กรดยูริก','สูง=เสี่ยงเกาต์/นิ่ว',d.uric,f?2.4:3.4,f?6.0:7.0,'mg%'),
+    ].filter(Boolean).join('');
+    const kidney=[
+      labRow('BUN','ของเสียที่ไตกรอง',d.bun,6,20,'mg%'),
+      labRow('Creatinine','ของเสียจากกล้ามเนื้อ',d.creat,f?0.5:0.6,f?1.0:1.2,'mg%'),
+      d.egfr!==null?`<div class="lm-lr"><div><p class="lm-ln">eGFR</p><p class="lm-ls">อัตราการกรองไต — ยิ่งสูงยิ่งดี</p></div><div class="lm-lr-r"><span class="lm-lv ${d.egfr<60?'lm-lvh':'lm-lvo'}">${d.egfr}<span style="font-size:12px;font-weight:400"> mL/min</span></span><div style="display:flex;gap:5px;align-items:center"><span class="lm-b ${d.egfr>=90?'lm-bok':d.egfr>=60?'lm-bm':'lm-bh'}">${d.egfr>=90?'ปกติ':d.egfr>=60?'ลดลง':'ต่ำ'}</span><span class="lm-ref">&gt;90</span></div></div></div>`:''
+    ].filter(Boolean).join('');
+    const liver=[
+      labRow('ALT (SGPT)','เอนไซม์ตับ — สูง=ตับอักเสบ',d.alt,0,f?35:40,'U/L'),
+      labRow('AST (SGOT)','เอนไซม์ตับ/กล้ามเนื้อ',d.ast,0,f?35:40,'U/L'),
+      labRow('ALP','เอนไซม์ตับ/กระดูก',d.alp,40,120,'U/L'),
+    ].filter(Boolean).join('');
+    const urine=d.urineBlood!==undefined?`<div class="lm-card">
+      <div class="lm-sec"><i class="ti ti-droplets" aria-hidden="true"></i> การตรวจปัสสาวะ</div>
+      ${d.urinePeriod?'<div class="lm-alert" style="background:#FAEEDA;color:#633806">△ มีประจำเดือน — ผลปัสสาวะบางรายการอาจผิดปกติ ควรตรวจซ้ำ</div>':''}
+      <div class="lm-lr"><div><p class="lm-ln">เลือดในปัสสาวะ</p></div><span class="lm-b ${d.urineBlood?d.urinePeriod?'lm-bm':'lm-bh':'lm-bok'}">${d.urineBlood?d.urinePeriod?'พบ (น่าจะจากประจำเดือน)':'พบ — ควรตรวจซ้ำ':'ไม่พบ (ปกติ)'}</span></div>
+      <div class="lm-lr"><div><p class="lm-ln">โปรตีนในปัสสาวะ</p></div><span class="lm-b ${d.urineProtein?'lm-bh':'lm-bok'}">${d.urineProtein?'พบ':'ไม่พบ (ปกติ)'}</span></div>
+      <div class="lm-lr"><div><p class="lm-ln">น้ำตาลในปัสสาวะ</p></div><span class="lm-b ${d.urineGlucose?'lm-bh':'lm-bok'}">${d.urineGlucose?'พบ':'ไม่พบ (ปกติ)'}</span></div>
+    </div>`:'';
+    return`<div class="lm">
+      <div class="lm-card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:.875rem">
+          <div class="lm-av" style="background:#E6F1FB;color:#185FA5">${init}</div>
+          <div style="flex:1"><p style="font-weight:500;font-size:15px;margin:0">${d.name||'ผู้รับบริการ'}</p><p style="font-size:13px;color:#888;margin:0">${d.age?`อายุ ${d.age} ปี`:''}${d.date?` • ${d.date}`:''}</p></div>
+          <span class="lm-b ${ov.cls}">${ov.lbl}</span>
+        </div>
+        <div class="lm-mg">${metH}</div>
+        <div class="lm-sg">
+          <div class="lm-sc"><div class="lm-sn" style="color:#3B6D11">${cN}</div><div class="lm-sl">รายการปกติ</div></div>
+          <div class="lm-sc"><div class="lm-sn" style="color:#A32D2D">${cH}</div><div class="lm-sl">สูงกว่าปกติ</div></div>
+          <div class="lm-sc"><div class="lm-sn" style="color:#185FA5">${cL}</div><div class="lm-sl">ต่ำกว่าปกติ</div></div>
+          <div class="lm-sc"><div class="lm-sn">${cN+cH+cL}</div><div class="lm-sl">รายการทั้งหมด</div></div>
+        </div>
+      </div>
+      ${cbc?`<div class="lm-card"><div class="lm-sec"><i class="ti ti-droplet" aria-hidden="true"></i> ความสมบูรณ์ของเม็ดเลือด (CBC)</div>${cbc}</div>`:''}
+      ${lipid?`<div class="lm-card"><div class="lm-sec"><i class="ti ti-heart" aria-hidden="true"></i> ไขมันในเลือด</div>${lipid}</div>`:''}
+      ${met?`<div class="lm-card"><div class="lm-sec"><i class="ti ti-activity" aria-hidden="true"></i> เมตาบอลิซึม</div>${met}</div>`:''}
+      ${kidney?`<div class="lm-card"><div class="lm-sec"><i class="ti ti-droplets" aria-hidden="true"></i> การทำงานของไต</div>${kidney}</div>`:''}
+      ${liver?`<div class="lm-card"><div class="lm-sec"><i class="ti ti-shield" aria-hidden="true"></i> การทำงานของตับ</div>${liver}</div>`:''}
+      ${urine}
+      <div class="lm-card"><div class="lm-sec"><i class="ti ti-virus" aria-hidden="true"></i> การประเมินความเสี่ยง NCDs</div>${ncdH}</div>
+      ${recH?`<div class="lm-card"><div class="lm-sec"><i class="ti ti-checklist" aria-hidden="true"></i> คำแนะนำสำหรับท่าน</div>${recH}</div>`:''}
+      <p class="lm-dis">ผลการวิเคราะห์นี้ใช้เพื่อการคัดกรองเบื้องต้นเท่านั้น ไม่ใช่การวินิจฉัยโรค กรุณาปรึกษาแพทย์</p>
+    </div>`;
+  }
+  async function renderInto(containerId,src,gender){
+    const el=document.getElementById(containerId);
+    if(!el)return;
+    el.innerHTML='<p style="color:#888;font-size:14px;padding:1rem;text-align:center">⏳ กำลังอ่านผลตรวจ...</p>';
+    try{
+      const text=await pdfToText(src);
+      const lab=extractLab(text);
+      if(!gender)gender=lab.name&&lab.name.includes('หญิง')?'F':'M';
+      const ncd=analyzeNCD(lab,gender,lab.age);
+      el.innerHTML=buildHTML(lab,gender,ncd);
+    }catch(e){
+      el.innerHTML=`<div style="background:#FCEBEB;border-radius:8px;padding:1rem;color:#A32D2D;font-size:14px">ไม่สามารถอ่านไฟล์ PDF ได้: ${e.message}</div>`;
+    }
+  }
+  async function renderFromFile(file,containerId,gender){
+    return renderInto(containerId,await file.arrayBuffer(),gender);
+  }
+  global.LabModule={renderInto,renderFromFile,analyzeNCD,extractLab};
+})(window);
+
+// ======= NCD DASHBOARD (Admin) =======
+window.renderAdminNcdDashboard = async function(records) {
+  const el = document.getElementById('ncd-dashboard');
+  if (!el) return;
+  const stats = {
+    total: records.length,
+    hasPdf: 0,
+    ncdHigh: 0,
+    ncdMedium: 0,
+    bmiOver: 0,
+    alcohol: 0,
+    smoke: 0,
+  };
+  records.forEach(r => {
+    if (r.pdfData) stats.hasPdf++;
+    const bmi = parseFloat(r.bmi || 0);
+    if (bmi > 25) stats.bmiOver++;
+    const alc = parseInt(r.alcohol || 0);
+    if (alc >= 3) stats.alcohol++;
+    const smk = parseInt(r.smoke || 0);
+    if (smk >= 3) stats.smoke++;
+    if (r.ncdRisk === 'high') stats.ncdHigh++;
+    else if (r.ncdRisk === 'medium') stats.ncdMedium++;
+  });
+  function statCard(icon, label, val, total, color) {
+    const p = total > 0 ? Math.round(val / total * 100) : 0;
+    return `<div style="background:#fff;border:1px solid #e8e8e4;border-radius:12px;padding:.875rem 1rem">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:.5rem">
+        <span style="font-size:20px">${icon}</span>
+        <span style="font-size:13px;color:#888">${label}</span>
+      </div>
+      <div style="font-size:26px;font-weight:500;color:${color}">${val} <span style="font-size:14px;font-weight:400;color:#888">คน</span></div>
+      <div style="height:5px;background:#ebebeb;border-radius:4px;margin-top:.5rem;overflow:hidden">
+        <div style="height:100%;width:${p}%;background:${color};border-radius:4px;transition:width .6s"></div>
+      </div>
+      <div style="font-size:11px;color:#aaa;margin-top:3px">${p}% จาก ${total} คนทั้งหมด</div>
+    </div>`;
+  }
+  el.innerHTML = `
+    <div class="sc p-4 mb-2">
+      <h3 style="font-size:13px;font-weight:700;color:#374151;margin:0 0 12px;">📊 สรุปภาพรวมสุขภาพ</h3>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;">
+        ${statCard('🏥','ผู้รับบริการทั้งหมด',stats.total,stats.total,'#185FA5')}
+        ${statCard('📄','มีผลตรวจ PDF',stats.hasPdf,stats.total,'#639922')}
+        ${statCard('🔴','เสี่ยง NCDs สูง',stats.ncdHigh,stats.total,'#E24B4A')}
+        ${statCard('🟡','เสี่ยง NCDs ปานกลาง',stats.ncdMedium,stats.total,'#EF9F27')}
+        ${statCard('⚖️','BMI เกิน 25',stats.bmiOver,stats.total,'#854F0B')}
+        ${statCard('🍺','ดื่มสุราเป็นประจำ',stats.alcohol,stats.total,'#6C3483')}
+        ${statCard('🚬','สูบบุหรี่เป็นประจำ',stats.smoke,stats.total,'#555555')}
+      </div>
+    </div>`;
+};
+
+// ======= EXPORT EXCEL รง.ผสต.11 (ปรับปรุง) =======
+window.exportPomsat11 = function(recs) {
+  const thaiMonths = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+  function formatDate(raw) {
+    if (!raw) return '';
+    try {
+      const d = new Date(raw);
+      return `${d.getDate()} ${thaiMonths[d.getMonth()]} ${d.getFullYear() + 543}`;
+    } catch { return raw; }
+  }
+  function bmiGroup(bmi) {
+    const b = parseFloat(bmi);
+    if (isNaN(b)) return '';
+    if (b < 18.5) return 'ต่ำกว่าเกณฑ์';
+    if (b < 23) return 'ปกติ';
+    if (b < 25) return 'น้ำหนักเกิน';
+    if (b < 30) return 'อ้วน';
+    return 'อ้วนมาก';
+  }
+  function ncdRiskLabel(r) {
+    return r === 'high' ? 'เสี่ยงสูง' : r === 'medium' ? 'เสี่ยงปานกลาง' : r === 'low' ? 'ต่ำ' : '-';
+  }
+  function q9Level(score) {
+    const s = parseInt(score);
+    if (isNaN(s)) return '-';
+    if (s <= 6) return 'ปกติ';
+    if (s <= 12) return 'เล็กน้อย';
+    if (s <= 18) return 'ปานกลาง';
+    return 'รุนแรง';
+  }
+  function q8Level(score) {
+    const s = parseInt(score);
+    if (isNaN(s)) return '-';
+    if (s === 0) return 'ไม่เสี่ยง';
+    if (s <= 8) return 'เสี่ยง';
+    return 'เสี่ยงสูง';
+  }
+  const ncdNames = ['ความดันโลหิตสูง','เบาหวาน','โรคหัวใจและหลอดเลือด','ไขมันในเลือดสูง'];
+  const headers = [
+    'ลำดับ','ยศ/คำนำหน้า','ชื่อ','นามสกุล','HN','เลขบัตรประชาชน',
+    'หน่วยต้นสังกัด','ตำแหน่ง','ช่วยราชการ','อายุ (ปี)','เพศ','สิทธิเบิก',
+    'น้ำหนัก (kg)','ส่วนสูง (cm)','BMI','กลุ่ม BMI','รอบเอว (cm)',
+    'การสูบบุหรี่','คะแนน Fagerstrom','การดื่มแอลกอฮอล์','คะแนน AUDIT-C','การออกกำลังกาย',
+    'โรคประจำตัว','โรคอื่นๆ','การรับยา',
+    'คะแนน 9Q','ระดับ 9Q','คะแนน 8Q','ระดับ 8Q',
+    'ผลตรวจ Hb','ผลตรวจ Cholesterol','ผลตรวจ FBS','ผลตรวจ eGFR',
+    'ความเสี่ยง NCDs','กลุ่มสี','วันเกิด (พ.ศ.)','วันที่บันทึก'
+  ];
+  const rows = recs.map((r, i) => {
+    const ncdTxt = r.hasNCD && r.ncds && r.ncds.length > 0 ? r.ncds.map(n => ncdNames[n-1]).join(', ') : 'ไม่มี';
+    return [
+      i + 1,
+      r.prefix || '',
+      r.fname || '',
+      r.lname || '',
+      r.hn || '',
+      r.idcard || '',
+      r.unit || '',
+      r.position || '',
+      r.attach || '',
+      r.age || '',
+      r.gender == '1' ? 'ชาย' : 'หญิง',
+      ['','ข้าราชการ','รัฐวิสาหกิจ','ปกส.','สปสช.','อื่นๆ'][r.right] || '',
+      r.weight || '',
+      r.height || '',
+      r.bmi || '',
+      bmiGroup(r.bmi),
+      r.waist || '',
+      ['ไม่เคยสูบ','เคยสูบ เลิกแล้ว','สูบครั้งคราว','สูบประจำ'][r.smoke] || '',
+      r.fagScore || 0,
+      ['ไม่เคยดื่ม','เคยดื่ม เลิกแล้ว','ดื่มครั้งคราว','ดื่มประจำ'][r.alcohol] || '',
+      r.auditScore || 0,
+      ['ไม่ออก','ต่ำกว่าเกณฑ์','ตามเกณฑ์'][r.exercise] || '',
+      ncdTxt,
+      r.otherDisease || '',
+      ['','สม่ำเสมอ','ไม่สม่ำเสมอ','ขาดยา'][r.medicine] || 'ไม่มีโรค',
+      r.q9 || 0,
+      q9Level(r.q9),
+      r.q8 || 0,
+      q8Level(r.q8),
+      r.labHb || '',
+      r.labChol || '',
+      r.labFbs || '',
+      r.labEgfr || '',
+      ncdRiskLabel(r.ncdRisk),
+      {green:'กลุ่มปกติ',yellow:'กลุ่มเฝ้าระวัง',red:'กลุ่มเสี่ยง'}[r.colorGroup] || '',
+      r.dob || '',
+      r.savedAt || '',
+    ];
+  });
+  const wsData = [headers, ...rows];
+  const ws = XLSX.utils.aoa_to_sheet(wsData);
+  ws['!cols'] = headers.map(() => ({wch: 16}));
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'รง.ผสต.11');
+  // Sheet 2: สรุปสถิติ
+  const totalN = recs.length;
+  const ncdH = recs.filter(r => r.ncdRisk === 'high').length;
+  const ncdM = recs.filter(r => r.ncdRisk === 'medium').length;
+  const bmiOver = recs.filter(r => parseFloat(r.bmi || 0) > 25).length;
+  const dep9 = recs.filter(r => parseInt(r.q9 || 0) > 6).length;
+  const q8pos = recs.filter(r => parseInt(r.q8 || 0) > 0).length;
+  const summaryData = [
+    ['รายงานสรุปผลการตรวจสุขภาพประจำปี'],
+    ['โรงพยาบาลค่ายพระยอดเมืองขวาง'],
+    [`วันที่ออกรายงาน: ${new Date().toLocaleDateString('th-TH',{year:'numeric',month:'long',day:'numeric'})}`],
+    [],
+    ['หัวข้อ','จำนวน (คน)','ร้อยละ (%)'],
+    ['ผู้เข้ารับการตรวจสุขภาพทั้งหมด', totalN, 100],
+    ['กลุ่มเสี่ยง NCDs สูง', ncdH, totalN ? +((ncdH/totalN*100).toFixed(1)) : 0],
+    ['กลุ่มเสี่ยง NCDs ปานกลาง', ncdM, totalN ? +((ncdM/totalN*100).toFixed(1)) : 0],
+    ['BMI เกิน 25 (น้ำหนักเกิน/อ้วน)', bmiOver, totalN ? +((bmiOver/totalN*100).toFixed(1)) : 0],
+    ['9Q > 6 (ซึมเศร้า)', dep9, totalN ? +((dep9/totalN*100).toFixed(1)) : 0],
+    ['8Q > 0 (เสี่ยงฆ่าตัวตาย)', q8pos, totalN ? +((q8pos/totalN*100).toFixed(1)) : 0],
+  ];
+  const ws2 = XLSX.utils.aoa_to_sheet(summaryData);
+  ws2['!cols'] = [{wch:40},{wch:15},{wch:12}];
+  XLSX.utils.book_append_sheet(wb, ws2, 'สรุปสถิติ');
+  const today = new Date();
+  const fname = `รง_ผสต11_${today.getFullYear()+543}${String(today.getMonth()+1).padStart(2,'0')}${String(today.getDate()).padStart(2,'0')}.xlsx`;
+  XLSX.writeFile(wb, fname);
+};
+
 // ======= STORAGE =======
 let records = [], admins = [], currentRecord = null, lastId = null, currentAdmin = null;
 let _firebaseReady = false;
@@ -571,6 +1052,7 @@ function showLoadingOverlay(msg){
     el.style.display = 'flex';
   }
 }
+
 function hideLoadingOverlay(){
   const el = document.getElementById('fb-loading-overlay');
   if(el) el.style.display = 'none';
@@ -589,6 +1071,7 @@ window.loadFromFirebase = async function(){
       admins = [{name:'Nurse Admin',username:'nurse',password:'nurse1',isDefault:true}];
       await saveAdmins();
     }
+    window.__allRecords = records;
     _firebaseReady = true;
     hideLoadingOverlay();
     if(!document.getElementById('page-admin').classList.contains('hidden')) renderAdmin();
@@ -680,7 +1163,11 @@ function showPage(p){
   document.getElementById('page-'+p).classList.remove('hidden');
   if(p==='register'){ initQ(); goStep(1,true); initDOBDropdowns('f-dob-day','f-dob-month','f-dob-year'); }
   if(p==='login'){ initDOBDropdowns('login-dob-day','login-dob-month','login-dob-year'); }
-  if(p==='admin'){ renderAdmin(); document.getElementById('admin-logged-as').textContent = currentAdmin?'เข้าสู่ระบบในฐานะ: '+currentAdmin.name:''; }
+  if(p==='admin'){
+    renderAdmin();
+    renderAdminNcdDashboard(records);
+    document.getElementById('admin-logged-as').textContent = currentAdmin?'เข้าสู่ระบบในฐานะ: '+currentAdmin.name:'';
+  }
   if(p==='manage-admins') renderAdminList();
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -693,7 +1180,9 @@ function showAdminLogin(){
   document.getElementById('modal-admin-login').classList.remove('hidden');
   setTimeout(function(){ document.getElementById('admin-login-user').focus(); },100);
 }
+
 function closeAdminLogin(){ document.getElementById('modal-admin-login').classList.add('hidden'); }
+
 function doAdminLogin(){
   const u = document.getElementById('admin-login-user').value.trim();
   const p = document.getElementById('admin-login-pass').value;
@@ -820,10 +1309,12 @@ function calcBMI(){
     document.getElementById('bmi-result').innerHTML='<span style="color:'+color+'">● BMI '+bmi+': '+txt+'</span>';
   }
 }
+
 function toggleNCD(show){
   document.getElementById('ncd-options').classList.toggle('hidden',!show);
   document.getElementById('medicine-section').classList.toggle('hidden',!show);
 }
+
 function checkAddictions(){
   const s=parseInt(document.getElementById('f-smoke').value);
   const a=parseInt(document.getElementById('f-alcohol').value);
@@ -1041,8 +1532,7 @@ function renderResult(r){
     +'<span class="rt '+q8Tag+'" style="margin-top:8px;display:inline-block;">'+q8Txt+'</span>'
     +'<div style="font-size:11px;color:#6b7280;margin-top:8px;">0=ไม่มี | 1-8=น้อย | 9-16=ปานกลาง | 17-46=รุนแรง</div></div>'
     +'</div></div>';
-
-  // ════ แสดงผล Lab Module ถ้ามี PDF ════
+  // แสดงผล Lab Module ถ้ามี PDF
   const labSection = document.getElementById('lab-module-section');
   const labContainer = document.getElementById('lab-result-container');
   if(r.pdfData && window.LabModule){
@@ -1072,7 +1562,6 @@ function renderAdmin(){
   ].map(function(x){
     return '<div class="sc p-4" style="background:'+x[3]+';"><div style="font-size:12px;color:'+x[2]+';font-weight:600;">'+x[0]+'</div><div style="font-size:28px;font-weight:800;color:'+x[2]+';">'+x[1]+'</div></div>';
   }).join('');
-
   const ncdNames=['ความดันโลหิตสูง','เบาหวาน','โรคหัวใจและหลอดเลือด','ไขมันในเลือดสูง'];
   const ncdColors=['#dc2626','#d97706','#be123c','#7c3aed'];
   const ncdCounts=[0,0,0,0];
@@ -1107,7 +1596,6 @@ function renderAdmin(){
     +'<span>⚠️ ไม่สม่ำเสมอ: <b style="color:#d97706;">'+medIrregular+'</b></span>'
     +'<span>❌ ขาดยา: <b style="color:#dc2626;">'+medMiss+'</b></span></div>';
   diseaseEl.innerHTML=dHtml;
-
   const healthy=records.filter(function(r){return r.colorGroup==='green';}).length;
   const atRisk=records.filter(function(r){return r.colorGroup==='yellow'&&(!r.appointment||r.appointment.type==='none');}).length;
   const needDoctor=records.filter(function(r){return r.colorGroup==='red';}).length;
@@ -1120,7 +1608,6 @@ function renderAdmin(){
       +'<div style="font-size:11px;color:'+x[3]+';font-weight:600;margin-bottom:4px;">'+x[0]+'</div>'
       +'<div style="font-size:26px;font-weight:800;color:'+x[3]+';">'+x[1]+'</div></div>';
   }).join('')+'<div style="grid-column:span 3;font-size:10px;color:#9ca3af;">*ผิดปกติแต่ยังไม่มีนัด</div>';
-
   const bmiGroups=[0,0,0,0];
   records.forEach(function(r){
     const b=parseFloat(r.bmi);
@@ -1138,7 +1625,6 @@ function renderAdmin(){
       +'<div style="font-size:10px;color:'+x[4]+';opacity:.7;margin-bottom:4px;">BMI '+x[1]+'</div>'
       +'<div style="font-size:22px;font-weight:800;color:'+x[4]+';">'+x[2]+'</div></div>';
   }).join('');
-
   const tbody=document.getElementById('admin-tbody');
   if(!records.length){tbody.innerHTML='<tr><td colspan="11" style="text-align:center;padding:24px;color:#9ca3af;">ยังไม่มีข้อมูล</td></tr>';return;}
   tbody.innerHTML=records.map(function(r,i){
@@ -1182,7 +1668,6 @@ function renderAdmin(){
   }).join('');
 }
 
-// ======= ดู PDF + Lab จาก Admin table =======
 function viewAdminPdf(id){
   const r=records.find(function(x){return x.id===id;});
   if(!r||!r.pdfData)return;
@@ -1216,13 +1701,16 @@ function openAppt(id){
   toggleApptDate();
   document.getElementById('modal-appt').classList.remove('hidden');
 }
+
 function toggleApptDate(){
   const val=document.querySelector('input[name="appt-type"]:checked');
   const show=val&&val.value==='appt';
   document.getElementById('appt-date-wrap').style.display=show?'':'none';
   document.getElementById('appt-note-wrap').style.display=show?'':'none';
 }
+
 function closeAppt(){document.getElementById('modal-appt').classList.add('hidden');}
+
 function saveAppt(){
   const r=records.find(function(x){return x.id===currentApptId;});
   if(!r)return;
@@ -1248,7 +1736,7 @@ function toggleAttended(id){
   renderAdmin();
 }
 
-// ======= PDF MODAL (Admin แนบ PDF) =======
+// ======= PDF MODAL =======
 let currentPdfModalId=null, pendingPdfBase64=null, pendingPdfName=null;
 
 function openPdfModal(id){
@@ -1273,12 +1761,14 @@ function openPdfModal(id){
 }
 
 function closePdfModal(){ document.getElementById('modal-pdf').classList.add('hidden'); }
+
 function clearPdfPreview(){
   pendingPdfBase64=null; pendingPdfName=null;
   document.getElementById('pdf-preview-wrap').classList.add('hidden');
   document.getElementById('pdf-lab-preview').classList.add('hidden');
   document.getElementById('pdf-lab-preview-content').innerHTML='';
 }
+
 function handlePdfSelect(evt){ processPdfFile(evt.target.files[0]); }
 function handlePdfDrop(evt){ evt.preventDefault(); if(evt.dataTransfer.files[0]) processPdfFile(evt.dataTransfer.files[0]); }
 
@@ -1299,13 +1789,11 @@ function processPdfFile(file){
     document.getElementById('pdf-preview-name').textContent=file.name;
     document.getElementById('pdf-preview-size').textContent=Math.round(file.size/1024)+' KB';
     document.getElementById('pdf-preview-wrap').classList.remove('hidden');
-    // ════ Preview Lab วิเคราะห์ทันที ════
     previewLabFromPdf(pendingPdfBase64, currentPdfModalId);
   };
   reader.readAsDataURL(file);
 }
 
-// วิเคราะห์ Lab preview ใน modal ก่อน save
 function previewLabFromPdf(pdfBase64, recordId){
   if(!window.LabModule) return;
   const r=records.find(function(x){return x.id===recordId;});
@@ -1316,7 +1804,6 @@ function previewLabFromPdf(pdfBase64, recordId){
   labSection.classList.remove('hidden');
   loadingEl.textContent='กำลังอ่าน PDF...';
   contentEl.innerHTML='';
-  // renderFromFile ต้องการ File object; ใช้ renderInto กับ base64 แทน
   window.LabModule.renderInto('pdf-lab-preview-content', pdfBase64, gender)
     .then(function(){ loadingEl.textContent='✅ วิเคราะห์สำเร็จ'; })
     .catch(function(){ loadingEl.textContent='⚠️ อ่านข้อมูลได้บางส่วน'; });
@@ -1347,44 +1834,18 @@ function viewPdfCurrent(){
   const w=window.open();
   w.document.write('<iframe src="'+r.pdfData+'" width="100%" height="100%" style="border:none;"></iframe>');
 }
+
 function closePdfViewer(){}
 
 // ======= EXPORT =======
 function exportAllExcel(){
   if(!records.length){alert('ยังไม่มีข้อมูล');return;}
-  doExport(records,'รง_ผสต11_'+fmtDate()+'.xlsx');
+  exportPomsat11(records);
 }
+
 function exportSingleExcel(){
   if(!currentRecord)return;
-  doExport([currentRecord],'ผลตรวจ_'+currentRecord.fname+'_'+currentRecord.lname+'.xlsx');
-}
-function fmtDate(){
-  const d=new Date();
-  return (d.getFullYear()+543)+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');
-}
-function doExport(recs,fn){
-  const h=['ลำดับ','คำนำหน้า/ยศ','ชื่อ','นามสกุล','HN','เลขบัตรประชาชน','หน่วยต้นสังกัด','ตำแหน่ง','ช่วยราชการ','อายุ','เพศ','สิทธิเบิก','น้ำหนัก(kg)','ส่วนสูง(cm)','BMI','รอบเอว(cm)','โรคประจำตัว','โรคอื่นๆ','การรับยา','การสูบบุหรี่','คะแนน Fagerstrom','การดื่มสุรา','คะแนน AUDIT-C','การออกกำลังกาย','9Q (ซึมเศร้า)','ระดับ 9Q','8Q (ฆ่าตัวตาย)','ระดับ 8Q','กลุ่มสี','วันเกิด (พ.ศ.)','วันที่บันทึก'];
-  const ncdNames=['ความดันโลหิตสูง','เบาหวาน','โรคหัวใจและหลอดเลือด','ไขมันในเลือดสูง'];
-  const rows=[h].concat(recs.map(function(r,i){
-    const ncdTxt=r.hasNCD&&r.ncds.length>0?r.ncds.map(function(n){return ncdNames[n-1];}).join(', '):'ไม่มี';
-    const q9l=parseInt(r.q9)<=6?'เล็กน้อย':parseInt(r.q9)<=12?'น้อย':parseInt(r.q9)<=18?'ปานกลาง':'รุนแรง';
-    const q8l=parseInt(r.q8)===0?'ไม่มีแนวโน้ม':parseInt(r.q8)<=8?'น้อย':parseInt(r.q8)<=16?'ปานกลาง':'รุนแรง';
-    return [i+1,r.prefix,r.fname,r.lname,r.hn||'',r.idcard,r.unit,r.position||'',r.attach||'',r.age,
-      r.gender=='1'?'ชาย':'หญิง',['','ข้าราชการ','รัฐวิสาหกิจ','ปกส.','สปสช.','อื่นๆ'][r.right]||'',
-      r.weight,r.height,r.bmi,r.waist||'',ncdTxt,r.otherDisease||'',
-      ['','สม่ำเสมอ','ไม่สม่ำเสมอ','ขาดยา'][r.medicine]||'ไม่มีโรค',
-      ['ไม่เคยสูบ','เคยสูบ เลิกแล้ว','สูบครั้งคราว','สูบประจำ'][r.smoke]||'',r.fagScore||0,
-      ['ไม่เคยดื่ม','เคยดื่ม เลิกแล้ว','ดื่มครั้งคราว','ดื่มประจำ'][r.alcohol]||'',r.auditScore||0,
-      ['ไม่ออก','ต่ำกว่าเกณฑ์','ตามเกณฑ์'][r.exercise]||'',
-      r.q9,q9l,r.q8,q8l,
-      {green:'กลุ่มปกติ',yellow:'กลุ่มเฝ้าระวัง',red:'กลุ่มเสี่ยง'}[r.colorGroup]||'',
-      dobToDisplay(r.dob), r.savedAt];
-  }));
-  const wb=XLSX.utils.book_new();
-  const ws=XLSX.utils.aoa_to_sheet(rows);
-  ws['!cols']=h.map(function(){return{wch:16};});
-  XLSX.utils.book_append_sheet(wb,ws,'รง.ผสต.11');
-  XLSX.writeFile(wb,fn);
+  exportPomsat11([currentRecord]);
 }
 
 window.addEventListener('load', function(){
@@ -1392,5 +1853,7 @@ window.addEventListener('load', function(){
   showLoadingOverlay('กำลังโหลดข้อมูล...');
 });
 </script>
+
 </body>
+
 </html>
