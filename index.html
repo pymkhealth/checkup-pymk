@@ -599,7 +599,8 @@
     return t;
   }
   function n(text,re){const m=text.match(re);return m?parseFloat(m[1]):null;}
-  function extractLab(text){
+  function extractLab(text,gender){
+    const f=gender==='F';
     const d={};
     const nm=text.match(/ชื่อ\s*:\s*([^\n\r]+)/)||text.match(/((?:ร|พ)\.[อต]\.(?:หญิง|ชาย)\s+\S+\s+\S+|นาย\s+\S+\s+\S+|นาง(?:สาว)?\s+\S+\s+\S+)/);
     d.name=nm?nm[1].trim():null;
@@ -618,11 +619,23 @@
     d.bun=n(text,/BUN[^\d]*([\d.]+)/);d.creat=n(text,/Creatinine[^\d]*([\d.]+)/);
     d.egfr=n(text,/eGFR[^\d]*([\d.]+)/);
     d.alt=n(text,/SGPT\(ALT\)[^\d]*([\d.]+)/);d.ast=n(text,/SGOT\(AST\)[^\d]*([\d.]+)/);d.alp=n(text,/ALP[^\d]*([\d.]+)/);
+    d.hdl=n(text,/HDL-?C?\s*[^\d]*([\d.]+)/);d.ldl=n(text,/LDL-?C?\s*[^\d]*([\d.]+)/);
     d.urineBlood=/3\+\s*Blood|2\+\s*Blood|1\+\s*Blood/.test(text);
     d.urineProtein=!/Negative Protein/.test(text)&&/Protein/.test(text);
     d.urineGlucose=!/Glucose Negative/.test(text)&&/Glucose/.test(text);
     d.urineRBC=n(text,/(\d+)-\d+\s+RBC\s+0\s*-\s*2/);
     d.urinePeriod=/มีประจำเดือน|มีประจําเดือน/.test(text);
+    // CBC abnormal: Hct<40% (male) or per ref range, or other CBC values out of range
+    const hctRefLo=f?36:40;
+    d.cbcAbnormal = (d.hb!==null&&d.hb<(f?12:14)) || (d.hct!==null&&d.hct<hctRefLo) ||
+      (d.wbc!==null&&(d.wbc<4||d.wbc>10)) || (d.plt!==null&&(d.plt<140||d.plt>440));
+    // Blood chemistry abnormal: any of glucose/chol/tg/bun/cr/uric/ast/alt out of normal range
+    d.bloodChemAbnormal = (d.fbs!==null&&(d.fbs<70||d.fbs>100)) ||
+      (d.chol!==null&&d.chol>200) || (d.tg!==null&&d.tg>=150) ||
+      (d.bun!==null&&(d.bun<6||d.bun>20)) ||
+      (d.creat!==null&&(d.creat<(f?0.5:0.6)||d.creat>(f?1.0:1.2))) ||
+      (d.uric!==null&&(d.uric<(f?2.4:3.4)||d.uric>(f?6.0:7.0))) ||
+      (d.ast!==null&&d.ast>(f?35:40)) || (d.alt!==null&&d.alt>(f?35:40));
     return d;
   }
   function analyzeNCD(d,gender,age){
@@ -813,7 +826,9 @@
     el.innerHTML='<p style="color:#888;font-size:14px;padding:1rem;text-align:center">⏳ กำลังอ่านผลตรวจ...</p>';
     try{
       const text=await pdfToText(src);
-      const lab=extractLab(text);
+      let g=gender;
+      if(!g){const nmTmp=text.match(/((?:ร|พ)\.[อต]\.หญิง|นาง(?:สาว)?)/);g=nmTmp?'F':'M';}
+      const lab=extractLab(text,g);
       if(!gender)gender=lab.name&&lab.name.includes('หญิง')?'F':'M';
       const ncd=analyzeNCD(lab,gender,lab.age);
       el.innerHTML=buildHTML(lab,gender,ncd);
@@ -824,7 +839,7 @@
   async function renderFromFile(file,containerId,gender){
     return renderInto(containerId,await file.arrayBuffer(),gender);
   }
-  global.LabModule={renderInto,renderFromFile,analyzeNCD,extractLab};
+  global.LabModule={renderInto,renderFromFile,analyzeNCD,extractLab,pdfToText};
 })(window);
 // ======= NCD DASHBOARD (Admin) =======
 window.renderAdminNcdDashboard = async function(records) {
@@ -917,17 +932,60 @@ window.exportPomsat11 = function(recs) {
   }
   const ncdNames = ['ความดันโลหิตสูง','เบาหวาน','โรคหัวใจและหลอดเลือด','ไขมันในเลือดสูง'];
   const headers = [
-    'ลำดับ','ยศ/คำนำหน้า','ชื่อ','นามสกุล','HN','เลขบัตรประชาชน',
-    'หน่วยต้นสังกัด','ตำแหน่ง','ช่วยราชการ','อายุ (ปี)','เพศ','สิทธิเบิก',
-    'น้ำหนัก (kg)','ส่วนสูง (cm)','BMI','กลุ่ม BMI','รอบเอว (cm)',
-    'การสูบบุหรี่','คะแนน Fagerstrom','การดื่มแอลกอฮอล์','คะแนน AUDIT-C','การออกกำลังกาย',
-    'โรคประจำตัว','โรคอื่นๆ','การรับยา',
-    'คะแนน 9Q','ระดับ 9Q','คะแนน 8Q','ระดับ 8Q',
-    'ผลตรวจ Hb','ผลตรวจ Cholesterol','ผลตรวจ FBS','ผลตรวจ eGFR',
-    'ความเสี่ยง NCDs','กลุ่มสี','วันเกิด (พ.ศ.)','วันที่บันทึก'
+    'ลำดับ','คำนำหน้า','ชื่อ','นามสกุล','เลขที่ทั่วไป(HN.No.)','เลขประจำตัวประชาชน',
+    'หน่วยต้นสังกัด','ตำแหน่ง','ช่วยราชการ(ระบุ)','อายุ(ปี)','เพศ(1)ชาย(2)หญิง','สิทธิเบิก',
+    'น้ำหนัก(kg)','ความสูง(cm)','BMI(kg/m2)','รอบเอว(cm)','Systolic(mmHg)','Diastolic(mmHg)',
+    'Chest x-ray ผล','Chest x-ray ผิดปกติ(ระบุ)',
+    'Urine ผล','Urine Proteinurea>1+','Urine Hematuria>1+','Urine ผิดปกติอื่นๆ(ระบุ)',
+    'CBC ผล','CBC ผิดปกติอื่นๆ(ระบุ)',
+    'Glu(mg/dL)','Chol(mg/dL)','TG(mg/dL)','HDL-C(mg/dL)','LDL-C(mg/dL)','BUN(mg/dL)','Cr(mg/dL)','Uric(mg/dL)','AST(U/L)','ALT(U/L)',
+    'Blood Chem ผล','Blood Chem ผิดปกติ(ระบุ)',
+    'โรคประจำตัว(ผล)','โรคอื่นๆ(ระบุ)',
+    'การสูบบุหรี่','การดื่มแอลกอฮอล์','การออกกำลังกาย',
+    'สุขภาพฟัน','ST5','Q9','Q8','การแบ่งกลุ่ม','การประเมินซ้ำ','การส่งพบแพทย์'
   ];
+  function abnormalText(items){
+    return items.filter(x=>x.flag).map(x=>x.label).join(', ');
+  }
+  function pres(v){ return (v===null||v===undefined||v==='')?'':v; }
   const rows = recs.map((r, i) => {
-    const ncdTxt = r.hasNCD && r.ncds && r.ncds.length > 0 ? r.ncds.map(n => ncdNames[n-1]).join(', ') : 'ไม่มี';
+    const lab = r.lab || {};
+    const f = r.gender !== '1';
+    // CBC: 1=ปกติ, 2=ผิดปกติ, 0=ไม่ได้ตรวจ/ไม่มีข้อมูล
+    const hasCbc = lab.hb!=null || lab.hct!=null || lab.wbc!=null || lab.plt!=null || lab.rbc!=null;
+    const cbcResult = hasCbc ? (lab.cbcAbnormal ? 2 : 1) : '';
+    const cbcAbn = [];
+    if(lab.hct!=null && lab.hct < (f?36:40)) cbcAbn.push({flag:true,label:`Hct ${lab.hct}% ต่ำ`});
+    if(lab.mcv!=null && lab.mcv < 78) cbcAbn.push({flag:true,label:`MCV ${lab.mcv}`});
+    if(lab.hb!=null && lab.hb < (f?12:14)) cbcAbn.push({flag:true,label:`Hb ${lab.hb}`});
+    if(lab.wbc!=null && (lab.wbc<4||lab.wbc>10)) cbcAbn.push({flag:true,label:`WBC ${lab.wbc}`});
+    if(lab.plt!=null && (lab.plt<140||lab.plt>440)) cbcAbn.push({flag:true,label:`Plt ${lab.plt}`});
+    // Urine
+    const hasUrine = lab.urineBlood!=null || lab.urineProtein!=null || lab.urineGlucose!=null || lab.urineRBC!=null;
+    const urineResult = hasUrine ? ((lab.urineBlood||lab.urineProtein||lab.urineGlucose) ? 2 : 1) : '';
+    const urineAbn = [];
+    if(lab.urineGlucose) urineAbn.push('พบน้ำตาลในปัสสาวะ');
+    // Blood chemistry
+    const hasChem = lab.fbs!=null || lab.chol!=null || lab.tg!=null || lab.bun!=null || lab.creat!=null || lab.uric!=null || lab.ast!=null || lab.alt!=null;
+    const chemResult = hasChem ? (lab.bloodChemAbnormal ? 2 : 1) : '';
+    const chemAbn = [];
+    if(lab.fbs!=null && lab.fbs>=126) chemAbn.push(`FBS ${lab.fbs} (เบาหวาน)`);
+    else if(lab.fbs!=null && lab.fbs>=100) chemAbn.push(`FBS ${lab.fbs} (Prediabetes)`);
+    if(lab.chol!=null && lab.chol>200) chemAbn.push(`Chol ${lab.chol}`);
+    if(lab.tg!=null && lab.tg>=150) chemAbn.push(`TG ${lab.tg}`);
+    if(lab.bun!=null && (lab.bun<6||lab.bun>20)) chemAbn.push(`BUN ${lab.bun}`);
+    if(lab.creat!=null && (lab.creat<(f?0.5:0.6)||lab.creat>(f?1.0:1.2))) chemAbn.push(`Cr ${lab.creat}`);
+    if(lab.uric!=null && (lab.uric<(f?2.4:3.4)||lab.uric>(f?6.0:7.0))) chemAbn.push(`Uric ${lab.uric}`);
+    if(lab.ast!=null && lab.ast>(f?35:40)) chemAbn.push(`AST ${lab.ast}`);
+    if(lab.alt!=null && lab.alt>(f?35:40)) chemAbn.push(`ALT ${lab.alt}`);
+    // โรคประจำตัว: 0=ไม่มี,1=ความดัน,2=เบาหวาน,3=หัวใจ,4=ไขมัน,5=>=2โรค,6=อื่นๆ
+    let ncdCode = 0;
+    if(r.hasNCD && r.ncds && r.ncds.length>0){
+      ncdCode = r.ncds.length>=2 ? 5 : r.ncds[0];
+      if(r.otherDisease) ncdCode = r.ncds.length>0 ? ncdCode : 6;
+    } else if(r.otherDisease){
+      ncdCode = 6;
+    }
     return [
       i + 1,
       r.prefix || '',
@@ -939,33 +997,46 @@ window.exportPomsat11 = function(recs) {
       r.position || '',
       r.attach || '',
       r.age || '',
-      r.gender == '1' ? 'ชาย' : 'หญิง',
-      ['','ข้าราชการ','รัฐวิสาหกิจ','ปกส.','สปสช.','อื่นๆ'][r.right] || '',
+      r.gender || '',
+      r.right || '',
       r.weight || '',
       r.height || '',
       r.bmi || '',
-      bmiGroup(r.bmi),
       r.waist || '',
-      ['ไม่เคยสูบ','เคยสูบ เลิกแล้ว','สูบครั้งคราว','สูบประจำ'][r.smoke] || '',
-      r.fagScore || 0,
-      ['ไม่เคยดื่ม','เคยดื่ม เลิกแล้ว','ดื่มครั้งคราว','ดื่มประจำ'][r.alcohol] || '',
-      r.auditScore || 0,
-      ['ไม่ออก','ต่ำกว่าเกณฑ์','ตามเกณฑ์'][r.exercise] || '',
-      ncdTxt,
+      '', // Systolic - ไม่มีในฟอร์ม
+      '', // Diastolic - ไม่มีในฟอร์ม
+      '', // Chest x-ray ผล - ไม่มีในฟอร์ม
+      '', // Chest x-ray ผิดปกติ
+      pres(urineResult),
+      lab.urineProtein ? 2 : (hasUrine?1:''),
+      lab.urineBlood ? 2 : (hasUrine?1:''),
+      urineAbn.join(', '),
+      pres(cbcResult),
+      abnormalText(cbcAbn),
+      lab.fbs!=null?lab.fbs:'',
+      lab.chol!=null?lab.chol:'',
+      lab.tg!=null?lab.tg:'',
+      lab.hdl!=null?lab.hdl:'',
+      lab.ldl!=null?lab.ldl:'',
+      lab.bun!=null?lab.bun:'',
+      lab.creat!=null?lab.creat:'',
+      lab.uric!=null?lab.uric:'',
+      lab.ast!=null?lab.ast:'',
+      lab.alt!=null?lab.alt:'',
+      pres(chemResult),
+      chemAbn.join(', '),
+      ncdCode,
       r.otherDisease || '',
-      ['','สม่ำเสมอ','ไม่สม่ำเสมอ','ขาดยา'][r.medicine] || 'ไม่มีโรค',
-      r.q9 || 0,
-      q9Level(r.q9),
-      r.q8 || 0,
-      q8Level(r.q8),
-      r.labHb || '',
-      r.labChol || '',
-      r.labFbs || '',
-      r.labEgfr || '',
-      ncdRiskLabel(r.ncdRisk),
-      {green:'กลุ่มปกติ',yellow:'กลุ่มเฝ้าระวัง',red:'กลุ่มเสี่ยง'}[r.colorGroup] || '',
-      r.dob || '',
-      r.savedAt || '',
+      r.smoke!=null?r.smoke:'',
+      r.alcohol!=null?r.alcohol:'',
+      r.exercise!=null?r.exercise:'',
+      '', // สุขภาพฟัน - ไม่มีในฟอร์ม
+      '', // ST5 - ไม่มีในฟอร์ม
+      r.q9!=null?r.q9:'',
+      r.q8!=null?r.q8:'',
+      {green:0,yellow:1,red:2}[r.colorGroup] ?? '',
+      0, // การประเมินซ้ำ
+      0, // การส่งพบแพทย์
     ];
   });
   const wsData = [headers, ...rows];
@@ -1396,6 +1467,52 @@ function doLogin(){
   }
 }
 // ======= RENDER RESULT =======
+
+// ======= คำแนะนำพฤติกรรมสุขภาพ =======
+function buildLifestyleAdviceHTML(r){
+  const cards=[];
+  // คำแนะนำการสูบบุหรี่
+  const smokeAdvice=[
+    {title:'ไม่เคยสูบบุหรี่',body:'ยอดเยี่ยมมาก! ควรหลีกเลี่ยงควันบุหรี่มือสองและรักษาพฤติกรรมนี้ต่อไป'},
+    {title:'เคยสูบ แต่เลิกแล้ว',body:'ยินดีด้วยที่เลิกสูบได้สำเร็จ ควรหลีกเลี่ยงสิ่งกระตุ้นที่ทำให้กลับไปสูบอีก และออกกำลังกายสม่ำเสมอเพื่อฟื้นฟูสุขภาพปอด'},
+    {title:'สูบบุหรี่เป็นครั้งคราว',body:'แนะนำให้ลดความถี่ลงและตั้งเป้าหมายเลิกสูบ ปรึกษาคลินิกเลิกบุหรี่ของโรงพยาบาลเพื่อขอคำแนะนำและตัวช่วยในการเลิก'},
+    {title:'สูบบุหรี่เป็นประจำ',body:'ควรเข้ารับคำปรึกษาที่คลินิกเลิกบุหรี่ พิจารณาใช้ผลิตภัณฑ์ทดแทนนิโคตินภายใต้คำแนะนำแพทย์ และตรวจสุขภาพปอด/หัวใจเป็นระยะ เนื่องจากเพิ่มความเสี่ยงโรคมะเร็งปอด ถุงลมโป่งพอง และโรคหัวใจและหลอดเลือด'}
+  ][r.smoke] || null;
+  if(smokeAdvice){
+    cards.push({icon:'🚬',color:'#374151',bg:'#f3f4f6',title:'คำแนะนำเรื่องการสูบบุหรี่: '+smokeAdvice.title,body:smokeAdvice.body});
+  }
+  // คำแนะนำการดื่มสุรา
+  const alcAdvice=[
+    {title:'ไม่เคยดื่มสุรา',body:'ดีมาก ควรรักษาพฤติกรรมนี้ต่อไปเพื่อสุขภาพตับและหัวใจที่ดี'},
+    {title:'เคยดื่ม แต่เลิกแล้ว',body:'ยินดีด้วยที่เลิกดื่มได้ ควรหลีกเลี่ยงสถานการณ์ที่กระตุ้นให้กลับไปดื่มอีก'},
+    {title:'ดื่มเป็นครั้งคราว',body:'ควรจำกัดปริมาณการดื่มไม่ให้เกินเกณฑ์ที่ปลอดภัย (ชาย ≤2 ดื่มมาตรฐาน/วัน, หญิง ≤1 ดื่มมาตรฐาน/วัน) และไม่ดื่มก่อนขับขี่ยานพาหนะ'},
+    {title:'ดื่มเป็นประจำ',body:'แนะนำให้ลดปริมาณและความถี่ในการดื่ม เนื่องจากเพิ่มความเสี่ยงโรคตับ ความดันโลหิตสูง และอุบัติเหตุ ควรปรึกษาแพทย์หากมีปัญหาในการควบคุมการดื่ม'}
+  ][r.alcohol] || null;
+  if(alcAdvice){
+    cards.push({icon:'🍺',color:'#6C3483',bg:'#f5f3ff',title:'คำแนะนำเรื่องการดื่มแอลกอฮอล์: '+alcAdvice.title,body:alcAdvice.body});
+  }
+  // คำแนะนำการออกกำลังกาย
+  const exAdvice=[
+    {title:'ไม่ออกกำลังกาย',body:'ควรเริ่มออกกำลังกายเบาๆ เช่น เดินเร็ว 10-15 นาทีต่อวัน แล้วค่อยเพิ่มเวลาและความหนักขึ้นทีละน้อย เพื่อลดความเสี่ยงโรคอ้วน เบาหวาน และโรคหัวใจ'},
+    {title:'ออกกำลังกายต่ำกว่าเกณฑ์',body:'แนะนำให้เพิ่มความสม่ำเสมอ โดยตั้งเป้าออกกำลังกายระดับปานกลาง (เช่น เดินเร็ว ปั่นจักรยาน) อย่างน้อย 150 นาทีต่อสัปดาห์ ตามคำแนะนำขององค์การอนามัยโลก'},
+    {title:'ออกกำลังกายตามเกณฑ์',body:'ดีมาก! ควรรักษาความสม่ำเสมอนี้ไว้ และเพิ่มความหลากหลายของกิจกรรม เช่น ฝึกความแข็งแรงของกล้ามเนื้อร่วมด้วยสัปดาห์ละ 2 ครั้ง'}
+  ][r.exercise] || null;
+  if(exAdvice){
+    cards.push({icon:'🏃',color:'#16a34a',bg:'#f0fdf4',title:'คำแนะนำเรื่องการออกกำลังกาย: '+exAdvice.title,body:exAdvice.body});
+  }
+  if(!cards.length) return '';
+  const cardsHTML=cards.map(function(c){
+    return '<div style="background:'+c.bg+';border-radius:10px;padding:14px;margin-bottom:10px;">'
+      +'<div style="font-size:13px;font-weight:700;color:'+c.color+';margin-bottom:6px;">'+c.icon+' '+c.title+'</div>'
+      +'<div style="font-size:13px;color:#374151;line-height:1.6;">'+c.body+'</div>'
+      +'</div>';
+  }).join('');
+  return '<div class="sc p-4 mb-4">'
+    +'<h3 style="font-size:13px;font-weight:700;color:#374151;margin:0 0 10px;border-bottom:1px solid #e5e7eb;padding-bottom:6px;">💡 คำแนะนำการปรับเปลี่ยนพฤติกรรมสุขภาพ</h3>'
+    +cardsHTML
+    +'</div>';
+}
+
 function renderResult(r){
   document.getElementById('result-name-hd').textContent=r.prefix+' '+r.fname+' '+r.lname+' | '+r.unit+' | บันทึกเมื่อ: '+r.savedAt;
   const bmi=parseFloat(r.bmi);
@@ -1464,7 +1581,8 @@ function renderResult(r){
     +'<div style="font-size:12px;color:#6b7280;">คะแนน (0-8)</div>'
     +'<span class="rt '+q8Tag+'" style="margin-top:8px;display:inline-block;">'+q8Txt+'</span>'
     +'<div style="font-size:11px;color:#6b7280;margin-top:8px;">0=ไม่มี | 1-8=น้อย | 9-16=ปานกลาง | 17-46=รุนแรง</div></div>'
-    +'</div></div>';
+    +'</div></div>'
+    +buildLifestyleAdviceHTML(r);
   // แสดงผล Lab Module ถ้ามี PDF
   const labSection = document.getElementById('lab-module-section');
   const labContainer = document.getElementById('lab-result-container');
@@ -1738,6 +1856,21 @@ async function savePdf(){
     await window._uploadString(fileRef, pendingPdfBase64, 'data_url');
     const url=await window._getDownloadURL(fileRef);
     r.pdfData=url; r.pdfName=pendingPdfName; r.pdfDate=new Date().toLocaleString('th-TH'); r.pdfPath=path;
+    // ดึงข้อมูลผลตรวจ Lab จาก PDF มาบันทึกลงในเรคคอร์ด เพื่อใช้ใน Export รง.ผสต.11
+    if(window.LabModule){
+      try{
+        const gender = r.gender==='1' ? 'M' : 'F';
+        const text = await window.LabModule.pdfToText(pendingPdfBase64);
+        const lab = window.LabModule.extractLab(text, gender);
+        r.lab = lab;
+        const ncd = window.LabModule.analyzeNCD(lab, gender, r.age);
+        const highest = ncd.reduce(function(acc,d){
+          const order={high:3,medium:2,low:1};
+          return (order[d.level]||0) > (order[acc]||0) ? d.level : acc;
+        }, 'low');
+        r.ncdRisk = highest;
+      }catch(e){ console.error('Lab extract error:', e); }
+    }
     await updateRecordInFirebase(r);
     closePdfModal();
     renderAdmin();
@@ -1756,7 +1889,7 @@ async function removePdf(){
       const fileRef=window._storageRef(window._storage, r.pdfPath);
       await window._deleteObject(fileRef).catch(function(){});
     }
-    delete r.pdfData; delete r.pdfName; delete r.pdfDate; delete r.pdfPath;
+    delete r.pdfData; delete r.pdfName; delete r.pdfDate; delete r.pdfPath; delete r.lab; delete r.ncdRisk;
     await updateRecordInFirebase(r);
     document.getElementById('pdf-current-wrap').classList.add('hidden');
     renderAdmin();
