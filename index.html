@@ -1,26 +1,18 @@
 <!DOCTYPE html>
-
 <html lang="th">
-
 <head>
-
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>ระบบตรวจสุขภาพประจำปี - รพ.ค่ายพระยอดเมืองขวาง</title>
-
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-
 <!-- Tabler Icons -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/tabler-icons.min.css">
-
 <!-- Firebase SDK -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getFirestore, collection, doc, setDoc, getDocs, updateDoc, deleteDoc, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
+  import { getStorage, ref as storageRef, uploadString, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
   const firebaseConfig = {
     apiKey: "AIzaSyAh_U2SfI-8mj5voLR17ZqYr3-EkywAHng",
     authDomain: "pymk-health.firebaseapp.com",
@@ -30,14 +22,18 @@
     appId: "1:314295525314:web:21b4e8fdc763792bd9405b",
     measurementId: "G-5VW0RZ4PYK"
   };
-
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app, 'pymkhealth');
-
   window._db = db;
   window._col = collection;
   window._doc = doc;
   window._setDoc = setDoc;
+  const storage = getStorage(app);
+  window._storage = storage;
+  window._storageRef = storageRef;
+  window._uploadString = uploadString;
+  window._getDownloadURL = getDownloadURL;
+  window._deleteObject = deleteObject;
   window._getDocs = getDocs;
   window._updateDoc = updateDoc;
   window._deleteDoc = deleteDoc;
@@ -45,7 +41,6 @@
   window._where = where;
   window._onSnapshot = onSnapshot;
   window._firebaseModuleReady = true;
-
   function tryLoad() {
     if (typeof window.loadFromFirebase === 'function') {
       window.loadFromFirebase();
@@ -53,14 +48,12 @@
       setTimeout(tryLoad, 50);
     }
   }
-
   if (document.readyState === 'complete') {
     tryLoad();
   } else {
     window.addEventListener('load', tryLoad);
   }
 </script>
-
 <style>
 .p-4{padding:1rem!important}.p-6{padding:1.5rem!important}.p-8{padding:2rem!important}
 .p-2{padding:.5rem!important}.p-3{padding:.75rem!important}
@@ -68,7 +61,6 @@
 .mt-4{margin-top:1rem!important}.mt-2{margin-top:.5rem!important}
 .hidden{display:none!important}
 </style>
-
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap');
 *{font-family:'Sarabun',sans-serif;}
@@ -102,7 +94,6 @@
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:1000;}
 #lab-module-section{margin-top:1rem;}
 </style>
-
 <!-- Lab Module CSS -->
 <style id="lm-css">
   .lm{font-family:-apple-system,'Sarabun',sans-serif;font-size:15px;color:#1a1a1a}
@@ -146,11 +137,8 @@
   .lm-alert{border-radius:8px;padding:.7rem .9rem;font-size:13px;margin-bottom:.75rem}
   @media(max-width:480px){.lm-sg{grid-template-columns:repeat(2,1fr)}.lm-mg{grid-template-columns:repeat(2,1fr)}}
 </style>
-
 </head>
-
 <body style="background:#f0f4ff;min-height:100vh;padding:16px;">
-
 <!-- HEADER -->
 <div style="max-width:960px;margin:0 auto 20px;">
   <div class="sc p-4" style="display:flex;align-items:center;gap:16px;">
@@ -167,7 +155,6 @@
     </div>
   </div>
 </div>
-
 <!-- HOME -->
 <div id="page-home" style="max-width:960px;margin:0 auto;">
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
@@ -187,7 +174,6 @@
     </div>
   </div>
 </div>
-
 <!-- REGISTER -->
 <div id="page-register" class="hidden" style="max-width:960px;margin:0 auto;">
   <div class="sc p-4 mb-4">
@@ -201,7 +187,6 @@
       <div style="display:flex;align-items:center;gap:8px;justify-content:flex-end;"><div class="sdot pending" id="sd4">4</div><span style="font-size:13px;color:#9ca3af;" id="sl4">สุขภาพจิต</span></div>
     </div>
   </div>
-
   <!-- STEP 1 -->
   <div id="step1" class="sc p-6">
     <h2 style="font-size:16px;font-weight:700;color:#1e293b;margin:0 0 18px;padding-bottom:10px;border-bottom:2px solid #eff6ff;">ขั้นตอนที่ 1: ข้อมูลส่วนตัว</h2>
@@ -246,7 +231,6 @@
       <button class="bp" onclick="goStep(2)">ถัดไป →</button>
     </div>
   </div>
-
   <!-- STEP 2 -->
   <div id="step2" class="hidden sc p-6">
     <h2 style="font-size:16px;font-weight:700;color:#1e293b;margin:0 0 18px;padding-bottom:10px;border-bottom:2px solid #eff6ff;">ขั้นตอนที่ 2: ข้อมูลสุขภาพ</h2>
@@ -289,7 +273,6 @@
       <button class="bp" onclick="goStep(3)">ถัดไป →</button>
     </div>
   </div>
-
   <!-- STEP 3 -->
   <div id="step3" class="hidden sc p-6">
     <h2 style="font-size:16px;font-weight:700;color:#1e293b;margin:0 0 18px;padding-bottom:10px;border-bottom:2px solid #eff6ff;">ขั้นตอนที่ 3: ประวัติสุขภาพ</h2>
@@ -322,7 +305,6 @@
       <button class="bp" onclick="goStep(4)">ถัดไป →</button>
     </div>
   </div>
-
   <!-- STEP 4 -->
   <div id="step4" class="hidden sc p-6">
     <h2 style="font-size:16px;font-weight:700;color:#1e293b;margin:0 0 18px;padding-bottom:10px;border-bottom:2px solid #eff6ff;">ขั้นตอนที่ 4: แบบประเมินสุขภาพจิต</h2>
@@ -344,7 +326,6 @@
     </div>
   </div>
 </div>
-
 <!-- LOGIN -->
 <div id="page-login" class="hidden" style="max-width:480px;margin:0 auto;">
   <div class="sc p-8">
@@ -375,7 +356,6 @@
     </div>
   </div>
 </div>
-
 <!-- RESULT -->
 <div id="page-result" class="hidden" style="max-width:960px;margin:0 auto;">
   <div class="sc p-4 mb-4" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
@@ -389,7 +369,6 @@
     </div>
   </div>
   <div id="result-content"></div>
-
   <!-- ════ ส่วนผลตรวจ Lab ════ -->
   <div id="lab-module-section" class="hidden">
     <div class="sc p-4 mb-2" style="background:#eff6ff;border-color:#bfdbfe;">
@@ -400,7 +379,6 @@
     <div id="lab-result-container" style="padding:.5rem 0"></div>
   </div>
 </div>
-
 <!-- SUCCESS -->
 <div id="page-success" class="hidden" style="max-width:480px;margin:0 auto;">
   <div class="sc p-8" style="text-align:center;">
@@ -415,7 +393,6 @@
     </div>
   </div>
 </div>
-
 <!-- ADMIN -->
 <div id="page-admin" class="hidden" style="max-width:1200px;margin:0 auto;">
   <div class="sc p-4 mb-4" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
@@ -429,10 +406,8 @@
       <button class="bg" style="font-size:13px;padding:7px 14px;" onclick="exportAllExcel()">⬇ Export Excel (รง.ผสต.11)</button>
     </div>
   </div>
-
   <!-- NCD Dashboard (ใหม่) -->
   <div id="ncd-dashboard" style="margin-bottom:12px;"></div>
-
   <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:12px;" id="admin-stats"></div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
     <div class="sc p-4">
@@ -450,7 +425,6 @@
       </div>
     </div>
   </div>
-
   <div class="sc" style="overflow-x:auto;">
     <table style="width:100%;border-collapse:collapse;min-width:1020px;">
       <thead>
@@ -472,7 +446,6 @@
     </table>
   </div>
 </div>
-
 <!-- MODAL แนบ PDF -->
 <div id="modal-pdf" class="hidden modal-overlay">
   <div class="sc p-6" style="width:520px;max-width:95vw;max-height:90vh;overflow-y:auto;">
@@ -520,7 +493,6 @@
     </div>
   </div>
 </div>
-
 <!-- MODAL ดู PDF -->
 <div id="modal-pdf-viewer" class="hidden modal-overlay" style="padding:16px;">
   <div style="background:white;border-radius:12px;width:90vw;max-width:860px;height:90vh;display:flex;flex-direction:column;overflow:hidden;">
@@ -531,7 +503,6 @@
     <iframe id="pdf-viewer-frame" style="flex:1;border:none;width:100%;"></iframe>
   </div>
 </div>
-
 <!-- MODAL นัดหมาย -->
 <div id="modal-appt" class="hidden modal-overlay">
   <div class="sc p-6" style="width:400px;max-width:95vw;">
@@ -558,7 +529,6 @@
     </div>
   </div>
 </div>
-
 <!-- MANAGE ADMINS -->
 <div id="page-manage-admins" class="hidden" style="max-width:700px;margin:0 auto;">
   <div class="sc p-4 mb-4" style="display:flex;justify-content:space-between;align-items:center;">
@@ -589,7 +559,6 @@
     </table>
   </div>
 </div>
-
 <!-- ADMIN LOGIN MODAL -->
 <div id="modal-admin-login" class="hidden modal-overlay">
   <div class="sc p-8" style="width:360px;">
@@ -608,7 +577,6 @@
     </div>
   </div>
 </div>
-
 <script>
 // ======= LAB MODULE =======
 (function(global){
@@ -858,7 +826,6 @@
   }
   global.LabModule={renderInto,renderFromFile,analyzeNCD,extractLab};
 })(window);
-
 // ======= NCD DASHBOARD (Admin) =======
 window.renderAdminNcdDashboard = async function(records) {
   const el = document.getElementById('ncd-dashboard');
@@ -911,7 +878,6 @@ window.renderAdminNcdDashboard = async function(records) {
       </div>
     </div>`;
 };
-
 // ======= EXPORT EXCEL รง.ผสต.11 (ปรับปรุง) =======
 window.exportPomsat11 = function(recs) {
   const thaiMonths = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
@@ -1034,11 +1000,9 @@ window.exportPomsat11 = function(recs) {
   const fname = `รง_ผสต11_${today.getFullYear()+543}${String(today.getMonth()+1).padStart(2,'0')}${String(today.getDate()).padStart(2,'0')}.xlsx`;
   XLSX.writeFile(wb, fname);
 };
-
 // ======= STORAGE =======
 let records = [], admins = [], currentRecord = null, lastId = null, currentAdmin = null;
 let _firebaseReady = false;
-
 function showLoadingOverlay(msg){
   let el = document.getElementById('fb-loading-overlay');
   if(!el){
@@ -1052,12 +1016,10 @@ function showLoadingOverlay(msg){
     el.style.display = 'flex';
   }
 }
-
 function hideLoadingOverlay(){
   const el = document.getElementById('fb-loading-overlay');
   if(el) el.style.display = 'none';
 }
-
 window.loadFromFirebase = async function(){
   showLoadingOverlay('กำลังโหลดข้อมูล...');
   try {
@@ -1081,9 +1043,7 @@ window.loadFromFirebase = async function(){
     alert('❌ ไม่สามารถเชื่อมต่อ Firebase ได้\n' + e.message);
   }
 };
-
 async function saveAll(){}
-
 async function saveRecordToFirebase(rec){
   try {
     await window._setDoc(window._doc(window._db, 'hc_records', rec.id), rec);
@@ -1092,15 +1052,14 @@ async function saveRecordToFirebase(rec){
     alert('❌ บันทึกข้อมูลไม่สำเร็จ: ' + e.message);
   }
 }
-
 async function updateRecordInFirebase(rec){
   try {
     await window._setDoc(window._doc(window._db, 'hc_records', rec.id), rec);
   } catch(e){
     console.error('Update record error:', e);
+    alert('❌ บันทึกข้อมูลไม่สำเร็จ: ' + e.message);
   }
 }
-
 async function saveAdmins(){
   try {
     for(const a of admins){
@@ -1108,16 +1067,13 @@ async function saveAdmins(){
     }
   } catch(e){ console.error('Save admins error:', e); }
 }
-
 async function deleteAdminFromFirebase(username){
   try {
     await window._deleteDoc(window._doc(window._db, 'hc_admins', username));
   } catch(e){ console.error('Delete admin error:', e); }
 }
-
 // ======= DOB =======
 const MONTHS_TH = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
-
 function initDOBDropdowns(dayId, monthId, yearId){
   const dayEl = document.getElementById(dayId);
   const monthEl = document.getElementById(monthId);
@@ -1130,7 +1086,6 @@ function initDOBDropdowns(dayId, monthId, yearId){
   const curBE = new Date().getFullYear()+543;
   for(let y=curBE;y>=curBE-100;y--) yearEl.innerHTML += '<option value="'+y+'">'+y+'</option>';
 }
-
 function getDOBValue(dayId, monthId, yearId){
   const d = document.getElementById(dayId).value;
   const m = document.getElementById(monthId).value;
@@ -1138,7 +1093,6 @@ function getDOBValue(dayId, monthId, yearId){
   if(!d||!m||!y) return '';
   return y+'-'+String(m).padStart(2,'0')+'-'+String(d).padStart(2,'0');
 }
-
 function setDOBValue(dayId, monthId, yearId, val){
   if(!val) return;
   const parts = val.split('-');
@@ -1147,14 +1101,12 @@ function setDOBValue(dayId, monthId, yearId, val){
   document.getElementById(monthId).value = parseInt(parts[1]).toString();
   document.getElementById(dayId).value = parseInt(parts[2]).toString();
 }
-
 function dobToDisplay(val){
   if(!val) return '-';
   const parts = val.split('-');
   if(parts.length<3) return val;
   return parseInt(parts[2])+' '+MONTHS_TH[parseInt(parts[1])-1]+' '+parts[0];
 }
-
 // ======= NAV =======
 function showPage(p){
   ['home','register','login','result','success','admin','manage-admins'].forEach(function(x){
@@ -1171,7 +1123,6 @@ function showPage(p){
   if(p==='manage-admins') renderAdminList();
   window.scrollTo({top:0,behavior:'smooth'});
 }
-
 // ======= ADMIN LOGIN =======
 function showAdminLogin(){
   document.getElementById('admin-login-user').value='';
@@ -1180,9 +1131,7 @@ function showAdminLogin(){
   document.getElementById('modal-admin-login').classList.remove('hidden');
   setTimeout(function(){ document.getElementById('admin-login-user').focus(); },100);
 }
-
 function closeAdminLogin(){ document.getElementById('modal-admin-login').classList.add('hidden'); }
-
 function doAdminLogin(){
   const u = document.getElementById('admin-login-user').value.trim();
   const p = document.getElementById('admin-login-pass').value;
@@ -1196,7 +1145,6 @@ function doAdminLogin(){
     document.getElementById('admin-login-error').classList.remove('hidden');
   }
 }
-
 // ======= MANAGE ADMINS =======
 function renderAdminList(){
   const tbody = document.getElementById('admin-list-tbody');
@@ -1211,7 +1159,6 @@ function renderAdminList(){
       +'</td></tr>';
   }).join('');
 }
-
 function addAdmin(){
   const name = document.getElementById('new-admin-name').value.trim();
   const user = document.getElementById('new-admin-user').value.trim();
@@ -1228,7 +1175,6 @@ function addAdmin(){
   document.getElementById('new-admin-pass').value='';
   renderAdminList();
 }
-
 function deleteAdmin(i){
   if(!confirm('ยืนยันการลบแอดมิน "'+admins[i].name+'" ?')) return;
   const username = admins[i].username;
@@ -1237,7 +1183,6 @@ function deleteAdmin(i){
   saveAdmins();
   renderAdminList();
 }
-
 // ======= STEP =======
 function goStep(n, force){
   if(!force && n>1 && !validateStep(n-1)) return;
@@ -1252,7 +1197,6 @@ function goStep(n, force){
   document.getElementById('step'+n).classList.remove('hidden');
   window.scrollTo({top:0,behavior:'smooth'});
 }
-
 // ======= VALIDATE =======
 function validateStep(n){
   if(n===1){
@@ -1292,7 +1236,6 @@ function validateStep(n){
   }
   return true;
 }
-
 // ======= BMI =======
 function calcBMI(){
   const w=parseFloat(document.getElementById('f-weight').value);
@@ -1309,19 +1252,16 @@ function calcBMI(){
     document.getElementById('bmi-result').innerHTML='<span style="color:'+color+'">● BMI '+bmi+': '+txt+'</span>';
   }
 }
-
 function toggleNCD(show){
   document.getElementById('ncd-options').classList.toggle('hidden',!show);
   document.getElementById('medicine-section').classList.toggle('hidden',!show);
 }
-
 function checkAddictions(){
   const s=parseInt(document.getElementById('f-smoke').value);
   const a=parseInt(document.getElementById('f-alcohol').value);
   document.getElementById('smoke-assess').classList.toggle('hidden',s<2);
   document.getElementById('alcohol-assess').classList.toggle('hidden',a<2);
 }
-
 // ======= 9Q & 8Q =======
 const q9List=[
   'เบื่อหน่าย หมดความสนใจในสิ่งที่เคยสนใจ หรือทำแล้วไม่มีความสุขเหมือนเดิม',
@@ -1339,7 +1279,6 @@ const q8List=[
   'เตรียมการจะฆ่าตัวตาย ตั้งใจให้ตายจริงๆ','ทำให้ตนเองบาดเจ็บ แต่ตั้งใจให้ตาย',
   'พยายามฆ่าตัวตาย ตั้งใจให้ตาย','ตลอดชีวิตเคยพยายามฆ่าตัวตาย'
 ];
-
 function initQ(){
   document.getElementById('q9-container').innerHTML = q9List.map(function(q,i){
     return '<div style="border:1px solid #bbf7d0;border-radius:8px;padding:10px 12px;background:white;">'
@@ -1359,7 +1298,6 @@ function initQ(){
       +'</div></div>';
   }).join('');
 }
-
 function updateQ9Score(){
   let s=0;
   for(let i=0;i<9;i++){const r=document.querySelector('input[name="q9_'+i+'"]:checked');if(r)s+=parseInt(r.value);}
@@ -1371,7 +1309,6 @@ function updateQ9Score(){
   else{txt='คะแนน 9Q: '+s+' — ซึมเศร้ารุนแรง';bg='#fee2e2';color='#991b1b';}
   bar.style.background=bg;bar.style.color=color;bar.textContent=txt;bar.classList.remove('hidden');
 }
-
 function updateQ8Score(){
   let s=0;
   for(let i=0;i<8;i++){const r=document.querySelector('input[name="q8_'+i+'"]:checked');if(r)s+=parseInt(r.value);}
@@ -1383,7 +1320,6 @@ function updateQ8Score(){
   else{txt='คะแนน 8Q: '+s+' — มีแนวโน้มระดับรุนแรง';bg='#fee2e2';color='#991b1b';}
   bar.style.background=bg;bar.style.color=color;bar.textContent=txt;bar.classList.remove('hidden');
 }
-
 // ======= SUBMIT =======
 function submitForm(){
   let q9=0;
@@ -1438,12 +1374,10 @@ function submitForm(){
   lastId=rec.id;
   showPage('success');
 }
-
 function viewOwnResult(){
   const r=records.find(function(x){return x.id===lastId;});
   if(r){currentRecord=r;renderResult(r);showPage('result');}
 }
-
 // ======= LOGIN =======
 function doLogin(){
   const id=document.getElementById('login-id').value.trim();
@@ -1461,7 +1395,6 @@ function doLogin(){
     errEl.classList.remove('hidden');
   }
 }
-
 // ======= RENDER RESULT =======
 function renderResult(r){
   document.getElementById('result-name-hd').textContent=r.prefix+' '+r.fname+' '+r.lname+' | '+r.unit+' | บันทึกเมื่อ: '+r.savedAt;
@@ -1545,10 +1478,8 @@ function renderResult(r){
     labContainer.innerHTML = '';
   }
 }
-
 // ======= ADMIN RENDER =======
 let currentApptId = null;
-
 function renderAdmin(){
   const total=records.length;
   const q9high=records.filter(function(r){return parseInt(r.q9)>=13;}).length;
@@ -1667,7 +1598,6 @@ function renderAdmin(){
       +'</tr>';
   }).join('');
 }
-
 function viewAdminPdf(id){
   const r=records.find(function(x){return x.id===id;});
   if(!r||!r.pdfData)return;
@@ -1675,12 +1605,10 @@ function viewAdminPdf(id){
   renderResult(r);
   showPage('result');
 }
-
 function viewAdmin(id){
   const r=records.find(function(x){return x.id===id;});
   if(r){currentRecord=r;renderResult(r);showPage('result');}
 }
-
 // ======= APPOINTMENT =======
 function openAppt(id){
   currentApptId=id;
@@ -1701,16 +1629,13 @@ function openAppt(id){
   toggleApptDate();
   document.getElementById('modal-appt').classList.remove('hidden');
 }
-
 function toggleApptDate(){
   const val=document.querySelector('input[name="appt-type"]:checked');
   const show=val&&val.value==='appt';
   document.getElementById('appt-date-wrap').style.display=show?'':'none';
   document.getElementById('appt-note-wrap').style.display=show?'':'none';
 }
-
 function closeAppt(){document.getElementById('modal-appt').classList.add('hidden');}
-
 function saveAppt(){
   const r=records.find(function(x){return x.id===currentApptId;});
   if(!r)return;
@@ -1727,7 +1652,6 @@ function saveAppt(){
   closeAppt();
   renderAdmin();
 }
-
 function toggleAttended(id){
   const r=records.find(function(x){return x.id===id;});
   if(!r||!r.appointment||r.appointment.type!=='appt')return;
@@ -1735,10 +1659,8 @@ function toggleAttended(id){
   updateRecordInFirebase(r);
   renderAdmin();
 }
-
 // ======= PDF MODAL =======
 let currentPdfModalId=null, pendingPdfBase64=null, pendingPdfName=null;
-
 function openPdfModal(id){
   currentPdfModalId=id;
   pendingPdfBase64=null; pendingPdfName=null;
@@ -1759,19 +1681,15 @@ function openPdfModal(id){
   }
   document.getElementById('modal-pdf').classList.remove('hidden');
 }
-
 function closePdfModal(){ document.getElementById('modal-pdf').classList.add('hidden'); }
-
 function clearPdfPreview(){
   pendingPdfBase64=null; pendingPdfName=null;
   document.getElementById('pdf-preview-wrap').classList.add('hidden');
   document.getElementById('pdf-lab-preview').classList.add('hidden');
   document.getElementById('pdf-lab-preview-content').innerHTML='';
 }
-
 function handlePdfSelect(evt){ processPdfFile(evt.target.files[0]); }
 function handlePdfDrop(evt){ evt.preventDefault(); if(evt.dataTransfer.files[0]) processPdfFile(evt.dataTransfer.files[0]); }
-
 function processPdfFile(file){
   if(!file||!file.name.endsWith('.pdf')){
     document.getElementById('pdf-err').textContent='รองรับเฉพาะไฟล์ .pdf';
@@ -1793,7 +1711,6 @@ function processPdfFile(file){
   };
   reader.readAsDataURL(file);
 }
-
 function previewLabFromPdf(pdfBase64, recordId){
   if(!window.LabModule) return;
   const r=records.find(function(x){return x.id===recordId;});
@@ -1808,52 +1725,66 @@ function previewLabFromPdf(pdfBase64, recordId){
     .then(function(){ loadingEl.textContent='✅ วิเคราะห์สำเร็จ'; })
     .catch(function(){ loadingEl.textContent='⚠️ อ่านข้อมูลได้บางส่วน'; });
 }
-
-function savePdf(){
+async function savePdf(){
   if(!pendingPdfBase64){ alert('กรุณาเลือกไฟล์ PDF'); return; }
   const r=records.find(function(x){return x.id===currentPdfModalId;});
   if(!r)return;
-  r.pdfData=pendingPdfBase64; r.pdfName=pendingPdfName; r.pdfDate=new Date().toLocaleString('th-TH');
-  updateRecordInFirebase(r);
-  closePdfModal();
-  renderAdmin();
+  const saveBtn=document.getElementById('pdf-save-btn');
+  const origLabel=saveBtn?saveBtn.textContent:'';
+  if(saveBtn){saveBtn.disabled=true;saveBtn.textContent='⏳ กำลังอัปโหลด...';}
+  try{
+    const path='pdfresults/'+r.id+'.pdf';
+    const fileRef=window._storageRef(window._storage, path);
+    await window._uploadString(fileRef, pendingPdfBase64, 'data_url');
+    const url=await window._getDownloadURL(fileRef);
+    r.pdfData=url; r.pdfName=pendingPdfName; r.pdfDate=new Date().toLocaleString('th-TH'); r.pdfPath=path;
+    await updateRecordInFirebase(r);
+    closePdfModal();
+    renderAdmin();
+  }catch(e){
+    console.error('PDF upload error:', e);
+    alert('❌ อัปโหลด PDF ไม่สำเร็จ: '+e.message);
+  }finally{
+    if(saveBtn){saveBtn.disabled=false;saveBtn.textContent=origLabel;}
+  }
 }
-
-function removePdf(){
+async function removePdf(){
   const r=records.find(function(x){return x.id===currentPdfModalId;});
   if(!r)return;
-  delete r.pdfData; delete r.pdfName; delete r.pdfDate;
-  updateRecordInFirebase(r);
-  document.getElementById('pdf-current-wrap').classList.add('hidden');
-  renderAdmin();
+  try{
+    if(r.pdfPath){
+      const fileRef=window._storageRef(window._storage, r.pdfPath);
+      await window._deleteObject(fileRef).catch(function(){});
+    }
+    delete r.pdfData; delete r.pdfName; delete r.pdfDate; delete r.pdfPath;
+    await updateRecordInFirebase(r);
+    document.getElementById('pdf-current-wrap').classList.add('hidden');
+    renderAdmin();
+  }catch(e){
+    console.error('PDF remove error:', e);
+    alert('❌ ลบ PDF ไม่สำเร็จ: '+e.message);
+  }
 }
-
 function viewPdfCurrent(){
   const r=records.find(function(x){return x.id===currentPdfModalId;});
   if(!r||!r.pdfData)return;
   const w=window.open();
   w.document.write('<iframe src="'+r.pdfData+'" width="100%" height="100%" style="border:none;"></iframe>');
 }
-
 function closePdfViewer(){}
-
 // ======= EXPORT =======
 function exportAllExcel(){
   if(!records.length){alert('ยังไม่มีข้อมูล');return;}
   exportPomsat11(records);
 }
-
 function exportSingleExcel(){
   if(!currentRecord)return;
   exportPomsat11([currentRecord]);
 }
-
 window.addEventListener('load', function(){
   initDOBDropdowns('login-dob-day','login-dob-month','login-dob-year');
   showLoadingOverlay('กำลังโหลดข้อมูล...');
 });
 </script>
-
 </body>
-
 </html>
