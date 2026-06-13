@@ -1,18 +1,26 @@
 <!DOCTYPE html>
+
 <html lang="th">
+
 <head>
+
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>ระบบตรวจสุขภาพประจำปี - รพ.ค่ายพระยอดเมืองขวาง</title>
+
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
 <!-- Tabler Icons -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/tabler-icons.min.css">
+
 <!-- Firebase SDK -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getFirestore, collection, doc, setDoc, getDocs, updateDoc, deleteDoc, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-  import { getStorage, ref as storageRef, uploadString, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+
   const firebaseConfig = {
     apiKey: "AIzaSyAh_U2SfI-8mj5voLR17ZqYr3-EkywAHng",
     authDomain: "pymk-health.firebaseapp.com",
@@ -22,18 +30,14 @@
     appId: "1:314295525314:web:21b4e8fdc763792bd9405b",
     measurementId: "G-5VW0RZ4PYK"
   };
+
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app, 'pymkhealth');
+
   window._db = db;
   window._col = collection;
   window._doc = doc;
   window._setDoc = setDoc;
-  const storage = getStorage(app);
-  window._storage = storage;
-  window._storageRef = storageRef;
-  window._uploadString = uploadString;
-  window._getDownloadURL = getDownloadURL;
-  window._deleteObject = deleteObject;
   window._getDocs = getDocs;
   window._updateDoc = updateDoc;
   window._deleteDoc = deleteDoc;
@@ -41,6 +45,7 @@
   window._where = where;
   window._onSnapshot = onSnapshot;
   window._firebaseModuleReady = true;
+
   function tryLoad() {
     if (typeof window.loadFromFirebase === 'function') {
       window.loadFromFirebase();
@@ -48,12 +53,14 @@
       setTimeout(tryLoad, 50);
     }
   }
+
   if (document.readyState === 'complete') {
     tryLoad();
   } else {
     window.addEventListener('load', tryLoad);
   }
 </script>
+
 <style>
 .p-4{padding:1rem!important}.p-6{padding:1.5rem!important}.p-8{padding:2rem!important}
 .p-2{padding:.5rem!important}.p-3{padding:.75rem!important}
@@ -61,6 +68,7 @@
 .mt-4{margin-top:1rem!important}.mt-2{margin-top:.5rem!important}
 .hidden{display:none!important}
 </style>
+
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap');
 *{font-family:'Sarabun',sans-serif;}
@@ -94,6 +102,7 @@
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:1000;}
 #lab-module-section{margin-top:1rem;}
 </style>
+
 <!-- Lab Module CSS -->
 <style id="lm-css">
   .lm{font-family:-apple-system,'Sarabun',sans-serif;font-size:15px;color:#1a1a1a}
@@ -137,8 +146,11 @@
   .lm-alert{border-radius:8px;padding:.7rem .9rem;font-size:13px;margin-bottom:.75rem}
   @media(max-width:480px){.lm-sg{grid-template-columns:repeat(2,1fr)}.lm-mg{grid-template-columns:repeat(2,1fr)}}
 </style>
+
 </head>
+
 <body style="background:#f0f4ff;min-height:100vh;padding:16px;">
+
 <!-- HEADER -->
 <div style="max-width:960px;margin:0 auto 20px;">
   <div class="sc p-4" style="display:flex;align-items:center;gap:16px;">
@@ -155,6 +167,7 @@
     </div>
   </div>
 </div>
+
 <!-- HOME -->
 <div id="page-home" style="max-width:960px;margin:0 auto;">
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
@@ -174,6 +187,7 @@
     </div>
   </div>
 </div>
+
 <!-- REGISTER -->
 <div id="page-register" class="hidden" style="max-width:960px;margin:0 auto;">
   <div class="sc p-4 mb-4">
@@ -187,6 +201,7 @@
       <div style="display:flex;align-items:center;gap:8px;justify-content:flex-end;"><div class="sdot pending" id="sd4">4</div><span style="font-size:13px;color:#9ca3af;" id="sl4">สุขภาพจิต</span></div>
     </div>
   </div>
+
   <!-- STEP 1 -->
   <div id="step1" class="sc p-6">
     <h2 style="font-size:16px;font-weight:700;color:#1e293b;margin:0 0 18px;padding-bottom:10px;border-bottom:2px solid #eff6ff;">ขั้นตอนที่ 1: ข้อมูลส่วนตัว</h2>
@@ -231,6 +246,7 @@
       <button class="bp" onclick="goStep(2)">ถัดไป →</button>
     </div>
   </div>
+
   <!-- STEP 2 -->
   <div id="step2" class="hidden sc p-6">
     <h2 style="font-size:16px;font-weight:700;color:#1e293b;margin:0 0 18px;padding-bottom:10px;border-bottom:2px solid #eff6ff;">ขั้นตอนที่ 2: ข้อมูลสุขภาพ</h2>
@@ -273,6 +289,7 @@
       <button class="bp" onclick="goStep(3)">ถัดไป →</button>
     </div>
   </div>
+
   <!-- STEP 3 -->
   <div id="step3" class="hidden sc p-6">
     <h2 style="font-size:16px;font-weight:700;color:#1e293b;margin:0 0 18px;padding-bottom:10px;border-bottom:2px solid #eff6ff;">ขั้นตอนที่ 3: ประวัติสุขภาพ</h2>
@@ -305,6 +322,7 @@
       <button class="bp" onclick="goStep(4)">ถัดไป →</button>
     </div>
   </div>
+
   <!-- STEP 4 -->
   <div id="step4" class="hidden sc p-6">
     <h2 style="font-size:16px;font-weight:700;color:#1e293b;margin:0 0 18px;padding-bottom:10px;border-bottom:2px solid #eff6ff;">ขั้นตอนที่ 4: แบบประเมินสุขภาพจิต</h2>
@@ -326,6 +344,7 @@
     </div>
   </div>
 </div>
+
 <!-- LOGIN -->
 <div id="page-login" class="hidden" style="max-width:480px;margin:0 auto;">
   <div class="sc p-8">
@@ -356,6 +375,7 @@
     </div>
   </div>
 </div>
+
 <!-- RESULT -->
 <div id="page-result" class="hidden" style="max-width:960px;margin:0 auto;">
   <div class="sc p-4 mb-4" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
@@ -369,6 +389,7 @@
     </div>
   </div>
   <div id="result-content"></div>
+
   <!-- ════ ส่วนผลตรวจ Lab ════ -->
   <div id="lab-module-section" class="hidden">
     <div class="sc p-4 mb-2" style="background:#eff6ff;border-color:#bfdbfe;">
@@ -379,6 +400,7 @@
     <div id="lab-result-container" style="padding:.5rem 0"></div>
   </div>
 </div>
+
 <!-- SUCCESS -->
 <div id="page-success" class="hidden" style="max-width:480px;margin:0 auto;">
   <div class="sc p-8" style="text-align:center;">
@@ -393,6 +415,7 @@
     </div>
   </div>
 </div>
+
 <!-- ADMIN -->
 <div id="page-admin" class="hidden" style="max-width:1200px;margin:0 auto;">
   <div class="sc p-4 mb-4" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
@@ -406,8 +429,10 @@
       <button class="bg" style="font-size:13px;padding:7px 14px;" onclick="exportAllExcel()">⬇ Export Excel (รง.ผสต.11)</button>
     </div>
   </div>
+
   <!-- NCD Dashboard (ใหม่) -->
   <div id="ncd-dashboard" style="margin-bottom:12px;"></div>
+
   <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:12px;" id="admin-stats"></div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
     <div class="sc p-4">
@@ -425,6 +450,7 @@
       </div>
     </div>
   </div>
+
   <div class="sc" style="overflow-x:auto;">
     <table style="width:100%;border-collapse:collapse;min-width:1020px;">
       <thead>
@@ -446,6 +472,7 @@
     </table>
   </div>
 </div>
+
 <!-- MODAL แนบ PDF -->
 <div id="modal-pdf" class="hidden modal-overlay">
   <div class="sc p-6" style="width:520px;max-width:95vw;max-height:90vh;overflow-y:auto;">
@@ -493,6 +520,7 @@
     </div>
   </div>
 </div>
+
 <!-- MODAL ดู PDF -->
 <div id="modal-pdf-viewer" class="hidden modal-overlay" style="padding:16px;">
   <div style="background:white;border-radius:12px;width:90vw;max-width:860px;height:90vh;display:flex;flex-direction:column;overflow:hidden;">
@@ -503,6 +531,7 @@
     <iframe id="pdf-viewer-frame" style="flex:1;border:none;width:100%;"></iframe>
   </div>
 </div>
+
 <!-- MODAL นัดหมาย -->
 <div id="modal-appt" class="hidden modal-overlay">
   <div class="sc p-6" style="width:400px;max-width:95vw;">
@@ -529,6 +558,7 @@
     </div>
   </div>
 </div>
+
 <!-- MANAGE ADMINS -->
 <div id="page-manage-admins" class="hidden" style="max-width:700px;margin:0 auto;">
   <div class="sc p-4 mb-4" style="display:flex;justify-content:space-between;align-items:center;">
@@ -559,6 +589,7 @@
     </table>
   </div>
 </div>
+
 <!-- ADMIN LOGIN MODAL -->
 <div id="modal-admin-login" class="hidden modal-overlay">
   <div class="sc p-8" style="width:360px;">
@@ -577,6 +608,7 @@
     </div>
   </div>
 </div>
+
 <script>
 // ======= LAB MODULE =======
 (function(global){
@@ -599,8 +631,7 @@
     return t;
   }
   function n(text,re){const m=text.match(re);return m?parseFloat(m[1]):null;}
-  function extractLab(text,gender){
-    const f=gender==='F';
+  function extractLab(text){
     const d={};
     const nm=text.match(/ชื่อ\s*:\s*([^\n\r]+)/)||text.match(/((?:ร|พ)\.[อต]\.(?:หญิง|ชาย)\s+\S+\s+\S+|นาย\s+\S+\s+\S+|นาง(?:สาว)?\s+\S+\s+\S+)/);
     d.name=nm?nm[1].trim():null;
@@ -619,23 +650,11 @@
     d.bun=n(text,/BUN[^\d]*([\d.]+)/);d.creat=n(text,/Creatinine[^\d]*([\d.]+)/);
     d.egfr=n(text,/eGFR[^\d]*([\d.]+)/);
     d.alt=n(text,/SGPT\(ALT\)[^\d]*([\d.]+)/);d.ast=n(text,/SGOT\(AST\)[^\d]*([\d.]+)/);d.alp=n(text,/ALP[^\d]*([\d.]+)/);
-    d.hdl=n(text,/HDL-?C?\s*[^\d]*([\d.]+)/);d.ldl=n(text,/LDL-?C?\s*[^\d]*([\d.]+)/);
     d.urineBlood=/3\+\s*Blood|2\+\s*Blood|1\+\s*Blood/.test(text);
     d.urineProtein=!/Negative Protein/.test(text)&&/Protein/.test(text);
     d.urineGlucose=!/Glucose Negative/.test(text)&&/Glucose/.test(text);
     d.urineRBC=n(text,/(\d+)-\d+\s+RBC\s+0\s*-\s*2/);
     d.urinePeriod=/มีประจำเดือน|มีประจําเดือน/.test(text);
-    // CBC abnormal: Hct<40% (male) or per ref range, or other CBC values out of range
-    const hctRefLo=f?36:40;
-    d.cbcAbnormal = (d.hb!==null&&d.hb<(f?12:14)) || (d.hct!==null&&d.hct<hctRefLo) ||
-      (d.wbc!==null&&(d.wbc<4||d.wbc>10)) || (d.plt!==null&&(d.plt<140||d.plt>440));
-    // Blood chemistry abnormal: any of glucose/chol/tg/bun/cr/uric/ast/alt out of normal range
-    d.bloodChemAbnormal = (d.fbs!==null&&(d.fbs<70||d.fbs>100)) ||
-      (d.chol!==null&&d.chol>200) || (d.tg!==null&&d.tg>=150) ||
-      (d.bun!==null&&(d.bun<6||d.bun>20)) ||
-      (d.creat!==null&&(d.creat<(f?0.5:0.6)||d.creat>(f?1.0:1.2))) ||
-      (d.uric!==null&&(d.uric<(f?2.4:3.4)||d.uric>(f?6.0:7.0))) ||
-      (d.ast!==null&&d.ast>(f?35:40)) || (d.alt!==null&&d.alt>(f?35:40));
     return d;
   }
   function analyzeNCD(d,gender,age){
@@ -826,9 +845,7 @@
     el.innerHTML='<p style="color:#888;font-size:14px;padding:1rem;text-align:center">⏳ กำลังอ่านผลตรวจ...</p>';
     try{
       const text=await pdfToText(src);
-      let g=gender;
-      if(!g){const nmTmp=text.match(/((?:ร|พ)\.[อต]\.หญิง|นาง(?:สาว)?)/);g=nmTmp?'F':'M';}
-      const lab=extractLab(text,g);
+      const lab=extractLab(text);
       if(!gender)gender=lab.name&&lab.name.includes('หญิง')?'F':'M';
       const ncd=analyzeNCD(lab,gender,lab.age);
       el.innerHTML=buildHTML(lab,gender,ncd);
@@ -839,8 +856,9 @@
   async function renderFromFile(file,containerId,gender){
     return renderInto(containerId,await file.arrayBuffer(),gender);
   }
-  global.LabModule={renderInto,renderFromFile,analyzeNCD,extractLab,pdfToText};
+  global.LabModule={renderInto,renderFromFile,analyzeNCD,extractLab};
 })(window);
+
 // ======= NCD DASHBOARD (Admin) =======
 window.renderAdminNcdDashboard = async function(records) {
   const el = document.getElementById('ncd-dashboard');
@@ -893,6 +911,7 @@ window.renderAdminNcdDashboard = async function(records) {
       </div>
     </div>`;
 };
+
 // ======= EXPORT EXCEL รง.ผสต.11 (ปรับปรุง) =======
 window.exportPomsat11 = function(recs) {
   const thaiMonths = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
@@ -932,60 +951,17 @@ window.exportPomsat11 = function(recs) {
   }
   const ncdNames = ['ความดันโลหิตสูง','เบาหวาน','โรคหัวใจและหลอดเลือด','ไขมันในเลือดสูง'];
   const headers = [
-    'ลำดับ','คำนำหน้า','ชื่อ','นามสกุล','เลขที่ทั่วไป(HN.No.)','เลขประจำตัวประชาชน',
-    'หน่วยต้นสังกัด','ตำแหน่ง','ช่วยราชการ(ระบุ)','อายุ(ปี)','เพศ(1)ชาย(2)หญิง','สิทธิเบิก',
-    'น้ำหนัก(kg)','ความสูง(cm)','BMI(kg/m2)','รอบเอว(cm)','Systolic(mmHg)','Diastolic(mmHg)',
-    'Chest x-ray ผล','Chest x-ray ผิดปกติ(ระบุ)',
-    'Urine ผล','Urine Proteinurea>1+','Urine Hematuria>1+','Urine ผิดปกติอื่นๆ(ระบุ)',
-    'CBC ผล','CBC ผิดปกติอื่นๆ(ระบุ)',
-    'Glu(mg/dL)','Chol(mg/dL)','TG(mg/dL)','HDL-C(mg/dL)','LDL-C(mg/dL)','BUN(mg/dL)','Cr(mg/dL)','Uric(mg/dL)','AST(U/L)','ALT(U/L)',
-    'Blood Chem ผล','Blood Chem ผิดปกติ(ระบุ)',
-    'โรคประจำตัว(ผล)','โรคอื่นๆ(ระบุ)',
-    'การสูบบุหรี่','การดื่มแอลกอฮอล์','การออกกำลังกาย',
-    'สุขภาพฟัน','ST5','Q9','Q8','การแบ่งกลุ่ม','การประเมินซ้ำ','การส่งพบแพทย์'
+    'ลำดับ','ยศ/คำนำหน้า','ชื่อ','นามสกุล','HN','เลขบัตรประชาชน',
+    'หน่วยต้นสังกัด','ตำแหน่ง','ช่วยราชการ','อายุ (ปี)','เพศ','สิทธิเบิก',
+    'น้ำหนัก (kg)','ส่วนสูง (cm)','BMI','กลุ่ม BMI','รอบเอว (cm)',
+    'การสูบบุหรี่','คะแนน Fagerstrom','การดื่มแอลกอฮอล์','คะแนน AUDIT-C','การออกกำลังกาย',
+    'โรคประจำตัว','โรคอื่นๆ','การรับยา',
+    'คะแนน 9Q','ระดับ 9Q','คะแนน 8Q','ระดับ 8Q',
+    'ผลตรวจ Hb','ผลตรวจ Cholesterol','ผลตรวจ FBS','ผลตรวจ eGFR',
+    'ความเสี่ยง NCDs','กลุ่มสี','วันเกิด (พ.ศ.)','วันที่บันทึก'
   ];
-  function abnormalText(items){
-    return items.filter(x=>x.flag).map(x=>x.label).join(', ');
-  }
-  function pres(v){ return (v===null||v===undefined||v==='')?'':v; }
   const rows = recs.map((r, i) => {
-    const lab = r.lab || {};
-    const f = r.gender !== '1';
-    // CBC: 1=ปกติ, 2=ผิดปกติ, 0=ไม่ได้ตรวจ/ไม่มีข้อมูล
-    const hasCbc = lab.hb!=null || lab.hct!=null || lab.wbc!=null || lab.plt!=null || lab.rbc!=null;
-    const cbcResult = hasCbc ? (lab.cbcAbnormal ? 2 : 1) : '';
-    const cbcAbn = [];
-    if(lab.hct!=null && lab.hct < (f?36:40)) cbcAbn.push({flag:true,label:`Hct ${lab.hct}% ต่ำ`});
-    if(lab.mcv!=null && lab.mcv < 78) cbcAbn.push({flag:true,label:`MCV ${lab.mcv}`});
-    if(lab.hb!=null && lab.hb < (f?12:14)) cbcAbn.push({flag:true,label:`Hb ${lab.hb}`});
-    if(lab.wbc!=null && (lab.wbc<4||lab.wbc>10)) cbcAbn.push({flag:true,label:`WBC ${lab.wbc}`});
-    if(lab.plt!=null && (lab.plt<140||lab.plt>440)) cbcAbn.push({flag:true,label:`Plt ${lab.plt}`});
-    // Urine
-    const hasUrine = lab.urineBlood!=null || lab.urineProtein!=null || lab.urineGlucose!=null || lab.urineRBC!=null;
-    const urineResult = hasUrine ? ((lab.urineBlood||lab.urineProtein||lab.urineGlucose) ? 2 : 1) : '';
-    const urineAbn = [];
-    if(lab.urineGlucose) urineAbn.push('พบน้ำตาลในปัสสาวะ');
-    // Blood chemistry
-    const hasChem = lab.fbs!=null || lab.chol!=null || lab.tg!=null || lab.bun!=null || lab.creat!=null || lab.uric!=null || lab.ast!=null || lab.alt!=null;
-    const chemResult = hasChem ? (lab.bloodChemAbnormal ? 2 : 1) : '';
-    const chemAbn = [];
-    if(lab.fbs!=null && lab.fbs>=126) chemAbn.push(`FBS ${lab.fbs} (เบาหวาน)`);
-    else if(lab.fbs!=null && lab.fbs>=100) chemAbn.push(`FBS ${lab.fbs} (Prediabetes)`);
-    if(lab.chol!=null && lab.chol>200) chemAbn.push(`Chol ${lab.chol}`);
-    if(lab.tg!=null && lab.tg>=150) chemAbn.push(`TG ${lab.tg}`);
-    if(lab.bun!=null && (lab.bun<6||lab.bun>20)) chemAbn.push(`BUN ${lab.bun}`);
-    if(lab.creat!=null && (lab.creat<(f?0.5:0.6)||lab.creat>(f?1.0:1.2))) chemAbn.push(`Cr ${lab.creat}`);
-    if(lab.uric!=null && (lab.uric<(f?2.4:3.4)||lab.uric>(f?6.0:7.0))) chemAbn.push(`Uric ${lab.uric}`);
-    if(lab.ast!=null && lab.ast>(f?35:40)) chemAbn.push(`AST ${lab.ast}`);
-    if(lab.alt!=null && lab.alt>(f?35:40)) chemAbn.push(`ALT ${lab.alt}`);
-    // โรคประจำตัว: 0=ไม่มี,1=ความดัน,2=เบาหวาน,3=หัวใจ,4=ไขมัน,5=>=2โรค,6=อื่นๆ
-    let ncdCode = 0;
-    if(r.hasNCD && r.ncds && r.ncds.length>0){
-      ncdCode = r.ncds.length>=2 ? 5 : r.ncds[0];
-      if(r.otherDisease) ncdCode = r.ncds.length>0 ? ncdCode : 6;
-    } else if(r.otherDisease){
-      ncdCode = 6;
-    }
+    const ncdTxt = r.hasNCD && r.ncds && r.ncds.length > 0 ? r.ncds.map(n => ncdNames[n-1]).join(', ') : 'ไม่มี';
     return [
       i + 1,
       r.prefix || '',
@@ -997,46 +973,33 @@ window.exportPomsat11 = function(recs) {
       r.position || '',
       r.attach || '',
       r.age || '',
-      r.gender || '',
-      r.right || '',
+      r.gender == '1' ? 'ชาย' : 'หญิง',
+      ['','ข้าราชการ','รัฐวิสาหกิจ','ปกส.','สปสช.','อื่นๆ'][r.right] || '',
       r.weight || '',
       r.height || '',
       r.bmi || '',
+      bmiGroup(r.bmi),
       r.waist || '',
-      '', // Systolic - ไม่มีในฟอร์ม
-      '', // Diastolic - ไม่มีในฟอร์ม
-      '', // Chest x-ray ผล - ไม่มีในฟอร์ม
-      '', // Chest x-ray ผิดปกติ
-      pres(urineResult),
-      lab.urineProtein ? 2 : (hasUrine?1:''),
-      lab.urineBlood ? 2 : (hasUrine?1:''),
-      urineAbn.join(', '),
-      pres(cbcResult),
-      abnormalText(cbcAbn),
-      lab.fbs!=null?lab.fbs:'',
-      lab.chol!=null?lab.chol:'',
-      lab.tg!=null?lab.tg:'',
-      lab.hdl!=null?lab.hdl:'',
-      lab.ldl!=null?lab.ldl:'',
-      lab.bun!=null?lab.bun:'',
-      lab.creat!=null?lab.creat:'',
-      lab.uric!=null?lab.uric:'',
-      lab.ast!=null?lab.ast:'',
-      lab.alt!=null?lab.alt:'',
-      pres(chemResult),
-      chemAbn.join(', '),
-      ncdCode,
+      ['ไม่เคยสูบ','เคยสูบ เลิกแล้ว','สูบครั้งคราว','สูบประจำ'][r.smoke] || '',
+      r.fagScore || 0,
+      ['ไม่เคยดื่ม','เคยดื่ม เลิกแล้ว','ดื่มครั้งคราว','ดื่มประจำ'][r.alcohol] || '',
+      r.auditScore || 0,
+      ['ไม่ออก','ต่ำกว่าเกณฑ์','ตามเกณฑ์'][r.exercise] || '',
+      ncdTxt,
       r.otherDisease || '',
-      r.smoke!=null?r.smoke:'',
-      r.alcohol!=null?r.alcohol:'',
-      r.exercise!=null?r.exercise:'',
-      '', // สุขภาพฟัน - ไม่มีในฟอร์ม
-      '', // ST5 - ไม่มีในฟอร์ม
-      r.q9!=null?r.q9:'',
-      r.q8!=null?r.q8:'',
-      {green:0,yellow:1,red:2}[r.colorGroup] ?? '',
-      0, // การประเมินซ้ำ
-      0, // การส่งพบแพทย์
+      ['','สม่ำเสมอ','ไม่สม่ำเสมอ','ขาดยา'][r.medicine] || 'ไม่มีโรค',
+      r.q9 || 0,
+      q9Level(r.q9),
+      r.q8 || 0,
+      q8Level(r.q8),
+      r.labHb || '',
+      r.labChol || '',
+      r.labFbs || '',
+      r.labEgfr || '',
+      ncdRiskLabel(r.ncdRisk),
+      {green:'กลุ่มปกติ',yellow:'กลุ่มเฝ้าระวัง',red:'กลุ่มเสี่ยง'}[r.colorGroup] || '',
+      r.dob || '',
+      r.savedAt || '',
     ];
   });
   const wsData = [headers, ...rows];
@@ -1071,9 +1034,11 @@ window.exportPomsat11 = function(recs) {
   const fname = `รง_ผสต11_${today.getFullYear()+543}${String(today.getMonth()+1).padStart(2,'0')}${String(today.getDate()).padStart(2,'0')}.xlsx`;
   XLSX.writeFile(wb, fname);
 };
+
 // ======= STORAGE =======
 let records = [], admins = [], currentRecord = null, lastId = null, currentAdmin = null;
 let _firebaseReady = false;
+
 function showLoadingOverlay(msg){
   let el = document.getElementById('fb-loading-overlay');
   if(!el){
@@ -1087,10 +1052,12 @@ function showLoadingOverlay(msg){
     el.style.display = 'flex';
   }
 }
+
 function hideLoadingOverlay(){
   const el = document.getElementById('fb-loading-overlay');
   if(el) el.style.display = 'none';
 }
+
 window.loadFromFirebase = async function(){
   showLoadingOverlay('กำลังโหลดข้อมูล...');
   try {
@@ -1114,7 +1081,9 @@ window.loadFromFirebase = async function(){
     alert('❌ ไม่สามารถเชื่อมต่อ Firebase ได้\n' + e.message);
   }
 };
+
 async function saveAll(){}
+
 async function saveRecordToFirebase(rec){
   try {
     await window._setDoc(window._doc(window._db, 'hc_records', rec.id), rec);
@@ -1123,14 +1092,15 @@ async function saveRecordToFirebase(rec){
     alert('❌ บันทึกข้อมูลไม่สำเร็จ: ' + e.message);
   }
 }
+
 async function updateRecordInFirebase(rec){
   try {
     await window._setDoc(window._doc(window._db, 'hc_records', rec.id), rec);
   } catch(e){
     console.error('Update record error:', e);
-    alert('❌ บันทึกข้อมูลไม่สำเร็จ: ' + e.message);
   }
 }
+
 async function saveAdmins(){
   try {
     for(const a of admins){
@@ -1138,13 +1108,16 @@ async function saveAdmins(){
     }
   } catch(e){ console.error('Save admins error:', e); }
 }
+
 async function deleteAdminFromFirebase(username){
   try {
     await window._deleteDoc(window._doc(window._db, 'hc_admins', username));
   } catch(e){ console.error('Delete admin error:', e); }
 }
+
 // ======= DOB =======
 const MONTHS_TH = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+
 function initDOBDropdowns(dayId, monthId, yearId){
   const dayEl = document.getElementById(dayId);
   const monthEl = document.getElementById(monthId);
@@ -1157,6 +1130,7 @@ function initDOBDropdowns(dayId, monthId, yearId){
   const curBE = new Date().getFullYear()+543;
   for(let y=curBE;y>=curBE-100;y--) yearEl.innerHTML += '<option value="'+y+'">'+y+'</option>';
 }
+
 function getDOBValue(dayId, monthId, yearId){
   const d = document.getElementById(dayId).value;
   const m = document.getElementById(monthId).value;
@@ -1164,6 +1138,7 @@ function getDOBValue(dayId, monthId, yearId){
   if(!d||!m||!y) return '';
   return y+'-'+String(m).padStart(2,'0')+'-'+String(d).padStart(2,'0');
 }
+
 function setDOBValue(dayId, monthId, yearId, val){
   if(!val) return;
   const parts = val.split('-');
@@ -1172,12 +1147,14 @@ function setDOBValue(dayId, monthId, yearId, val){
   document.getElementById(monthId).value = parseInt(parts[1]).toString();
   document.getElementById(dayId).value = parseInt(parts[2]).toString();
 }
+
 function dobToDisplay(val){
   if(!val) return '-';
   const parts = val.split('-');
   if(parts.length<3) return val;
   return parseInt(parts[2])+' '+MONTHS_TH[parseInt(parts[1])-1]+' '+parts[0];
 }
+
 // ======= NAV =======
 function showPage(p){
   ['home','register','login','result','success','admin','manage-admins'].forEach(function(x){
@@ -1194,6 +1171,7 @@ function showPage(p){
   if(p==='manage-admins') renderAdminList();
   window.scrollTo({top:0,behavior:'smooth'});
 }
+
 // ======= ADMIN LOGIN =======
 function showAdminLogin(){
   document.getElementById('admin-login-user').value='';
@@ -1202,7 +1180,9 @@ function showAdminLogin(){
   document.getElementById('modal-admin-login').classList.remove('hidden');
   setTimeout(function(){ document.getElementById('admin-login-user').focus(); },100);
 }
+
 function closeAdminLogin(){ document.getElementById('modal-admin-login').classList.add('hidden'); }
+
 function doAdminLogin(){
   const u = document.getElementById('admin-login-user').value.trim();
   const p = document.getElementById('admin-login-pass').value;
@@ -1216,6 +1196,7 @@ function doAdminLogin(){
     document.getElementById('admin-login-error').classList.remove('hidden');
   }
 }
+
 // ======= MANAGE ADMINS =======
 function renderAdminList(){
   const tbody = document.getElementById('admin-list-tbody');
@@ -1230,6 +1211,7 @@ function renderAdminList(){
       +'</td></tr>';
   }).join('');
 }
+
 function addAdmin(){
   const name = document.getElementById('new-admin-name').value.trim();
   const user = document.getElementById('new-admin-user').value.trim();
@@ -1246,6 +1228,7 @@ function addAdmin(){
   document.getElementById('new-admin-pass').value='';
   renderAdminList();
 }
+
 function deleteAdmin(i){
   if(!confirm('ยืนยันการลบแอดมิน "'+admins[i].name+'" ?')) return;
   const username = admins[i].username;
@@ -1254,6 +1237,7 @@ function deleteAdmin(i){
   saveAdmins();
   renderAdminList();
 }
+
 // ======= STEP =======
 function goStep(n, force){
   if(!force && n>1 && !validateStep(n-1)) return;
@@ -1268,6 +1252,7 @@ function goStep(n, force){
   document.getElementById('step'+n).classList.remove('hidden');
   window.scrollTo({top:0,behavior:'smooth'});
 }
+
 // ======= VALIDATE =======
 function validateStep(n){
   if(n===1){
@@ -1307,6 +1292,7 @@ function validateStep(n){
   }
   return true;
 }
+
 // ======= BMI =======
 function calcBMI(){
   const w=parseFloat(document.getElementById('f-weight').value);
@@ -1323,16 +1309,19 @@ function calcBMI(){
     document.getElementById('bmi-result').innerHTML='<span style="color:'+color+'">● BMI '+bmi+': '+txt+'</span>';
   }
 }
+
 function toggleNCD(show){
   document.getElementById('ncd-options').classList.toggle('hidden',!show);
   document.getElementById('medicine-section').classList.toggle('hidden',!show);
 }
+
 function checkAddictions(){
   const s=parseInt(document.getElementById('f-smoke').value);
   const a=parseInt(document.getElementById('f-alcohol').value);
   document.getElementById('smoke-assess').classList.toggle('hidden',s<2);
   document.getElementById('alcohol-assess').classList.toggle('hidden',a<2);
 }
+
 // ======= 9Q & 8Q =======
 const q9List=[
   'เบื่อหน่าย หมดความสนใจในสิ่งที่เคยสนใจ หรือทำแล้วไม่มีความสุขเหมือนเดิม',
@@ -1350,6 +1339,7 @@ const q8List=[
   'เตรียมการจะฆ่าตัวตาย ตั้งใจให้ตายจริงๆ','ทำให้ตนเองบาดเจ็บ แต่ตั้งใจให้ตาย',
   'พยายามฆ่าตัวตาย ตั้งใจให้ตาย','ตลอดชีวิตเคยพยายามฆ่าตัวตาย'
 ];
+
 function initQ(){
   document.getElementById('q9-container').innerHTML = q9List.map(function(q,i){
     return '<div style="border:1px solid #bbf7d0;border-radius:8px;padding:10px 12px;background:white;">'
@@ -1369,6 +1359,7 @@ function initQ(){
       +'</div></div>';
   }).join('');
 }
+
 function updateQ9Score(){
   let s=0;
   for(let i=0;i<9;i++){const r=document.querySelector('input[name="q9_'+i+'"]:checked');if(r)s+=parseInt(r.value);}
@@ -1380,6 +1371,7 @@ function updateQ9Score(){
   else{txt='คะแนน 9Q: '+s+' — ซึมเศร้ารุนแรง';bg='#fee2e2';color='#991b1b';}
   bar.style.background=bg;bar.style.color=color;bar.textContent=txt;bar.classList.remove('hidden');
 }
+
 function updateQ8Score(){
   let s=0;
   for(let i=0;i<8;i++){const r=document.querySelector('input[name="q8_'+i+'"]:checked');if(r)s+=parseInt(r.value);}
@@ -1391,6 +1383,7 @@ function updateQ8Score(){
   else{txt='คะแนน 8Q: '+s+' — มีแนวโน้มระดับรุนแรง';bg='#fee2e2';color='#991b1b';}
   bar.style.background=bg;bar.style.color=color;bar.textContent=txt;bar.classList.remove('hidden');
 }
+
 // ======= SUBMIT =======
 function submitForm(){
   let q9=0;
@@ -1445,10 +1438,12 @@ function submitForm(){
   lastId=rec.id;
   showPage('success');
 }
+
 function viewOwnResult(){
   const r=records.find(function(x){return x.id===lastId;});
   if(r){currentRecord=r;renderResult(r);showPage('result');}
 }
+
 // ======= LOGIN =======
 function doLogin(){
   const id=document.getElementById('login-id').value.trim();
@@ -1466,53 +1461,8 @@ function doLogin(){
     errEl.classList.remove('hidden');
   }
 }
+
 // ======= RENDER RESULT =======
-
-// ======= คำแนะนำพฤติกรรมสุขภาพ =======
-function buildLifestyleAdviceHTML(r){
-  const cards=[];
-  // คำแนะนำการสูบบุหรี่
-  const smokeAdvice=[
-    {title:'ไม่เคยสูบบุหรี่',body:'ยอดเยี่ยมมาก! ควรหลีกเลี่ยงควันบุหรี่มือสองและรักษาพฤติกรรมนี้ต่อไป'},
-    {title:'เคยสูบ แต่เลิกแล้ว',body:'ยินดีด้วยที่เลิกสูบได้สำเร็จ ควรหลีกเลี่ยงสิ่งกระตุ้นที่ทำให้กลับไปสูบอีก และออกกำลังกายสม่ำเสมอเพื่อฟื้นฟูสุขภาพปอด'},
-    {title:'สูบบุหรี่เป็นครั้งคราว',body:'แนะนำให้ลดความถี่ลงและตั้งเป้าหมายเลิกสูบ ปรึกษาคลินิกเลิกบุหรี่ของโรงพยาบาลเพื่อขอคำแนะนำและตัวช่วยในการเลิก'},
-    {title:'สูบบุหรี่เป็นประจำ',body:'ควรเข้ารับคำปรึกษาที่คลินิกเลิกบุหรี่ พิจารณาใช้ผลิตภัณฑ์ทดแทนนิโคตินภายใต้คำแนะนำแพทย์ และตรวจสุขภาพปอด/หัวใจเป็นระยะ เนื่องจากเพิ่มความเสี่ยงโรคมะเร็งปอด ถุงลมโป่งพอง และโรคหัวใจและหลอดเลือด'}
-  ][r.smoke] || null;
-  if(smokeAdvice){
-    cards.push({icon:'🚬',color:'#374151',bg:'#f3f4f6',title:'คำแนะนำเรื่องการสูบบุหรี่: '+smokeAdvice.title,body:smokeAdvice.body});
-  }
-  // คำแนะนำการดื่มสุรา
-  const alcAdvice=[
-    {title:'ไม่เคยดื่มสุรา',body:'ดีมาก ควรรักษาพฤติกรรมนี้ต่อไปเพื่อสุขภาพตับและหัวใจที่ดี'},
-    {title:'เคยดื่ม แต่เลิกแล้ว',body:'ยินดีด้วยที่เลิกดื่มได้ ควรหลีกเลี่ยงสถานการณ์ที่กระตุ้นให้กลับไปดื่มอีก'},
-    {title:'ดื่มเป็นครั้งคราว',body:'ควรจำกัดปริมาณการดื่มไม่ให้เกินเกณฑ์ที่ปลอดภัย (ชาย ≤2 ดื่มมาตรฐาน/วัน, หญิง ≤1 ดื่มมาตรฐาน/วัน) และไม่ดื่มก่อนขับขี่ยานพาหนะ'},
-    {title:'ดื่มเป็นประจำ',body:'แนะนำให้ลดปริมาณและความถี่ในการดื่ม เนื่องจากเพิ่มความเสี่ยงโรคตับ ความดันโลหิตสูง และอุบัติเหตุ ควรปรึกษาแพทย์หากมีปัญหาในการควบคุมการดื่ม'}
-  ][r.alcohol] || null;
-  if(alcAdvice){
-    cards.push({icon:'🍺',color:'#6C3483',bg:'#f5f3ff',title:'คำแนะนำเรื่องการดื่มแอลกอฮอล์: '+alcAdvice.title,body:alcAdvice.body});
-  }
-  // คำแนะนำการออกกำลังกาย
-  const exAdvice=[
-    {title:'ไม่ออกกำลังกาย',body:'ควรเริ่มออกกำลังกายเบาๆ เช่น เดินเร็ว 10-15 นาทีต่อวัน แล้วค่อยเพิ่มเวลาและความหนักขึ้นทีละน้อย เพื่อลดความเสี่ยงโรคอ้วน เบาหวาน และโรคหัวใจ'},
-    {title:'ออกกำลังกายต่ำกว่าเกณฑ์',body:'แนะนำให้เพิ่มความสม่ำเสมอ โดยตั้งเป้าออกกำลังกายระดับปานกลาง (เช่น เดินเร็ว ปั่นจักรยาน) อย่างน้อย 150 นาทีต่อสัปดาห์ ตามคำแนะนำขององค์การอนามัยโลก'},
-    {title:'ออกกำลังกายตามเกณฑ์',body:'ดีมาก! ควรรักษาความสม่ำเสมอนี้ไว้ และเพิ่มความหลากหลายของกิจกรรม เช่น ฝึกความแข็งแรงของกล้ามเนื้อร่วมด้วยสัปดาห์ละ 2 ครั้ง'}
-  ][r.exercise] || null;
-  if(exAdvice){
-    cards.push({icon:'🏃',color:'#16a34a',bg:'#f0fdf4',title:'คำแนะนำเรื่องการออกกำลังกาย: '+exAdvice.title,body:exAdvice.body});
-  }
-  if(!cards.length) return '';
-  const cardsHTML=cards.map(function(c){
-    return '<div style="background:'+c.bg+';border-radius:10px;padding:14px;margin-bottom:10px;">'
-      +'<div style="font-size:13px;font-weight:700;color:'+c.color+';margin-bottom:6px;">'+c.icon+' '+c.title+'</div>'
-      +'<div style="font-size:13px;color:#374151;line-height:1.6;">'+c.body+'</div>'
-      +'</div>';
-  }).join('');
-  return '<div class="sc p-4 mb-4">'
-    +'<h3 style="font-size:13px;font-weight:700;color:#374151;margin:0 0 10px;border-bottom:1px solid #e5e7eb;padding-bottom:6px;">💡 คำแนะนำการปรับเปลี่ยนพฤติกรรมสุขภาพ</h3>'
-    +cardsHTML
-    +'</div>';
-}
-
 function renderResult(r){
   document.getElementById('result-name-hd').textContent=r.prefix+' '+r.fname+' '+r.lname+' | '+r.unit+' | บันทึกเมื่อ: '+r.savedAt;
   const bmi=parseFloat(r.bmi);
@@ -1581,8 +1531,7 @@ function renderResult(r){
     +'<div style="font-size:12px;color:#6b7280;">คะแนน (0-8)</div>'
     +'<span class="rt '+q8Tag+'" style="margin-top:8px;display:inline-block;">'+q8Txt+'</span>'
     +'<div style="font-size:11px;color:#6b7280;margin-top:8px;">0=ไม่มี | 1-8=น้อย | 9-16=ปานกลาง | 17-46=รุนแรง</div></div>'
-    +'</div></div>'
-    +buildLifestyleAdviceHTML(r);
+    +'</div></div>';
   // แสดงผล Lab Module ถ้ามี PDF
   const labSection = document.getElementById('lab-module-section');
   const labContainer = document.getElementById('lab-result-container');
@@ -1596,8 +1545,10 @@ function renderResult(r){
     labContainer.innerHTML = '';
   }
 }
+
 // ======= ADMIN RENDER =======
 let currentApptId = null;
+
 function renderAdmin(){
   const total=records.length;
   const q9high=records.filter(function(r){return parseInt(r.q9)>=13;}).length;
@@ -1716,6 +1667,7 @@ function renderAdmin(){
       +'</tr>';
   }).join('');
 }
+
 function viewAdminPdf(id){
   const r=records.find(function(x){return x.id===id;});
   if(!r||!r.pdfData)return;
@@ -1723,10 +1675,12 @@ function viewAdminPdf(id){
   renderResult(r);
   showPage('result');
 }
+
 function viewAdmin(id){
   const r=records.find(function(x){return x.id===id;});
   if(r){currentRecord=r;renderResult(r);showPage('result');}
 }
+
 // ======= APPOINTMENT =======
 function openAppt(id){
   currentApptId=id;
@@ -1747,13 +1701,16 @@ function openAppt(id){
   toggleApptDate();
   document.getElementById('modal-appt').classList.remove('hidden');
 }
+
 function toggleApptDate(){
   const val=document.querySelector('input[name="appt-type"]:checked');
   const show=val&&val.value==='appt';
   document.getElementById('appt-date-wrap').style.display=show?'':'none';
   document.getElementById('appt-note-wrap').style.display=show?'':'none';
 }
+
 function closeAppt(){document.getElementById('modal-appt').classList.add('hidden');}
+
 function saveAppt(){
   const r=records.find(function(x){return x.id===currentApptId;});
   if(!r)return;
@@ -1770,6 +1727,7 @@ function saveAppt(){
   closeAppt();
   renderAdmin();
 }
+
 function toggleAttended(id){
   const r=records.find(function(x){return x.id===id;});
   if(!r||!r.appointment||r.appointment.type!=='appt')return;
@@ -1777,8 +1735,10 @@ function toggleAttended(id){
   updateRecordInFirebase(r);
   renderAdmin();
 }
+
 // ======= PDF MODAL =======
 let currentPdfModalId=null, pendingPdfBase64=null, pendingPdfName=null;
+
 function openPdfModal(id){
   currentPdfModalId=id;
   pendingPdfBase64=null; pendingPdfName=null;
@@ -1799,15 +1759,19 @@ function openPdfModal(id){
   }
   document.getElementById('modal-pdf').classList.remove('hidden');
 }
+
 function closePdfModal(){ document.getElementById('modal-pdf').classList.add('hidden'); }
+
 function clearPdfPreview(){
   pendingPdfBase64=null; pendingPdfName=null;
   document.getElementById('pdf-preview-wrap').classList.add('hidden');
   document.getElementById('pdf-lab-preview').classList.add('hidden');
   document.getElementById('pdf-lab-preview-content').innerHTML='';
 }
+
 function handlePdfSelect(evt){ processPdfFile(evt.target.files[0]); }
 function handlePdfDrop(evt){ evt.preventDefault(); if(evt.dataTransfer.files[0]) processPdfFile(evt.dataTransfer.files[0]); }
+
 function processPdfFile(file){
   if(!file||!file.name.endsWith('.pdf')){
     document.getElementById('pdf-err').textContent='รองรับเฉพาะไฟล์ .pdf';
@@ -1829,6 +1793,7 @@ function processPdfFile(file){
   };
   reader.readAsDataURL(file);
 }
+
 function previewLabFromPdf(pdfBase64, recordId){
   if(!window.LabModule) return;
   const r=records.find(function(x){return x.id===recordId;});
@@ -1843,81 +1808,52 @@ function previewLabFromPdf(pdfBase64, recordId){
     .then(function(){ loadingEl.textContent='✅ วิเคราะห์สำเร็จ'; })
     .catch(function(){ loadingEl.textContent='⚠️ อ่านข้อมูลได้บางส่วน'; });
 }
-async function savePdf(){
+
+function savePdf(){
   if(!pendingPdfBase64){ alert('กรุณาเลือกไฟล์ PDF'); return; }
   const r=records.find(function(x){return x.id===currentPdfModalId;});
   if(!r)return;
-  const saveBtn=document.getElementById('pdf-save-btn');
-  const origLabel=saveBtn?saveBtn.textContent:'';
-  if(saveBtn){saveBtn.disabled=true;saveBtn.textContent='⏳ กำลังอัปโหลด...';}
-  try{
-    const path='pdfresults/'+r.id+'.pdf';
-    const fileRef=window._storageRef(window._storage, path);
-    await window._uploadString(fileRef, pendingPdfBase64, 'data_url');
-    const url=await window._getDownloadURL(fileRef);
-    r.pdfData=url; r.pdfName=pendingPdfName; r.pdfDate=new Date().toLocaleString('th-TH'); r.pdfPath=path;
-    // ดึงข้อมูลผลตรวจ Lab จาก PDF มาบันทึกลงในเรคคอร์ด เพื่อใช้ใน Export รง.ผสต.11
-    if(window.LabModule){
-      try{
-        const gender = r.gender==='1' ? 'M' : 'F';
-        const text = await window.LabModule.pdfToText(pendingPdfBase64);
-        const lab = window.LabModule.extractLab(text, gender);
-        r.lab = lab;
-        const ncd = window.LabModule.analyzeNCD(lab, gender, r.age);
-        const highest = ncd.reduce(function(acc,d){
-          const order={high:3,medium:2,low:1};
-          return (order[d.level]||0) > (order[acc]||0) ? d.level : acc;
-        }, 'low');
-        r.ncdRisk = highest;
-      }catch(e){ console.error('Lab extract error:', e); }
-    }
-    await updateRecordInFirebase(r);
-    closePdfModal();
-    renderAdmin();
-  }catch(e){
-    console.error('PDF upload error:', e);
-    alert('❌ อัปโหลด PDF ไม่สำเร็จ: '+e.message);
-  }finally{
-    if(saveBtn){saveBtn.disabled=false;saveBtn.textContent=origLabel;}
-  }
+  r.pdfData=pendingPdfBase64; r.pdfName=pendingPdfName; r.pdfDate=new Date().toLocaleString('th-TH');
+  updateRecordInFirebase(r);
+  closePdfModal();
+  renderAdmin();
 }
-async function removePdf(){
+
+function removePdf(){
   const r=records.find(function(x){return x.id===currentPdfModalId;});
   if(!r)return;
-  try{
-    if(r.pdfPath){
-      const fileRef=window._storageRef(window._storage, r.pdfPath);
-      await window._deleteObject(fileRef).catch(function(){});
-    }
-    delete r.pdfData; delete r.pdfName; delete r.pdfDate; delete r.pdfPath; delete r.lab; delete r.ncdRisk;
-    await updateRecordInFirebase(r);
-    document.getElementById('pdf-current-wrap').classList.add('hidden');
-    renderAdmin();
-  }catch(e){
-    console.error('PDF remove error:', e);
-    alert('❌ ลบ PDF ไม่สำเร็จ: '+e.message);
-  }
+  delete r.pdfData; delete r.pdfName; delete r.pdfDate;
+  updateRecordInFirebase(r);
+  document.getElementById('pdf-current-wrap').classList.add('hidden');
+  renderAdmin();
 }
+
 function viewPdfCurrent(){
   const r=records.find(function(x){return x.id===currentPdfModalId;});
   if(!r||!r.pdfData)return;
   const w=window.open();
   w.document.write('<iframe src="'+r.pdfData+'" width="100%" height="100%" style="border:none;"></iframe>');
 }
+
 function closePdfViewer(){}
+
 // ======= EXPORT =======
 function exportAllExcel(){
   if(!records.length){alert('ยังไม่มีข้อมูล');return;}
   exportPomsat11(records);
 }
+
 function exportSingleExcel(){
   if(!currentRecord)return;
   exportPomsat11([currentRecord]);
 }
+
 window.addEventListener('load', function(){
   initDOBDropdowns('login-dob-day','login-dob-month','login-dob-year');
   showLoadingOverlay('กำลังโหลดข้อมูล...');
 });
 </script>
+
 </body>
+
 </html>
